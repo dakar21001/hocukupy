@@ -1016,7 +1016,7 @@ async function openRequestPage(requestId) {
   }
 
   var offerFormHtml = '';
-  if (!isClosed && currentUser && currentUser.id !== r.user_id) {
+  if (!isClosed) {
     offerFormHtml = '<button class="add-offer-toggle" data-action="offer-toggle" data-id="' + r.id + '">＋ Зробити пропозицію</button><div class="offer-form" id="oform-' + r.id + '"><input type="text" id="odesc-' + r.id + '" placeholder="Опис: модель, стан, комплектація..."><div class="form-row"><input type="number" id="oprice-' + r.id + '" placeholder="Ціна, ₴" style="max-width:160px"><button class="btn btn-primary btn-sm" data-action="offer-submit" data-id="' + r.id + '">Запропонувати</button></div><div class="photo-upload-area"><input type="file" accept="image/*" multiple data-formid="' + r.id + '" class="photo-file-input"><div class="photo-upload-label" id="upload-label-' + r.id + '">📷 Додати фото (до 3 шт.)</div></div><div class="photo-previews" id="previews-' + r.id + '"></div></div>';
   }
 
