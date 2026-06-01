@@ -79,7 +79,7 @@ serve(async (req) => {
                 ${Number(offer.price).toLocaleString('uk')} ₴
               </p>
             </div>
-            <a href="https://stupendous-zuccutto-7118eb.netlify.app"
+            <a href="https://hocukupy.onrender.com"
                style="display:inline-block;background:#1D9E75;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;">
               Переглянути пропозицію →
             </a>
