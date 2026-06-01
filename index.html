@@ -241,7 +241,7 @@ function showConfirm(title, text, onOk) {
   document.getElementById('confirm-modal').classList.add('open');
 }
 function closeConfirm() { document.getElementById('confirm-modal').classList.remove('open'); confirmCallback = null; }
-document.getElementById('confirm-ok').onclick = () => { closeConfirm(); if (confirmCallback) confirmCallback(); };
+document.getElementById('confirm-ok').addEventListener('click', function() { closeConfirm(); if (confirmCallback) confirmCallback(); });
 
 // ---- AUTH UI ----
 function openAuth()  { document.getElementById('auth-modal').classList.add('open'); }
