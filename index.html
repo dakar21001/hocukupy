@@ -261,17 +261,6 @@
   </div>
 </div>
 
-<!-- REQUEST PAGE -->
-<div id="request-page" style="display:none">
-  <div class="request-page">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-      <button class="back-btn" id="back-from-request-btn">← Назад</button>
-      <button class="share-btn" id="share-btn">🔗 Поділитись</button>
-    </div>
-    <div id="request-page-content"><div class="spinner"></div></div>
-  </div>
-</div>
-
 <!-- CHAT LIST PAGE -->
 <div id="chat-list-page" style="display:none">
   <div class="chat-page">
@@ -300,6 +289,17 @@
         <button class="chat-send-btn" id="chat-send-btn">➤</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- REQUEST MODAL -->
+<div class="modal-bg" id="request-modal">
+  <div class="modal" style="max-width:620px;max-height:90vh;overflow-y:auto;padding:24px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <button class="back-btn" style="margin:0" id="close-request-modal-btn">← Закрити</button>
+      <button class="share-btn" id="share-btn">🔗 Поділитись</button>
+    </div>
+    <div id="request-modal-content"><div class="spinner"></div></div>
   </div>
 </div>
 
@@ -395,7 +395,11 @@ function showPage(page) {
   document.getElementById('profile-page').style.display     = page === 'profile'   ? '' : 'none';
   document.getElementById('chat-list-page').style.display   = page === 'chat-list' ? '' : 'none';
   document.getElementById('chat-window-page').style.display = page === 'chat-win'  ? '' : 'none';
-  document.getElementById('request-page').style.display     = page === 'request'   ? '' : 'none';
+}
+function openRequestModal() { document.getElementById('request-modal').classList.add('open'); }
+function closeRequestModal() {
+  document.getElementById('request-modal').classList.remove('open');
+  history.pushState({}, '', window.location.pathname);
 }
 
 // ---- TOAST ----
@@ -939,28 +943,26 @@ async function loadReviews(userId) {
   document.getElementById('stat-rating') && (document.getElementById('stat-rating').textContent = avg);
 }
 
-// ---- REQUEST PAGE ----
-document.getElementById('back-from-request-btn').addEventListener('click', function() {
-  showPage('main');
-  loadRequests();
-  // restore URL
-  history.pushState({}, '', window.location.pathname);
+// ---- REQUEST MODAL ----
+document.getElementById('close-request-modal-btn').addEventListener('click', closeRequestModal);
+document.getElementById('request-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeRequestModal();
 });
-
 document.getElementById('share-btn').addEventListener('click', function() {
   var url = window.location.origin + window.location.pathname + '?request=' + (window._currentRequestId || '');
-  navigator.clipboard.writeText(url).then(function() {
-    toast('Посилання скопійовано!');
-  }).catch(function() {
-    toast(url);
-  });
+  navigator.clipboard.writeText(url).then(function() { toast('Посилання скопійовано!'); });
 });
 
 async function openRequestPage(requestId) {
   window._currentRequestId = requestId;
-  showPage('request');
   history.pushState({}, '', '?request=' + requestId);
-  document.getElementById('request-page-content').innerHTML = '<div class="spinner"></div>';
+  openRequestModal();
+  document.getElementById('request-modal-content').innerHTML = '<div class="spinner"></div>';
+
+  if (!currentUser) {
+    var sess = await db.auth.getSession();
+    if (sess.data.session) setUserUI(sess.data.session.user);
+  }
 
   var res = await db.from('requests')
     .select('*, profiles(id, name), offers(id, user_id, description, price, photos, profiles(name))')
@@ -968,7 +970,7 @@ async function openRequestPage(requestId) {
     .single();
 
   if (res.error || !res.data) {
-    document.getElementById('request-page-content').innerHTML = '<div class="empty"><div class="empty-icon">😕</div><p>Запит не знайдено</p></div>';
+    document.getElementById('request-modal-content').innerHTML = '<div class="empty"><div class="empty-icon">😕</div><p>Запит не знайдено</p></div>';
     return;
   }
 
@@ -984,12 +986,12 @@ async function openRequestPage(requestId) {
     if (o.photos && o.photos.length) {
       photosHtml = '<div class="offer-photos" style="margin-top:10px">';
       for (var k = 0; k < o.photos.length; k++) {
-        photosHtml += '<img class="offer-photo" src="' + o.photos[k] + '" alt="фото" data-action="lightbox" data-url="' + o.photos[k] + '">';
+        photosHtml += '<img class="offer-photo" src="' + o.photos[k] + '" alt="" data-action="lightbox" data-url="' + o.photos[k] + '">';
       }
       photosHtml += '</div>';
     }
     var writeBtn = '';
-    if (currentUser && currentUser.id === r.user_id && o.user_id && o.user_id !== currentUser.id) {
+    if (isOwner && o.user_id && o.user_id !== currentUser.id) {
       writeBtn = '<button class="btn btn-sm" style="margin-top:8px" data-action="open-chat" data-seller="' + o.user_id + '" data-reqid="' + r.id + '" data-selname="' + esc(o.profiles ? o.profiles.name : 'Продавець') + '" data-reqtitle="' + esc(r.title) + '">💬 Написати</button>';
     }
     offersHtml += '<div class="offer-row" style="margin-bottom:10px"><div class="offer-row-top"><div><div class="offer-seller">' + esc(o.profiles ? o.profiles.name : 'Анонім') + '</div><div class="offer-desc">' + esc(o.description) + '</div></div><div class="offer-price">' + Number(o.price).toLocaleString('uk') + ' ₴</div></div>' + photosHtml + writeBtn + '</div>';
@@ -1009,63 +1011,57 @@ async function openRequestPage(requestId) {
     actionsHtml += '<button class="btn btn-sm btn-danger" data-action="delete-req" data-id="' + r.id + '">Видалити</button></div>';
   }
 
-  var offerFormHtml = '';
-  if (!isClosed && currentUser && currentUser.id !== r.user_id) {
-    offerFormHtml = '<button class="add-offer-toggle" id="rp-toggle-' + r.id + '">＋ Зробити пропозицію</button><div class="offer-form" id="rp-oform-' + r.id + '"><input type="text" id="rp-odesc-' + r.id + '" placeholder="Опис: модель, стан, комплектація..."><div class="form-row"><input type="number" id="rp-oprice-' + r.id + '" placeholder="Ціна, ₴" style="max-width:160px"><button class="btn btn-primary btn-sm" id="rp-submit-' + r.id + '">Запропонувати</button></div><div class="photo-upload-area"><input type="file" accept="image/*" multiple data-formid="rp-' + r.id + '" class="rp-photo-file-input"><div class="photo-upload-label" id="rp-upload-label-' + r.id + '">📷 Додати фото (до 3 шт.)</div></div><div class="photo-previews" id="rp-previews-' + r.id + '"></div></div>';
-  }
-
-  var html = '<div class="req-full-card">';
-  html += '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px">';
-  html += '<div class="req-full-title">' + esc(r.title) + '</div>';
-  html += '<div style="display:flex;gap:6px;flex-wrap:wrap"><span class="cat-badge">' + esc(r.category || 'Інше') + '</span>' + (isClosed ? '<span class="closed-badge">✓ Знайдено</span>' : '<span class="offers-badge">' + offers.length + ' пропозицій</span>') + '</div>';
-  html += '</div>';
+  var html = '<div style="margin-bottom:16px"><div style="font-family:Unbounded,sans-serif;font-size:18px;font-weight:600;margin-bottom:10px">' + esc(r.title) + '</div>';
+  html += '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px"><span class="cat-badge">' + esc(r.category || 'Інше') + '</span>' + (isClosed ? '<span class="closed-badge">✓ Знайдено</span>' : '<span class="offers-badge">' + offers.length + ' пропозицій</span>') + '</div>';
   html += '<div class="req-meta"><span>👤 ' + esc(r.profiles ? r.profiles.name : 'Анонім') + '</span><span>🕐 ' + timeAgo(r.created_at) + '</span>' + (r.budget ? '<span>💰 до ' + Number(r.budget).toLocaleString('uk') + ' ₴</span>' : '') + '</div>';
   html += r.description ? '<div class="req-desc" style="margin-top:10px">' + esc(r.description) + '</div>' : '';
-  html += actionsHtml;
-  html += '</div>';
+  html += actionsHtml + '</div>';
 
   if (offers.length) {
-    html += '<div style="font-size:14px;font-weight:600;margin-bottom:12px">Пропозиції (' + offers.length + ')</div>';
+    html += '<div style="font-size:14px;font-weight:600;margin-bottom:10px">Пропозиції (' + offers.length + ')</div>';
     html += offersHtml;
   }
 
-  html += offerFormHtml;
-
-  document.getElementById('request-page-content').innerHTML = html;
-
-  // bind request page form events
-  var rpToggle = document.getElementById('rp-toggle-' + r.id);
-  var rpForm   = document.getElementById('rp-oform-' + r.id);
-  if (rpToggle && rpForm) {
-    rpToggle.addEventListener('click', function() {
-      rpForm.classList.toggle('open');
-      if (rpForm.classList.contains('open')) initPhotoUpload('rp-' + r.id);
-    });
+  if (!isClosed && !isOwner) {
+    html += '<div style="margin-top:16px;border-top:1px solid var(--border);padding-top:16px">';
+    html += '<div style="font-size:13px;font-weight:600;margin-bottom:10px">Зробити пропозицію</div>';
+    html += '<div style="display:flex;flex-direction:column;gap:10px">';
+    html += '<input type="text" id="modal-odesc" placeholder="Опис: модель, стан, комплектація...">';
+    html += '<div class="form-row"><input type="number" id="modal-oprice" placeholder="Ціна, ₴" style="max-width:160px"><button class="btn btn-primary btn-sm" id="modal-submit-btn">Запропонувати</button></div>';
+    html += '<div class="photo-upload-area" style="position:relative"><input type="file" accept="image/*" multiple id="modal-photo-input" style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer"><div class="photo-upload-label">📷 Додати фото (до 3 шт.)</div></div>';
+    html += '<div class="photo-previews" id="modal-previews"></div>';
+    html += '</div></div>';
   }
-  var rpSubmit = document.getElementById('rp-submit-' + r.id);
-  if (rpSubmit) {
-    rpSubmit.addEventListener('click', async function() {
-      if (!currentUser) { openAuth(); return; }
-      var desc  = document.getElementById('rp-odesc-'  + r.id).value.trim();
-      var price = document.getElementById('rp-oprice-' + r.id).value;
+
+  document.getElementById('request-modal-content').innerHTML = html;
+
+  // bind photo input
+  var photoInput = document.getElementById('modal-photo-input');
+  if (photoInput) {
+    photoInput.addEventListener('change', function() { handlePhotoSelect('modal-' + r.id, this); });
+  }
+
+  // bind submit
+  var submitBtn = document.getElementById('modal-submit-btn');
+  if (submitBtn) {
+    submitBtn.addEventListener('click', async function() {
+      if (!currentUser) { closeRequestModal(); openAuth(); return; }
+      var desc  = document.getElementById('modal-odesc').value.trim();
+      var price = document.getElementById('modal-oprice').value;
       if (!desc || !price) { toast('Заповніть опис та ціну', true); return; }
       await ensureProfile(currentUser);
-      rpSubmit.textContent = 'Завантаження...'; rpSubmit.disabled = true;
-      var photoUrls = await uploadPhotos('rp-' + r.id);
-      var res = await db.from('offers').insert({ request_id: r.id, user_id: currentUser.id, description: desc, price: Number(price), photos: photoUrls.length ? photoUrls : null });
-      rpSubmit.textContent = 'Запропонувати'; rpSubmit.disabled = false;
-      if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
+      submitBtn.textContent = 'Завантаження...'; submitBtn.disabled = true;
+      var photoUrls = await uploadPhotos('modal-' + r.id);
+      var res2 = await db.from('offers').insert({ request_id: r.id, user_id: currentUser.id, description: desc, price: Number(price), photos: photoUrls.length ? photoUrls : null });
+      submitBtn.textContent = 'Запропонувати'; submitBtn.disabled = false;
+      if (res2.error) { toast('Помилка: ' + res2.error.message, true); return; }
       toast('Пропозицію надіслано!');
+      photoState['modal-' + r.id] = [];
       openRequestPage(r.id);
     });
   }
-  var fileInputs = document.querySelectorAll('#request-page-content .rp-photo-file-input');
-  fileInputs.forEach(function(inp) {
-    inp.addEventListener('change', function() { handlePhotoSelect(this.dataset.formid, this); });
-  });
 }
 
-// Check URL for request param on load
 function checkUrlRequest() {
   var params = new URLSearchParams(window.location.search);
   var reqId  = params.get('request');
