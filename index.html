@@ -17,7 +17,7 @@
   *{box-sizing:border-box;margin:0;padding:0;}
   body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
   .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-  .logo{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:600;letter-spacing:-0.5px;}
+  .logo{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:600;letter-spacing:-0.5px;cursor:pointer;}
   .logo span{color:var(--green);}
   .topbar-right{display:flex;gap:10px;align-items:center;}
   .btn{font-family:'Manrope',sans-serif;font-size:13px;font-weight:600;padding:8px 18px;border-radius:var(--radius-sm);border:1.5px solid var(--border-hover);background:transparent;color:var(--text);cursor:pointer;transition:all 0.15s;}
@@ -98,13 +98,31 @@
   .empty-icon{font-size:40px;margin-bottom:12px;}
   .spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin 0.7s linear infinite;margin:48px auto;}
   @keyframes spin{to{transform:rotate(360deg);}}
-  .user-pill{font-size:12px;font-weight:600;padding:6px 14px;border-radius:99px;background:var(--green-light);color:var(--green-dark);}
+  .user-pill{font-size:12px;font-weight:600;padding:6px 14px;border-radius:99px;background:var(--green-light);color:var(--green-dark);cursor:pointer;}
+
+  /* PROFILE PAGE */
+  .profile-page{max-width:700px;margin:0 auto;padding:32px 24px;}
+  .profile-header{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin-bottom:20px;}
+  .profile-top{display:flex;align-items:center;gap:20px;margin-bottom:20px;}
+  .avatar{width:72px;height:72px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-family:'Unbounded',sans-serif;font-size:24px;font-weight:600;color:var(--green-dark);flex-shrink:0;overflow:hidden;}
+  .avatar img{width:100%;height:100%;object-fit:cover;}
+  .profile-name{font-family:'Unbounded',sans-serif;font-size:20px;font-weight:600;margin-bottom:4px;}
+  .profile-meta{font-size:13px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap;}
+  .profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+  .stat-card{background:var(--bg);border-radius:var(--radius-sm);padding:14px;text-align:center;}
+  .stat-num{font-family:'Unbounded',sans-serif;font-size:22px;font-weight:600;color:var(--text);}
+  .stat-label{font-size:11px;color:var(--muted);margin-top:2px;}
+  .profile-edit-form{display:none;flex-direction:column;gap:12px;border-top:1px solid var(--border);padding-top:20px;margin-top:4px;}
+  .profile-edit-form.open{display:flex;}
+  .profile-section-title{font-size:14px;font-weight:600;margin-bottom:12px;color:var(--text);}
+  .back-btn{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;margin-bottom:16px;padding:0;}
+  .back-btn:hover{color:var(--text);}
 </style>
 </head>
 <body>
 
 <header class="topbar">
-  <div class="logo">Хочу<span>Купити</span></div>
+  <div class="logo" id="logo-btn">Хочу<span>Купити</span></div>
   <div class="topbar-right">
     <span id="user-pill" class="user-pill" style="display:none"></span>
     <button class="btn btn-sm" id="auth-btn">Увійти</button>
@@ -112,32 +130,73 @@
   </div>
 </header>
 
-<main class="layout">
-  <section>
-    <div class="filter-row" id="filter-row">
-      <button class="filter-chip active" data-cat="">Всі</button>
-      <button class="filter-chip" data-cat="Електроніка">Електроніка</button>
-      <button class="filter-chip" data-cat="Авто">Авто</button>
-      <button class="filter-chip" data-cat="Одяг">Одяг</button>
-      <button class="filter-chip" data-cat="Меблі">Меблі</button>
-      <button class="filter-chip" data-cat="Спорт">Спорт</button>
-      <button class="filter-chip" data-cat="Інше">Інше</button>
-    </div>
-    <div id="requests-container"><div class="spinner"></div></div>
-  </section>
-  <aside class="sidebar">
-    <div class="sidebar-card">
-      <h2>+ Новий запит</h2>
-      <div class="field-group"><div class="field-label">Що шукаєте?</div><input type="text" id="new-title" placeholder="Наприклад: iPhone 13 Pro 256GB"></div>
-      <div class="field-group"><div class="field-label">Деталі (необов.)</div><textarea id="new-desc" placeholder="Стан, комплектація, побажання..."></textarea></div>
-      <div class="field-group"><div class="field-label">Категорія</div>
-        <select id="new-cat"><option>Електроніка</option><option>Авто</option><option>Одяг</option><option>Меблі</option><option>Спорт</option><option>Інше</option></select>
+<!-- MAIN PAGE -->
+<div id="main-page">
+  <main class="layout">
+    <section>
+      <div class="filter-row" id="filter-row">
+        <button class="filter-chip active" data-cat="">Всі</button>
+        <button class="filter-chip" data-cat="Електроніка">Електроніка</button>
+        <button class="filter-chip" data-cat="Авто">Авто</button>
+        <button class="filter-chip" data-cat="Одяг">Одяг</button>
+        <button class="filter-chip" data-cat="Меблі">Меблі</button>
+        <button class="filter-chip" data-cat="Спорт">Спорт</button>
+        <button class="filter-chip" data-cat="Інше">Інше</button>
       </div>
-      <div class="field-group"><div class="field-label">Бюджет (необов.)</div><input type="number" id="new-budget" placeholder="50000"></div>
-      <button class="btn btn-primary" style="width:100%;margin-top:4px" id="submit-request-btn">Опублікувати запит</button>
+      <div id="requests-container"><div class="spinner"></div></div>
+    </section>
+    <aside class="sidebar">
+      <div class="sidebar-card">
+        <h2>+ Новий запит</h2>
+        <div class="field-group"><div class="field-label">Що шукаєте?</div><input type="text" id="new-title" placeholder="Наприклад: iPhone 13 Pro 256GB"></div>
+        <div class="field-group"><div class="field-label">Деталі (необов.)</div><textarea id="new-desc" placeholder="Стан, комплектація, побажання..."></textarea></div>
+        <div class="field-group"><div class="field-label">Категорія</div>
+          <select id="new-cat"><option>Електроніка</option><option>Авто</option><option>Одяг</option><option>Меблі</option><option>Спорт</option><option>Інше</option></select>
+        </div>
+        <div class="field-group"><div class="field-label">Бюджет (необов.)</div><input type="number" id="new-budget" placeholder="50000"></div>
+        <button class="btn btn-primary" style="width:100%;margin-top:4px" id="submit-request-btn">Опублікувати запит</button>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<!-- PROFILE PAGE -->
+<div id="profile-page" style="display:none">
+  <div class="profile-page">
+    <button class="back-btn" id="back-btn">← Назад</button>
+    <div class="profile-header">
+      <div class="profile-top">
+        <div class="avatar" id="profile-avatar">?</div>
+        <div>
+          <div class="profile-name" id="profile-name">—</div>
+          <div class="profile-meta">
+            <span id="profile-city-show"></span>
+            <span id="profile-joined"></span>
+          </div>
+          <div style="margin-top:8px;font-size:13px;color:var(--muted)" id="profile-bio-show"></div>
+        </div>
+      </div>
+      <div class="profile-stats">
+        <div class="stat-card"><div class="stat-num" id="stat-requests">0</div><div class="stat-label">Запитів</div></div>
+        <div class="stat-card"><div class="stat-num" id="stat-offers">0</div><div class="stat-label">Пропозицій</div></div>
+        <div class="stat-card"><div class="stat-num" id="stat-closed">0</div><div class="stat-label">Знайдено</div></div>
+      </div>
+      <div id="edit-profile-wrap"></div>
+      <div class="profile-edit-form" id="profile-edit-form">
+        <div class="profile-section-title">Редагувати профіль</div>
+        <div class="field-group"><div class="field-label">Ім'я</div><input type="text" id="edit-name" placeholder="Ваше ім'я"></div>
+        <div class="field-group"><div class="field-label">Місто</div><input type="text" id="edit-city" placeholder="Київ, Львів..."></div>
+        <div class="field-group"><div class="field-label">Про себе</div><textarea id="edit-bio" placeholder="Кілька слів про себе..." style="min-height:60px"></textarea></div>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-primary btn-sm" id="save-profile-btn">Зберегти</button>
+          <button class="btn btn-sm" id="cancel-edit-btn">Скасувати</button>
+        </div>
+      </div>
     </div>
-  </aside>
-</main>
+    <div class="profile-section-title">Мої запити</div>
+    <div id="profile-requests"><div class="spinner"></div></div>
+  </div>
+</div>
 
 <!-- AUTH MODAL -->
 <div class="modal-bg" id="auth-modal">
@@ -198,9 +257,15 @@ let currentCat  = '';
 let confirmCb   = null;
 const photoState = {};
 
+// ---- PAGES ----
+function showPage(page) {
+  document.getElementById('main-page').style.display    = page === 'main'    ? '' : 'none';
+  document.getElementById('profile-page').style.display = page === 'profile' ? '' : 'none';
+}
+
 // ---- TOAST ----
 function toast(msg, isError) {
-  const t = document.getElementById('toast');
+  var t = document.getElementById('toast');
   t.textContent = msg;
   t.className = 'toast show' + (isError ? ' error' : '');
   setTimeout(function() { t.className = 'toast'; }, 3000);
@@ -241,11 +306,11 @@ function closeAuth() { document.getElementById('auth-modal').classList.remove('o
 
 document.getElementById('auth-btn').addEventListener('click', openAuth);
 document.getElementById('logout-btn').addEventListener('click', function() {
-  db.auth.signOut();
-  setUserUI(null);
-  toast('До побачення!');
+  db.auth.signOut(); setUserUI(null); toast('До побачення!');
 });
 document.getElementById('close-auth-btn').addEventListener('click', closeAuth);
+document.getElementById('logo-btn').addEventListener('click', function() { showPage('main'); loadRequests(); });
+document.getElementById('back-btn').addEventListener('click', function() { showPage('main'); });
 
 document.getElementById('tab-login').addEventListener('click', function() {
   document.getElementById('login-form').style.display = '';
@@ -261,19 +326,19 @@ document.getElementById('tab-register').addEventListener('click', function() {
 });
 
 document.getElementById('do-login-btn').addEventListener('click', async function() {
-  const email = document.getElementById('login-email').value.trim();
-  const pass  = document.getElementById('login-pass').value;
-  const { error } = await db.auth.signInWithPassword({ email: email, password: pass });
-  if (error) { toast(error.message, true); return; }
+  var email = document.getElementById('login-email').value.trim();
+  var pass  = document.getElementById('login-pass').value;
+  var res   = await db.auth.signInWithPassword({ email: email, password: pass });
+  if (res.error) { toast(res.error.message, true); return; }
   closeAuth(); toast('Вітаємо!');
 });
 
 document.getElementById('do-register-btn').addEventListener('click', async function() {
-  const name  = document.getElementById('reg-name').value.trim();
-  const email = document.getElementById('reg-email').value.trim();
-  const pass  = document.getElementById('reg-pass').value;
+  var name  = document.getElementById('reg-name').value.trim();
+  var email = document.getElementById('reg-email').value.trim();
+  var pass  = document.getElementById('reg-pass').value;
   if (!name) { toast("Введіть ім'я", true); return; }
-  const res = await db.auth.signUp({ email: email, password: pass, options: { data: { name: name } } });
+  var res = await db.auth.signUp({ email: email, password: pass, options: { data: { name: name } } });
   if (res.error) { toast(res.error.message, true); return; }
   if (res.data.user) await db.from('profiles').upsert({ id: res.data.user.id, name: name });
   closeAuth(); toast('Акаунт створено!');
@@ -281,11 +346,12 @@ document.getElementById('do-register-btn').addEventListener('click', async funct
 
 function setUserUI(user) {
   currentUser = user;
-  const pill    = document.getElementById('user-pill');
-  const authBtn = document.getElementById('auth-btn');
-  const outBtn  = document.getElementById('logout-btn');
+  var pill    = document.getElementById('user-pill');
+  var authBtn = document.getElementById('auth-btn');
+  var outBtn  = document.getElementById('logout-btn');
   if (user) {
-    pill.textContent   = user.user_metadata && user.user_metadata.name ? user.user_metadata.name : user.email.split('@')[0];
+    var name = user.user_metadata && user.user_metadata.name ? user.user_metadata.name : user.email.split('@')[0];
+    pill.textContent   = name;
     pill.style.display = '';
     authBtn.style.display = 'none';
     outBtn.style.display  = '';
@@ -296,9 +362,104 @@ function setUserUI(user) {
   }
 }
 
+// ---- USER PILL → PROFILE ----
+document.getElementById('user-pill').addEventListener('click', function() {
+  if (currentUser) openProfile(currentUser.id);
+});
+
+// ---- PROFILE ----
+async function openProfile(userId) {
+  showPage('profile');
+  document.getElementById('profile-requests').innerHTML = '<div class="spinner"></div>';
+
+  var res = await db.from('profiles').select('*').eq('id', userId).single();
+  var profile = res.data || {};
+
+  var name = profile.name || 'Без імені';
+  var initials = name.charAt(0).toUpperCase();
+
+  var avatarEl = document.getElementById('profile-avatar');
+  if (profile.avatar_url) {
+    avatarEl.innerHTML = '<img src="' + profile.avatar_url + '" alt="">';
+  } else {
+    avatarEl.textContent = initials;
+  }
+
+  document.getElementById('profile-name').textContent = name;
+  document.getElementById('profile-city-show').textContent  = profile.city ? '📍 ' + profile.city : '';
+  document.getElementById('profile-bio-show').textContent   = profile.bio  || '';
+  document.getElementById('profile-joined').textContent     = profile.created_at ? '📅 З ' + new Date(profile.created_at).toLocaleDateString('uk') : '';
+
+  // Stats
+  var reqRes = await db.from('requests').select('id, closed_at').eq('user_id', userId);
+  var offRes = await db.from('offers').select('id').eq('user_id', userId);
+  var requests = reqRes.data || [];
+  var closed   = requests.filter(function(r) { return r.closed_at; }).length;
+  document.getElementById('stat-requests').textContent = requests.length;
+  document.getElementById('stat-offers').textContent   = (offRes.data || []).length;
+  document.getElementById('stat-closed').textContent   = closed;
+
+  // Edit button (only own profile)
+  var editWrap = document.getElementById('edit-profile-wrap');
+  if (currentUser && currentUser.id === userId) {
+    editWrap.innerHTML = '<button class="btn btn-sm" id="edit-profile-btn" style="margin-top:4px">Редагувати профіль</button>';
+    document.getElementById('edit-profile-btn').addEventListener('click', function() {
+      document.getElementById('edit-name').value = profile.name  || '';
+      document.getElementById('edit-city').value = profile.city  || '';
+      document.getElementById('edit-bio').value  = profile.bio   || '';
+      document.getElementById('profile-edit-form').classList.add('open');
+    });
+  } else {
+    editWrap.innerHTML = '';
+  }
+
+  // Profile requests
+  var rRes = await db.from('requests')
+    .select('*, offers(id)')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+  renderProfileRequests(rRes.data || []);
+}
+
+function renderProfileRequests(requests) {
+  var c = document.getElementById('profile-requests');
+  if (!requests.length) {
+    c.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><p>Запитів ще немає</p></div>';
+    return;
+  }
+  var html = '';
+  for (var i = 0; i < requests.length; i++) {
+    var r = requests[i];
+    var isClosed = !!r.closed_at;
+    html += '<div class="req-card' + (isClosed ? ' closed' : '') + '"><div class="req-card-header"><div class="req-title">' + esc(r.title) + '</div><div style="display:flex;gap:6px">' + (isClosed ? '<span class="closed-badge">✓ Знайдено</span>' : '<span class="offers-badge">' + (r.offers ? r.offers.length : 0) + ' пропозицій</span>') + '<span class="cat-badge">' + esc(r.category || 'Інше') + '</span></div></div><div class="req-meta"><span>🕐 ' + timeAgo(r.created_at) + '</span>' + (r.budget ? '<span>💰 до ' + Number(r.budget).toLocaleString('uk') + ' ₴</span>' : '') + '</div>' + (r.description ? '<div class="req-desc">' + esc(r.description) + '</div>' : '') + '</div>';
+  }
+  c.innerHTML = html;
+}
+
+// ---- SAVE PROFILE ----
+document.getElementById('save-profile-btn').addEventListener('click', async function() {
+  if (!currentUser) return;
+  var name = document.getElementById('edit-name').value.trim();
+  var city = document.getElementById('edit-city').value.trim();
+  var bio  = document.getElementById('edit-bio').value.trim();
+  if (!name) { toast("Введіть ім'я", true); return; }
+  var res = await db.from('profiles').update({ name: name, city: city || null, bio: bio || null }).eq('id', currentUser.id);
+  if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
+  toast('Профіль збережено!');
+  document.getElementById('profile-edit-form').classList.remove('open');
+  // update pill name
+  var pill = document.getElementById('user-pill');
+  pill.textContent = name;
+  openProfile(currentUser.id);
+});
+
+document.getElementById('cancel-edit-btn').addEventListener('click', function() {
+  document.getElementById('profile-edit-form').classList.remove('open');
+});
+
 // ---- FILTER CHIPS ----
 document.getElementById('filter-row').addEventListener('click', function(e) {
-  const chip = e.target.closest('.filter-chip');
+  var chip = e.target.closest('.filter-chip');
   if (!chip) return;
   document.querySelectorAll('.filter-chip').forEach(function(b) { b.classList.remove('active'); });
   chip.classList.add('active');
@@ -308,21 +469,19 @@ document.getElementById('filter-row').addEventListener('click', function(e) {
 
 // ---- ENSURE PROFILE ----
 async function ensureProfile(user) {
-  const res = await db.from('profiles').select('id').eq('id', user.id).single();
+  var res = await db.from('profiles').select('id').eq('id', user.id).single();
   if (!res.data) {
-    const name = user.user_metadata && user.user_metadata.name ? user.user_metadata.name : user.email.split('@')[0];
+    var name = user.user_metadata && user.user_metadata.name ? user.user_metadata.name : user.email.split('@')[0];
     await db.from('profiles').insert({ id: user.id, name: name });
   }
 }
 
 // ---- PHOTO HELPERS ----
-function initPhotoUpload(formId) {
-  if (!photoState[formId]) photoState[formId] = [];
-}
+function initPhotoUpload(formId) { if (!photoState[formId]) photoState[formId] = []; }
 function handlePhotoSelect(formId, input) {
   initPhotoUpload(formId);
-  const files     = Array.from(input.files);
-  const remaining = 3 - photoState[formId].length;
+  var files     = Array.from(input.files);
+  var remaining = 3 - photoState[formId].length;
   if (remaining <= 0) { toast('Максимум 3 фото', true); return; }
   files.slice(0, remaining).forEach(function(file) {
     if (!file.type.startsWith('image/')) return;
@@ -331,25 +490,22 @@ function handlePhotoSelect(formId, input) {
   renderPhotoPreviews(formId);
   input.value = '';
 }
-function removePhoto(formId, idx) {
-  photoState[formId].splice(idx, 1);
-  renderPhotoPreviews(formId);
-}
+function removePhoto(formId, idx) { photoState[formId].splice(idx, 1); renderPhotoPreviews(formId); }
 function renderPhotoPreviews(formId) {
-  const container = document.getElementById('previews-' + formId);
+  var container = document.getElementById('previews-' + formId);
   if (!container) return;
-  const photos = photoState[formId] || [];
+  var photos = photoState[formId] || [];
   var html = '';
   for (var i = 0; i < photos.length; i++) {
     html += '<div class="photo-preview-wrap"><img class="photo-preview" src="' + photos[i].previewUrl + '" alt=""><button class="photo-remove" data-action="remove-photo" data-formid="' + formId + '" data-idx="' + i + '">×</button></div>';
   }
   container.innerHTML = html;
-  const label = document.getElementById('upload-label-' + formId);
+  var label = document.getElementById('upload-label-' + formId);
   if (label) label.textContent = photos.length >= 3 ? 'Максимум 3 фото додано' : '📷 Додати фото (до 3 шт.)';
 }
 async function uploadPhotos(formId) {
-  const photos = photoState[formId] || [];
-  const urls   = [];
+  var photos = photoState[formId] || [];
+  var urls   = [];
   for (var i = 0; i < photos.length; i++) {
     var p    = photos[i];
     var ext  = p.file.name.split('.').pop();
@@ -370,13 +526,13 @@ async function loadRequests() {
     .order('closed_at', { ascending: true, nullsFirst: true })
     .order('created_at', { ascending: false });
   if (currentCat) query = query.eq('category', currentCat);
-  const res = await query;
+  var res = await query;
   if (res.error) { toast('Помилка завантаження', true); return; }
   renderRequests(res.data || []);
 }
 
 function renderRequests(requests) {
-  const c = document.getElementById('requests-container');
+  var c = document.getElementById('requests-container');
   if (!requests.length) {
     c.innerHTML = '<div class="empty"><div class="empty-icon">🔍</div><p>Запитів ще немає.<br>Будьте першим!</p></div>';
     return;
@@ -387,7 +543,6 @@ function renderRequests(requests) {
     var isClosed = !!r.closed_at;
     var isOwner  = currentUser && currentUser.id === r.user_id;
     var offers   = r.offers || [];
-
     var offersHtml = '';
     for (var j = 0; j < offers.length; j++) {
       var o = offers[j];
@@ -401,39 +556,31 @@ function renderRequests(requests) {
       }
       offersHtml += '<div class="offer-row"><div class="offer-row-top"><div><div class="offer-seller">' + esc(o.profiles ? o.profiles.name : 'Анонім') + '</div><div class="offer-desc">' + esc(o.description) + '</div></div><div class="offer-price">' + Number(o.price).toLocaleString('uk') + ' ₴</div></div>' + photosHtml + '</div>';
     }
-
     var actionsHtml = '';
     if (isOwner) {
       actionsHtml = '<div class="req-actions">';
       if (!isClosed) actionsHtml += '<button class="btn btn-sm btn-primary" data-action="close-req" data-id="' + r.id + '">✓ Знайдено</button>';
       actionsHtml += '<button class="btn btn-sm btn-danger" data-action="delete-req" data-id="' + r.id + '">Видалити</button></div>';
     }
-
     var offerFormHtml = '';
     if (!isClosed) {
       offerFormHtml = '<button class="add-offer-toggle" data-action="offer-toggle" data-id="' + r.id + '">＋ Зробити пропозицію</button><div class="offer-form" id="oform-' + r.id + '"><input type="text" id="odesc-' + r.id + '" placeholder="Опис: модель, стан, комплектація..."><div class="form-row"><input type="number" id="oprice-' + r.id + '" placeholder="Ціна, ₴" style="max-width:160px"><button class="btn btn-primary btn-sm" data-action="offer-submit" data-id="' + r.id + '">Запропонувати</button></div><div class="photo-upload-area"><input type="file" accept="image/*" multiple data-formid="' + r.id + '" class="photo-file-input"><div class="photo-upload-label" id="upload-label-' + r.id + '">📷 Додати фото (до 3 шт.)</div></div><div class="photo-previews" id="previews-' + r.id + '"></div></div>';
     }
-
-    html += '<div class="req-card' + (isClosed ? ' closed' : '') + '" id="rcard-' + r.id + '"><div class="req-card-header"><div class="req-title">' + esc(r.title) + '</div><div style="display:flex;gap:6px;flex-wrap:wrap"><span class="cat-badge">' + esc(r.category || 'Інше') + '</span>' + (isClosed ? '<span class="closed-badge">✓ Знайдено</span>' : '<span class="offers-badge">' + offers.length + ' пропозицій</span>') + '</div></div><div class="req-meta"><span>👤 ' + esc(r.profiles ? r.profiles.name : 'Анонім') + '</span><span>🕐 ' + timeAgo(r.created_at) + '</span>' + (r.budget ? '<span>💰 до ' + Number(r.budget).toLocaleString('uk') + ' ₴</span>' : '') + (isClosed ? '<span>✓ Закрито ' + timeAgo(r.closed_at) + '</span>' : '') + '</div>' + (r.description ? '<div class="req-desc">' + esc(r.description) + '</div>' : '') + (offers.length ? '<div class="offers-section">' + offersHtml + '</div>' : '') + offerFormHtml + actionsHtml + '</div>';
+    html += '<div class="req-card' + (isClosed ? ' closed' : '') + '" id="rcard-' + r.id + '"><div class="req-card-header"><div class="req-title">' + esc(r.title) + '</div><div style="display:flex;gap:6px;flex-wrap:wrap"><span class="cat-badge">' + esc(r.category || 'Інше') + '</span>' + (isClosed ? '<span class="closed-badge">✓ Знайдено</span>' : '<span class="offers-badge">' + offers.length + ' пропозицій</span>') + '</div></div><div class="req-meta"><span>👤 ' + esc(r.profiles ? r.profiles.name : 'Анонім') + '</span><span>🕐 ' + timeAgo(r.created_at) + '</span>' + (r.budget ? '<span>💰 до ' + Number(r.budget).toLocaleString('uk') + ' ₴</span>' : '') + '</div>' + (r.description ? '<div class="req-desc">' + esc(r.description) + '</div>' : '') + (offers.length ? '<div class="offers-section">' + offersHtml + '</div>' : '') + offerFormHtml + actionsHtml + '</div>';
   }
   c.innerHTML = html;
-
-  // bind file inputs
   var fileInputs = c.querySelectorAll('.photo-file-input');
   fileInputs.forEach(function(inp) {
-    inp.addEventListener('change', function() {
-      handlePhotoSelect(this.dataset.formid, this);
-    });
+    inp.addEventListener('change', function() { handlePhotoSelect(this.dataset.formid, this); });
   });
 }
 
 // ---- EVENT DELEGATION ----
 document.addEventListener('click', function(e) {
-  var btn    = e.target.closest('[data-action]');
+  var btn = e.target.closest('[data-action]');
   if (!btn) return;
   var action = btn.dataset.action;
   var id     = btn.dataset.id;
-
   if (action === 'close-req')    { closeRequest(id); }
   if (action === 'delete-req')   { deleteRequest(id); }
   if (action === 'offer-toggle') { toggleOfferForm(id); }
@@ -495,8 +642,7 @@ async function closeRequest(requestId) {
   showConfirm('Закрити запит?', 'Позначити як "Знайдено"? Нові пропозиції більше не надходитимуть.', async function() {
     var res = await db.from('requests').update({ closed_at: new Date().toISOString(), is_active: false }).eq('id', requestId);
     if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
-    toast('Запит закрито! 🎉');
-    loadRequests();
+    toast('Запит закрито! 🎉'); loadRequests();
   });
 }
 
@@ -505,8 +651,7 @@ async function deleteRequest(requestId) {
   showConfirm('Видалити запит?', 'Цю дію не можна скасувати. Всі пропозиції також будуть видалені.', async function() {
     var res = await db.from('requests').delete().eq('id', requestId);
     if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
-    toast('Запит видалено');
-    loadRequests();
+    toast('Запит видалено'); loadRequests();
   });
 }
 
