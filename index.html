@@ -1061,7 +1061,7 @@ async function openRequestPage(requestId) {
   // bind photo input
   var photoInput = document.getElementById('modal-photo-input');
   if (photoInput) {
-    photoInput.addEventListener('change', function() { handlePhotoSelect('modal-' + r.id, this); });
+    photoInput.addEventListener('change', function() { handlePhotoSelect('modal', this); });
   }
 
   // bind submit
@@ -1074,12 +1074,12 @@ async function openRequestPage(requestId) {
       if (!desc || !price) { toast('Заповніть опис та ціну', true); return; }
       await ensureProfile(currentUser);
       submitBtn.textContent = 'Завантаження...'; submitBtn.disabled = true;
-      var photoUrls = await uploadPhotos('modal-' + r.id);
+      var photoUrls = await uploadPhotos('modal');
       var res2 = await db.from('offers').insert({ request_id: r.id, user_id: currentUser.id, description: desc, price: Number(price), photos: photoUrls.length ? photoUrls : null });
       submitBtn.textContent = 'Запропонувати'; submitBtn.disabled = false;
       if (res2.error) { toast('Помилка: ' + res2.error.message, true); return; }
       toast('Пропозицію надіслано!');
-      photoState['modal-' + r.id] = [];
+      photoState['modal'] = [];
       document.getElementById('modal-odesc').value = '';
       document.getElementById('modal-oprice').value = '';
       openRequestPage(r.id);
