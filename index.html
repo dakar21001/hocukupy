@@ -163,6 +163,13 @@
   .search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:16px;pointer-events:none;}
   .search-clear{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;display:none;line-height:1;}
   .search-clear.visible{display:block;}
+
+  /* REQUEST PAGE */
+  .request-page{max-width:700px;margin:0 auto;padding:32px 24px;}
+  .share-btn{font-size:12px;font-weight:600;padding:5px 12px;border-radius:6px;border:1.5px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:5px;}
+  .share-btn:hover{border-color:var(--green);color:var(--green);}
+  .req-full-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin-bottom:20px;}
+  .req-full-title{font-family:'Unbounded',sans-serif;font-size:20px;font-weight:600;margin-bottom:12px;}
 </style>
 </head>
 <body>
@@ -251,6 +258,17 @@
       <div class="profile-section-title">Відгуки</div>
       <div id="profile-reviews"><div class="spinner"></div></div>
     </div>
+  </div>
+</div>
+
+<!-- REQUEST PAGE -->
+<div id="request-page" style="display:none">
+  <div class="request-page">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <button class="back-btn" id="back-from-request-btn">← Назад</button>
+      <button class="share-btn" id="share-btn">🔗 Поділитись</button>
+    </div>
+    <div id="request-page-content"><div class="spinner"></div></div>
   </div>
 </div>
 
@@ -373,10 +391,11 @@ const photoState = {};
 
 // ---- PAGES ----
 function showPage(page) {
-  document.getElementById('main-page').style.display       = page === 'main'      ? '' : 'none';
-  document.getElementById('profile-page').style.display    = page === 'profile'   ? '' : 'none';
-  document.getElementById('chat-list-page').style.display  = page === 'chat-list' ? '' : 'none';
-  document.getElementById('chat-window-page').style.display= page === 'chat-win'  ? '' : 'none';
+  document.getElementById('main-page').style.display        = page === 'main'      ? '' : 'none';
+  document.getElementById('profile-page').style.display     = page === 'profile'   ? '' : 'none';
+  document.getElementById('chat-list-page').style.display   = page === 'chat-list' ? '' : 'none';
+  document.getElementById('chat-window-page').style.display = page === 'chat-win'  ? '' : 'none';
+  document.getElementById('request-page').style.display     = page === 'request'   ? '' : 'none';
 }
 
 // ---- TOAST ----
@@ -425,7 +444,8 @@ document.getElementById('logout-btn').addEventListener('click', function() {
   db.auth.signOut(); setUserUI(null); toast('До побачення!');
 });
 document.getElementById('close-auth-btn').addEventListener('click', closeAuth);
-document.getElementById('logo-btn').addEventListener('click', function() { showPage('main'); loadRequests(); });
+document.getElementById('logo-btn').addEventListener('click', function() { showPage('main'); loadRequests();
+checkUrlRequest(); });
 document.getElementById('back-btn').addEventListener('click', function() { showPage('main'); });
 
 document.getElementById('tab-login').addEventListener('click', function() {
@@ -724,7 +744,7 @@ function renderRequests(requests) {
     if (!isClosed) {
       offerFormHtml = '<button class="add-offer-toggle" data-action="offer-toggle" data-id="' + r.id + '">＋ Зробити пропозицію</button><div class="offer-form" id="oform-' + r.id + '"><input type="text" id="odesc-' + r.id + '" placeholder="Опис: модель, стан, комплектація..."><div class="form-row"><input type="number" id="oprice-' + r.id + '" placeholder="Ціна, ₴" style="max-width:160px"><button class="btn btn-primary btn-sm" data-action="offer-submit" data-id="' + r.id + '">Запропонувати</button></div><div class="photo-upload-area"><input type="file" accept="image/*" multiple data-formid="' + r.id + '" class="photo-file-input"><div class="photo-upload-label" id="upload-label-' + r.id + '">📷 Додати фото (до 3 шт.)</div></div><div class="photo-previews" id="previews-' + r.id + '"></div></div>';
     }
-    html += '<div class="req-card' + (isClosed ? ' closed' : '') + '" id="rcard-' + r.id + '"><div class="req-card-header"><div class="req-title">' + esc(r.title) + '</div><div style="display:flex;gap:6px;flex-wrap:wrap"><span class="cat-badge">' + esc(r.category || 'Інше') + '</span>' + (isClosed ? '<span class="closed-badge">✓ Знайдено</span>' : '<span class="offers-badge">' + offers.length + ' пропозицій</span>') + '</div></div><div class="req-meta"><span>👤 ' + esc(r.profiles ? r.profiles.name : 'Анонім') + '</span><span>🕐 ' + timeAgo(r.created_at) + '</span>' + (r.budget ? '<span>💰 до ' + Number(r.budget).toLocaleString('uk') + ' ₴</span>' : '') + '</div>' + (r.description ? '<div class="req-desc">' + esc(r.description) + '</div>' : '') + (offers.length ? '<div class="offers-section">' + offersHtml + '</div>' : '') + offerFormHtml + actionsHtml + '</div>';
+    html += '<div class="req-card' + (isClosed ? ' closed' : '') + '" id="rcard-' + r.id + '"><div class="req-card-header"><div class="req-title" style="cursor:pointer" data-action="open-request" data-id="' + r.id + '">' + esc(r.title) + '</div><div style="display:flex;gap:6px;flex-wrap:wrap"><span class="cat-badge">' + esc(r.category || 'Інше') + '</span>' + (isClosed ? '<span class="closed-badge">✓ Знайдено</span>' : '<span class="offers-badge">' + offers.length + ' пропозицій</span>') + '</div></div><div class="req-meta"><span>👤 ' + esc(r.profiles ? r.profiles.name : 'Анонім') + '</span><span>🕐 ' + timeAgo(r.created_at) + '</span>' + (r.budget ? '<span>💰 до ' + Number(r.budget).toLocaleString('uk') + ' ₴</span>' : '') + '</div>' + (r.description ? '<div class="req-desc">' + esc(r.description) + '</div>' : '') + (offers.length ? '<div class="offers-section">' + offersHtml + '</div>' : '') + offerFormHtml + actionsHtml + '</div>';
   }
   c.innerHTML = html;
   var fileInputs = c.querySelectorAll('.photo-file-input');
@@ -748,6 +768,7 @@ document.addEventListener('click', function(e) {
   if (action === 'leave-review') { openReviewModal(btn.dataset.seller, btn.dataset.reqid); }
   if (action === 'open-chat')    { openOrCreateChat(btn.dataset.seller, btn.dataset.reqid, btn.dataset.selname, btn.dataset.reqtitle); }
   if (action === 'open-chat-id') { openChatWindow(btn.dataset.chatid, btn.dataset.partner, btn.dataset.title); }
+  if (action === 'open-request') { openRequestPage(btn.dataset.id); }
 });
 
 // ---- SUBMIT REQUEST ----
@@ -916,6 +937,114 @@ async function loadReviews(userId) {
 
   // update stat
   document.getElementById('stat-rating') && (document.getElementById('stat-rating').textContent = avg);
+}
+
+// ---- REQUEST PAGE ----
+document.getElementById('back-from-request-btn').addEventListener('click', function() {
+  showPage('main');
+  loadRequests();
+  // restore URL
+  history.pushState({}, '', window.location.pathname);
+});
+
+document.getElementById('share-btn').addEventListener('click', function() {
+  var url = window.location.origin + window.location.pathname + '?request=' + (window._currentRequestId || '');
+  navigator.clipboard.writeText(url).then(function() {
+    toast('Посилання скопійовано!');
+  }).catch(function() {
+    toast(url);
+  });
+});
+
+async function openRequestPage(requestId) {
+  window._currentRequestId = requestId;
+  showPage('request');
+  history.pushState({}, '', '?request=' + requestId);
+  document.getElementById('request-page-content').innerHTML = '<div class="spinner"></div>';
+
+  var res = await db.from('requests')
+    .select('*, profiles(id, name), offers(id, user_id, description, price, photos, profiles(name))')
+    .eq('id', requestId)
+    .single();
+
+  if (res.error || !res.data) {
+    document.getElementById('request-page-content').innerHTML = '<div class="empty"><div class="empty-icon">😕</div><p>Запит не знайдено</p></div>';
+    return;
+  }
+
+  var r        = res.data;
+  var isClosed = !!r.closed_at;
+  var isOwner  = currentUser && currentUser.id === r.user_id;
+  var offers   = r.offers || [];
+
+  var offersHtml = '';
+  for (var j = 0; j < offers.length; j++) {
+    var o = offers[j];
+    var photosHtml = '';
+    if (o.photos && o.photos.length) {
+      photosHtml = '<div class="offer-photos" style="margin-top:10px">';
+      for (var k = 0; k < o.photos.length; k++) {
+        photosHtml += '<img class="offer-photo" src="' + o.photos[k] + '" alt="фото" data-action="lightbox" data-url="' + o.photos[k] + '">';
+      }
+      photosHtml += '</div>';
+    }
+    var writeBtn = '';
+    if (currentUser && currentUser.id === r.user_id && o.user_id && o.user_id !== currentUser.id) {
+      writeBtn = '<button class="btn btn-sm" style="margin-top:8px" data-action="open-chat" data-seller="' + o.user_id + '" data-reqid="' + r.id + '" data-selname="' + esc(o.profiles ? o.profiles.name : 'Продавець') + '" data-reqtitle="' + esc(r.title) + '">💬 Написати</button>';
+    }
+    offersHtml += '<div class="offer-row" style="margin-bottom:10px"><div class="offer-row-top"><div><div class="offer-seller">' + esc(o.profiles ? o.profiles.name : 'Анонім') + '</div><div class="offer-desc">' + esc(o.description) + '</div></div><div class="offer-price">' + Number(o.price).toLocaleString('uk') + ' ₴</div></div>' + photosHtml + writeBtn + '</div>';
+  }
+
+  var actionsHtml = '';
+  if (isOwner) {
+    actionsHtml = '<div class="req-actions">';
+    if (!isClosed) actionsHtml += '<button class="btn btn-sm btn-primary" data-action="close-req" data-id="' + r.id + '">✓ Знайдено</button>';
+    if (isClosed && offers.length) {
+      for (var oi = 0; oi < offers.length; oi++) {
+        if (offers[oi].profiles) {
+          actionsHtml += '<button class="btn btn-sm" data-action="leave-review" data-seller="' + offers[oi].user_id + '" data-reqid="' + r.id + '">⭐ Відгук для ' + esc(offers[oi].profiles.name) + '</button>';
+        }
+      }
+    }
+    actionsHtml += '<button class="btn btn-sm btn-danger" data-action="delete-req" data-id="' + r.id + '">Видалити</button></div>';
+  }
+
+  var offerFormHtml = '';
+  if (!isClosed && currentUser && currentUser.id !== r.user_id) {
+    offerFormHtml = '<button class="add-offer-toggle" data-action="offer-toggle" data-id="' + r.id + '">＋ Зробити пропозицію</button><div class="offer-form" id="oform-' + r.id + '"><input type="text" id="odesc-' + r.id + '" placeholder="Опис: модель, стан, комплектація..."><div class="form-row"><input type="number" id="oprice-' + r.id + '" placeholder="Ціна, ₴" style="max-width:160px"><button class="btn btn-primary btn-sm" data-action="offer-submit" data-id="' + r.id + '">Запропонувати</button></div><div class="photo-upload-area"><input type="file" accept="image/*" multiple data-formid="' + r.id + '" class="photo-file-input"><div class="photo-upload-label" id="upload-label-' + r.id + '">📷 Додати фото (до 3 шт.)</div></div><div class="photo-previews" id="previews-' + r.id + '"></div></div>';
+  }
+
+  var html = '<div class="req-full-card">';
+  html += '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px">';
+  html += '<div class="req-full-title">' + esc(r.title) + '</div>';
+  html += '<div style="display:flex;gap:6px;flex-wrap:wrap"><span class="cat-badge">' + esc(r.category || 'Інше') + '</span>' + (isClosed ? '<span class="closed-badge">✓ Знайдено</span>' : '<span class="offers-badge">' + offers.length + ' пропозицій</span>') + '</div>';
+  html += '</div>';
+  html += '<div class="req-meta"><span>👤 ' + esc(r.profiles ? r.profiles.name : 'Анонім') + '</span><span>🕐 ' + timeAgo(r.created_at) + '</span>' + (r.budget ? '<span>💰 до ' + Number(r.budget).toLocaleString('uk') + ' ₴</span>' : '') + '</div>';
+  html += r.description ? '<div class="req-desc" style="margin-top:10px">' + esc(r.description) + '</div>' : '';
+  html += actionsHtml;
+  html += '</div>';
+
+  if (offers.length) {
+    html += '<div style="font-size:14px;font-weight:600;margin-bottom:12px">Пропозиції (' + offers.length + ')</div>';
+    html += offersHtml;
+  }
+
+  html += offerFormHtml;
+
+  document.getElementById('request-page-content').innerHTML = html;
+
+  // bind file inputs
+  var fileInputs = document.querySelectorAll('#request-page-content .photo-file-input');
+  fileInputs.forEach(function(inp) {
+    inp.addEventListener('change', function() { handlePhotoSelect(this.dataset.formid, this); });
+  });
+}
+
+// Check URL for request param on load
+function checkUrlRequest() {
+  var params = new URLSearchParams(window.location.search);
+  var reqId  = params.get('request');
+  if (reqId) openRequestPage(reqId);
 }
 
 // ---- CHAT ----
