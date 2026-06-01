@@ -375,8 +375,8 @@
 // =============================================
 //  ЗАМІНИ ЦІ ДВА РЯДКИ НА СВОЇ ДАНІ!
 // =============================================
-const SUPABASE_URL = 'https://dvjmqgzpxpfwuxpjrsdx.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_h6yGHLcCUJNZRRp6gxjhoQ_UW_G8zod';
+const SUPABASE_URL = 'https://ВАШ_PROJECT_ID.supabase.co';
+const SUPABASE_KEY = 'ВАШ_PUBLISHABLE_KEY';
 // =============================================
 
 const { createClient } = supabase;
@@ -714,23 +714,7 @@ function renderRequests(requests) {
     var isClosed = !!r.closed_at;
     var isOwner  = currentUser && currentUser.id === r.user_id;
     var offers   = r.offers || [];
-    var offersHtml = '';
-    for (var j = 0; j < offers.length; j++) {
-      var o = offers[j];
-      var photosHtml = '';
-      if (o.photos && o.photos.length) {
-        photosHtml = '<div class="offer-photos">';
-        for (var k = 0; k < o.photos.length; k++) {
-          photosHtml += '<img class="offer-photo" src="' + o.photos[k] + '" alt="фото" data-action="lightbox" data-url="' + o.photos[k] + '">';
-        }
-        photosHtml += '</div>';
-      }
-      var writeBtn = '';
-      if (currentUser && currentUser.id === r.user_id && o.user_id && o.user_id !== currentUser.id) {
-        writeBtn = '<button class="btn btn-sm" style="margin-top:8px" data-action="open-chat" data-seller="' + o.user_id + '" data-reqid="' + r.id + '" data-selname="' + esc(o.profiles ? o.profiles.name : 'Продавець') + '" data-reqtitle="' + esc(r.title) + '">💬 Написати</button>';
-      }
-      offersHtml += '<div class="offer-row"><div class="offer-row-top"><div><div class="offer-seller">' + esc(o.profiles ? o.profiles.name : 'Анонім') + '</div><div class="offer-desc">' + esc(o.description) + '</div></div><div class="offer-price">' + Number(o.price).toLocaleString('uk') + ' ₴</div></div>' + photosHtml + writeBtn + '</div>';
-    }
+    var offersHtml = ''; // offers shown in modal only
     var actionsHtml = '';
     if (isOwner) {
       actionsHtml = '<div class="req-actions">';
@@ -745,16 +729,13 @@ function renderRequests(requests) {
       actionsHtml += '<button class="btn btn-sm btn-danger" data-action="delete-req" data-id="' + r.id + '">Видалити</button></div>';
     }
     var offerFormHtml = '';
-    if (!isClosed) {
-      offerFormHtml = '<button class="add-offer-toggle" id="rp-toggle-' + r.id + '">＋ Зробити пропозицію</button><div class="offer-form" id="rp-oform-' + r.id + '"><input type="text" id="rp-odesc-' + r.id + '" placeholder="Опис: модель, стан, комплектація..."><div class="form-row"><input type="number" id="rp-oprice-' + r.id + '" placeholder="Ціна, ₴" style="max-width:160px"><button class="btn btn-primary btn-sm" id="rp-submit-' + r.id + '">Запропонувати</button></div><div class="photo-upload-area"><input type="file" accept="image/*" multiple data-formid="rp-' + r.id + '" class="rp-photo-file-input"><div class="photo-upload-label" id="rp-upload-label-' + r.id + '">📷 Додати фото (до 3 шт.)</div></div><div class="photo-previews" id="rp-previews-' + r.id + '"></div></div>';
+    if (!isClosed && !isOwner) {
+      offerFormHtml = '<button class="add-offer-toggle" data-action="open-request" data-id="' + r.id + '" style="margin-top:8px">＋ Зробити пропозицію</button>';
     }
-    html += '<div class="req-card' + (isClosed ? ' closed' : '') + '" id="rcard-' + r.id + '"><div class="req-card-header"><div class="req-title" style="cursor:pointer" data-action="open-request" data-id="' + r.id + '">' + esc(r.title) + '</div><div style="display:flex;gap:6px;flex-wrap:wrap"><span class="cat-badge">' + esc(r.category || 'Інше') + '</span>' + (isClosed ? '<span class="closed-badge">✓ Знайдено</span>' : '<span class="offers-badge">' + offers.length + ' пропозицій</span>') + '</div></div><div class="req-meta"><span>👤 ' + esc(r.profiles ? r.profiles.name : 'Анонім') + '</span><span>🕐 ' + timeAgo(r.created_at) + '</span>' + (r.budget ? '<span>💰 до ' + Number(r.budget).toLocaleString('uk') + ' ₴</span>' : '') + '</div>' + (r.description ? '<div class="req-desc">' + esc(r.description) + '</div>' : '') + (offers.length ? '<div class="offers-section">' + offersHtml + '</div>' : '') + offerFormHtml + actionsHtml + '</div>';
+    html += '<div class="req-card' + (isClosed ? ' closed' : '') + '" id="rcard-' + r.id + '"><div class="req-card-header"><div class="req-title" style="cursor:pointer" data-action="open-request" data-id="' + r.id + '">' + esc(r.title) + '</div><div style="display:flex;gap:6px;flex-wrap:wrap"><span class="cat-badge">' + esc(r.category || 'Інше') + '</span>' + (isClosed ? '<span class="closed-badge">✓ Знайдено</span>' : '<span class="offers-badge">' + offers.length + ' пропозицій</span>') + '</div></div><div class="req-meta"><span>👤 ' + esc(r.profiles ? r.profiles.name : 'Анонім') + '</span><span>🕐 ' + timeAgo(r.created_at) + '</span>' + (r.budget ? '<span>💰 до ' + Number(r.budget).toLocaleString('uk') + ' ₴</span>' : '') + '</div>' + (r.description ? '<div class="req-desc">' + esc(r.description) + '</div>' : '') + offerFormHtml + actionsHtml + '</div>';
   }
   c.innerHTML = html;
-  var fileInputs = c.querySelectorAll('.photo-file-input');
-  fileInputs.forEach(function(inp) {
-    inp.addEventListener('change', function() { handlePhotoSelect(this.dataset.formid, this); });
-  });
+  // offer form moved to modal
 }
 
 // ---- EVENT DELEGATION ----
@@ -1057,7 +1038,10 @@ async function openRequestPage(requestId) {
       if (res2.error) { toast('Помилка: ' + res2.error.message, true); return; }
       toast('Пропозицію надіслано!');
       photoState['modal-' + r.id] = [];
+      document.getElementById('modal-odesc').value = '';
+      document.getElementById('modal-oprice').value = '';
       openRequestPage(r.id);
+      loadRequests();
     });
   }
 }
