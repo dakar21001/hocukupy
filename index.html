@@ -437,9 +437,12 @@ function toggleOfferForm(id) {
 // ---- CLOSE REQUEST ----
 async function closeRequest(requestId) {
   showConfirm('Закрити запит?', 'Позначити як "Знайдено"? Нові пропозиції більше не надходитимуть.', async () => {
-    const { error } = await db.from('requests')
+    console.log('Closing request:', requestId, 'User:', currentUser?.id)
+    const { data, error } = await db.from('requests')
       .update({ closed_at: new Date().toISOString(), is_active: false })
-      .eq('id', requestId);
+      .eq('id', requestId)
+      .select()
+    console.log('Result:', data, 'Error:', error)
     if (error) { toast('Помилка: ' + error.message, true); return; }
     toast('Запит закрито! 🎉');
     loadRequests();
