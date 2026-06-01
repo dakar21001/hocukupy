@@ -231,6 +231,14 @@
           <select id="new-cat"><option>Електроніка</option><option>Авто</option><option>Одяг</option><option>Меблі</option><option>Спорт</option><option>Інше</option></select>
         </div>
         <div class="field-group"><div class="field-label">Бюджет (необов.)</div><input type="number" id="new-budget" placeholder="50000"></div>
+        <div class="field-group">
+          <div class="field-label">Фото (необов., до 3 шт.)</div>
+          <div class="photo-upload-area" style="position:relative">
+            <input type="file" accept="image/*" multiple id="sidebar-photo-input" style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer">
+            <div class="photo-upload-label" id="sidebar-upload-label">📷 Додати фото</div>
+          </div>
+          <div class="photo-previews" id="previews-sidebar" style="margin-top:8px"></div>
+        </div>
         <button class="btn btn-primary" style="width:100%;margin-top:4px" id="submit-request-btn">Опублікувати запит</button>
         </div>
       </div>
@@ -712,7 +720,11 @@ function handlePhotoSelect(formId, input) {
 }
 function removePhoto(formId, idx) { photoState[formId].splice(idx, 1); renderPhotoPreviews(formId); }
 function renderPhotoPreviews(formId) {
-  var container = document.getElementById('previews-' + formId);
+  var container = document.getElementById('previews-' + formId)
+    || document.getElementById(formId + '-previews')
+    || (formId === 'fab' ? document.getElementById('fab-previews') : null)
+    || (formId === 'modal' ? document.getElementById('modal-previews') : null)
+    || (formId === 'sidebar' ? document.getElementById('previews-sidebar') : null);
   if (!container) return;
   var photos = photoState[formId] || [];
   var html = '';
@@ -782,7 +794,8 @@ function renderRequests(requests) {
     if (!isClosed && !isOwner) {
       offerFormHtml = '<button class="add-offer-toggle" data-action="open-request" data-id="' + r.id + '" style="margin-top:8px">＋ Зробити пропозицію</button>';
     }
-    html += '<div class="req-card' + (isClosed ? ' closed' : '') + '" id="rcard-' + r.id + '"><div class="req-card-header"><div class="req-title" style="cursor:pointer" data-action="open-request" data-id="' + r.id + '">' + esc(r.title) + '</div><div style="display:flex;gap:6px;flex-wrap:wrap"><span class="cat-badge">' + esc(r.category || 'Інше') + '</span>' + (isClosed ? '<span class="closed-badge">✓ Знайдено</span>' : '<span class="offers-badge">' + offers.length + ' пропозицій</span>') + '</div></div><div class="req-meta"><span>👤 ' + esc(r.profiles ? r.profiles.name : 'Анонім') + '</span><span>🕐 ' + timeAgo(r.created_at) + '</span>' + (r.budget ? '<span>💰 до ' + Number(r.budget).toLocaleString('uk') + ' ₴</span>' : '') + '</div>' + (r.description ? '<div class="req-desc">' + esc(r.description) + '</div>' : '') + offerFormHtml + actionsHtml + '</div>';
+    var firstPhoto = r.photos && r.photos.length ? '<img src="' + r.photos[0] + '" alt="" style="width:100%;height:160px;object-fit:cover;border-radius:var(--radius-sm);margin-bottom:10px;cursor:pointer" data-action="open-request" data-id="' + r.id + '">' : '';
+    html += '<div class="req-card' + (isClosed ? ' closed' : '') + '" id="rcard-' + r.id + '">' + firstPhoto + '<div class="req-card-header"><div class="req-title" style="cursor:pointer" data-action="open-request" data-id="' + r.id + '">' + esc(r.title) + '</div><div style="display:flex;gap:6px;flex-wrap:wrap"><span class="cat-badge">' + esc(r.category || 'Інше') + '</span>' + (isClosed ? '<span class="closed-badge">✓ Знайдено</span>' : '<span class="offers-badge">' + offers.length + ' пропозицій</span>') + '</div></div><div class="req-meta"><span>👤 ' + esc(r.profiles ? r.profiles.name : 'Анонім') + '</span><span>🕐 ' + timeAgo(r.created_at) + '</span>' + (r.budget ? '<span>💰 до ' + Number(r.budget).toLocaleString('uk') + ' ₴</span>' : '') + '</div>' + (r.description ? '<div class="req-desc">' + esc(r.description) + '</div>' : '') + offerFormHtml + actionsHtml + '</div>';
   }
   c.innerHTML = html;
   // offer form moved to modal
@@ -815,12 +828,15 @@ document.getElementById('submit-request-btn').addEventListener('click', async fu
   var budget = document.getElementById('new-budget').value;
   if (!title) { toast('Вкажіть що шукаєте', true); return; }
   await ensureProfile(currentUser);
-  var res = await db.from('requests').insert({ user_id: currentUser.id, title: title, description: desc || null, category: cat, budget: budget ? Number(budget) : null });
+  var sidebarPhotoUrls = await uploadPhotos('sidebar');
+  var res = await db.from('requests').insert({ user_id: currentUser.id, title: title, description: desc || null, category: cat, budget: budget ? Number(budget) : null, photos: sidebarPhotoUrls.length ? sidebarPhotoUrls : null });
   if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
   toast('Запит опубліковано!');
   document.getElementById('new-title').value  = '';
   document.getElementById('new-desc').value   = '';
   document.getElementById('new-budget').value = '';
+  photoState['sidebar'] = [];
+  renderPhotoPreviews('sidebar');
   loadRequests();
 });
 
@@ -1264,6 +1280,14 @@ db.channel('public-changes')
   .subscribe();
 
 // ---- INIT ----
+// Sidebar photo input
+var sidebarPhotoInput = document.getElementById('sidebar-photo-input');
+if (sidebarPhotoInput) {
+  sidebarPhotoInput.addEventListener('change', function() {
+    handlePhotoSelect('sidebar', this);
+  });
+}
+
 // Mobile sidebar toggle
 var sidebarToggle = document.getElementById('sidebar-toggle');
 var sidebarBody   = document.getElementById('sidebar-body');
