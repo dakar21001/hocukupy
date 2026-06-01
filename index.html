@@ -16,7 +16,15 @@
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-  .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+  .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 16px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+  @media(max-width:480px){
+    .topbar-right{gap:6px;}
+    #chats-btn span{display:none;}
+    .btn-sm{padding:5px 10px;font-size:12px;}
+    .user-pill{padding:5px 10px;font-size:11px;}
+    .modal{padding:20px;margin:8px;}
+    .modal h2{font-size:14px;}
+  }
   .logo{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:600;letter-spacing:-0.5px;cursor:pointer;}
   .logo span{color:var(--green);}
   .topbar-right{display:flex;gap:10px;align-items:center;}
@@ -28,7 +36,7 @@
   .btn-danger{background:#fff0f0;border-color:#ffcccc;color:#c0392b;}
   .btn-danger:hover{background:#ffe0e0;}
   .layout{max-width:900px;margin:0 auto;padding:32px 24px;display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start;}
-  @media(max-width:700px){.layout{grid-template-columns:1fr;padding:16px;}.sidebar{order:-1;}}
+  @media(max-width:700px){.layout{grid-template-columns:1fr;padding:12px;gap:12px;}.sidebar{order:1;}}
   .filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
   .filter-chip{font-size:12px;font-weight:600;padding:6px 14px;border-radius:99px;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:all 0.12s;}
   .filter-chip:hover{border-color:var(--green);color:var(--green);}
@@ -178,7 +186,7 @@
   <div class="logo" id="logo-btn">Хочу<span>Купити</span></div>
   <div class="topbar-right">
     <span id="user-pill" class="user-pill" style="display:none"></span>
-    <button class="btn btn-sm" id="chats-btn" style="display:none">💬 Чати</button>
+    <button class="btn btn-sm" id="chats-btn" style="display:none">💬 <span>Чати</span></button>
     <button class="btn btn-sm" id="auth-btn">Увійти</button>
     <button class="btn btn-sm btn-primary" id="logout-btn" style="display:none">Вийти</button>
   </div>
@@ -206,7 +214,10 @@
     </section>
     <aside class="sidebar">
       <div class="sidebar-card">
-        <h2>+ Новий запит</h2>
+        <h2 id="sidebar-toggle" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between">
+          + Новий запит <span id="sidebar-arrow" style="font-size:16px;transition:transform 0.2s">▾</span>
+        </h2>
+        <div id="sidebar-body">
         <div class="field-group"><div class="field-label">Що шукаєте?</div><input type="text" id="new-title" placeholder="Наприклад: iPhone 13 Pro 256GB"></div>
         <div class="field-group"><div class="field-label">Деталі (необов.)</div><textarea id="new-desc" placeholder="Стан, комплектація, побажання..."></textarea></div>
         <div class="field-group"><div class="field-label">Категорія</div>
@@ -214,6 +225,7 @@
         </div>
         <div class="field-group"><div class="field-label">Бюджет (необов.)</div><input type="number" id="new-budget" placeholder="50000"></div>
         <button class="btn btn-primary" style="width:100%;margin-top:4px" id="submit-request-btn">Опублікувати запит</button>
+        </div>
       </div>
     </aside>
   </main>
@@ -1157,6 +1169,23 @@ db.channel('public-changes')
   .subscribe();
 
 // ---- INIT ----
+// Mobile sidebar toggle
+var sidebarToggle = document.getElementById('sidebar-toggle');
+var sidebarBody   = document.getElementById('sidebar-body');
+var sidebarArrow  = document.getElementById('sidebar-arrow');
+var isMobile = window.innerWidth <= 700;
+if (isMobile && sidebarBody) {
+  sidebarBody.style.display = 'none';
+  sidebarArrow.style.transform = 'rotate(-90deg)';
+}
+if (sidebarToggle) {
+  sidebarToggle.addEventListener('click', function() {
+    var isHidden = sidebarBody.style.display === 'none';
+    sidebarBody.style.display = isHidden ? '' : 'none';
+    sidebarArrow.style.transform = isHidden ? '' : 'rotate(-90deg)';
+  });
+}
+
 db.auth.getSession().then(function(res) { if (res.data.session && res.data.session.user) setUserUI(res.data.session.user); });
 db.auth.onAuthStateChange(function(_e, session) { setUserUI(session ? session.user : null); loadRequests(); });
 loadRequests();
