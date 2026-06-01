@@ -957,6 +957,12 @@ document.getElementById('share-btn').addEventListener('click', function() {
 });
 
 async function openRequestPage(requestId) {
+   // ensure user is loaded
+   if (!currentUser) {
+    var sess = await db.auth.getSession();
+    if (sess.data.session) setUserUI(sess.data.session.user);
+  }
+  window._currentRequestId = requestId;
   window._currentRequestId = requestId;
   showPage('request');
   history.pushState({}, '', '?request=' + requestId);
