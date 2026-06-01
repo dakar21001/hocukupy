@@ -9,115 +9,96 @@
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --green: #1D9E75; --green-light: #E1F5EE; --green-dark: #0F6E56;
-    --bg: #F7F6F2; --surface: #FFFFFF;
-    --border: rgba(0,0,0,0.08); --border-hover: rgba(0,0,0,0.16);
-    --text: #1A1A18; --muted: #6B6B66;
-    --radius: 14px; --radius-sm: 8px;
+    --green:#1D9E75;--green-light:#E1F5EE;--green-dark:#0F6E56;
+    --bg:#F7F6F2;--surface:#FFFFFF;
+    --border:rgba(0,0,0,0.08);--border-hover:rgba(0,0,0,0.16);
+    --text:#1A1A18;--muted:#6B6B66;--radius:14px;--radius-sm:8px;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Manrope', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-
-  .topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
-  .logo { font-family: 'Unbounded', sans-serif; font-size: 16px; font-weight: 600; letter-spacing: -0.5px; }
-  .logo span { color: var(--green); }
-  .topbar-right { display: flex; gap: 10px; align-items: center; }
-
-  .btn { font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 600; padding: 8px 18px; border-radius: var(--radius-sm); border: 1.5px solid var(--border-hover); background: transparent; color: var(--text); cursor: pointer; transition: all 0.15s; }
-  .btn:hover { background: var(--bg); }
-  .btn-primary { background: var(--green); border-color: var(--green); color: #fff; }
-  .btn-primary:hover { background: var(--green-dark); border-color: var(--green-dark); }
-  .btn-sm { font-size: 12px; padding: 5px 12px; border-radius: 6px; }
-  .btn-danger { background: #fff0f0; border-color: #ffcccc; color: #c0392b; }
-  .btn-danger:hover { background: #ffe0e0; }
-
-  .layout { max-width: 900px; margin: 0 auto; padding: 32px 24px; display: grid; grid-template-columns: 1fr 340px; gap: 24px; align-items: start; }
-  @media (max-width: 700px) { .layout { grid-template-columns: 1fr; padding: 16px; } .sidebar { order: -1; } }
-
-  .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
-  .filter-chip { font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 99px; border: 1.5px solid var(--border); background: var(--surface); color: var(--muted); cursor: pointer; transition: all 0.12s; }
-  .filter-chip:hover { border-color: var(--green); color: var(--green); }
-  .filter-chip.active { background: var(--green); border-color: var(--green); color: #fff; }
-
-  .req-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 14px; transition: border-color 0.15s; }
-  .req-card:hover { border-color: var(--border-hover); }
-  .req-card.closed { opacity: 0.7; border-color: var(--green); }
-  .req-card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
-  .req-title { font-size: 16px; font-weight: 600; color: var(--text); }
-  .req-meta { font-size: 12px; color: var(--muted); display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
-  .req-desc { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 12px; }
-  .cat-badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 99px; background: var(--green-light); color: var(--green-dark); white-space: nowrap; }
-  .offers-badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 99px; background: #F0EFF8; color: #534AB7; white-space: nowrap; }
-  .closed-badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 99px; background: var(--green-light); color: var(--green-dark); white-space: nowrap; }
-
-  .req-actions { display: flex; gap: 8px; margin-top: 12px; border-top: 1px solid var(--border); padding-top: 12px; }
-
-  .offers-section { border-top: 1px solid var(--border); padding-top: 12px; display: flex; flex-direction: column; gap: 8px; }
-  .offer-row { padding: 12px; background: var(--bg); border-radius: var(--radius-sm); }
-  .offer-row-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-  .offer-seller { font-size: 13px; font-weight: 600; }
-  .offer-desc { font-size: 12px; color: var(--muted); }
-  .offer-price { font-size: 15px; font-weight: 600; color: var(--green-dark); white-space: nowrap; }
-
-  .offer-photos { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
-  .offer-photo { width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border); cursor: pointer; transition: opacity 0.15s; }
-  .offer-photo:hover { opacity: 0.85; }
-
-  .photo-upload-area { border: 2px dashed var(--border-hover); border-radius: var(--radius-sm); padding: 14px; text-align: center; cursor: pointer; transition: border-color 0.15s; position: relative; }
-  .photo-upload-area:hover { border-color: var(--green); }
-  .photo-upload-area input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; padding: 0; border: none; }
-  .photo-upload-label { font-size: 13px; color: var(--muted); pointer-events: none; }
-  .photo-previews { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
-  .photo-preview-wrap { position: relative; }
-  .photo-preview { width: 72px; height: 72px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border); }
-  .photo-remove { position: absolute; top: -6px; right: -6px; width: 18px; height: 18px; background: #c0392b; color: #fff; border: none; border-radius: 50%; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-
-  .lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 300; align-items: center; justify-content: center; }
-  .lightbox.open { display: flex; }
-  .lightbox img { max-width: 90vw; max-height: 90vh; border-radius: var(--radius); }
-  .lightbox-close { position: absolute; top: 20px; right: 24px; background: none; border: none; color: #fff; font-size: 32px; cursor: pointer; line-height: 1; }
-
-  .add-offer-toggle { font-size: 12px; font-weight: 600; color: var(--green); background: none; border: none; cursor: pointer; padding: 8px 0 0; display: flex; align-items: center; gap: 4px; }
-  .add-offer-toggle:hover { color: var(--green-dark); }
-  .offer-form { margin-top: 10px; padding: 14px; background: var(--bg); border-radius: var(--radius-sm); display: none; flex-direction: column; gap: 10px; }
-  .offer-form.open { display: flex; }
-  .form-row { display: flex; gap: 8px; }
-  .form-row input { flex: 1; }
-
-  input, textarea, select { font-family: 'Manrope', sans-serif; font-size: 14px; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); width: 100%; transition: border-color 0.15s; outline: none; }
-  input:focus, textarea:focus, select:focus { border-color: var(--green); }
-  textarea { resize: vertical; min-height: 80px; }
-
-  .sidebar-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; position: sticky; top: 80px; }
-  .sidebar-card h2 { font-family: 'Unbounded', sans-serif; font-size: 14px; font-weight: 600; margin-bottom: 18px; color: var(--text); }
-  .field-group { margin-bottom: 14px; }
-  .field-label { font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
-
-  .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; align-items: center; justify-content: center; }
-  .modal-bg.open { display: flex; }
-  .modal { background: var(--surface); border-radius: var(--radius); padding: 32px; width: 100%; max-width: 400px; margin: 16px; }
-  .modal h2 { font-family: 'Unbounded', sans-serif; font-size: 16px; font-weight: 600; margin-bottom: 20px; }
-  .modal-tabs { display: flex; margin-bottom: 20px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
-  .modal-tab { flex: 1; padding: 9px; font-size: 13px; font-weight: 600; background: transparent; border: none; cursor: pointer; color: var(--muted); }
-  .modal-tab.active { background: var(--green); color: #fff; }
-  .modal-close { float: right; background: none; border: none; font-size: 20px; cursor: pointer; color: var(--muted); line-height: 1; margin-top: -8px; }
-
-  /* CONFIRM MODAL */
-  .confirm-modal { background: var(--surface); border-radius: var(--radius); padding: 28px; width: 100%; max-width: 360px; margin: 16px; }
-  .confirm-modal h3 { font-size: 16px; font-weight: 600; margin-bottom: 10px; }
-  .confirm-modal p { font-size: 14px; color: var(--muted); margin-bottom: 20px; line-height: 1.5; }
-  .confirm-actions { display: flex; gap: 10px; }
-  .confirm-actions .btn { flex: 1; text-align: center; }
-
-  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--text); color: #fff; font-size: 13px; font-weight: 500; padding: 12px 22px; border-radius: 99px; opacity: 0; transition: all 0.25s; z-index: 999; white-space: nowrap; }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .toast.error { background: #c0392b; }
-
-  .empty { text-align: center; padding: 48px 24px; color: var(--muted); }
-  .empty-icon { font-size: 40px; margin-bottom: 12px; }
-  .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 0.7s linear infinite; margin: 48px auto; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .user-pill { font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 99px; background: var(--green-light); color: var(--green-dark); }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+  .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+  .logo{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:600;letter-spacing:-0.5px;}
+  .logo span{color:var(--green);}
+  .topbar-right{display:flex;gap:10px;align-items:center;}
+  .btn{font-family:'Manrope',sans-serif;font-size:13px;font-weight:600;padding:8px 18px;border-radius:var(--radius-sm);border:1.5px solid var(--border-hover);background:transparent;color:var(--text);cursor:pointer;transition:all 0.15s;}
+  .btn:hover{background:var(--bg);}
+  .btn-primary{background:var(--green);border-color:var(--green);color:#fff;}
+  .btn-primary:hover{background:var(--green-dark);border-color:var(--green-dark);}
+  .btn-sm{font-size:12px;padding:5px 12px;border-radius:6px;}
+  .btn-danger{background:#fff0f0;border-color:#ffcccc;color:#c0392b;}
+  .btn-danger:hover{background:#ffe0e0;}
+  .layout{max-width:900px;margin:0 auto;padding:32px 24px;display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start;}
+  @media(max-width:700px){.layout{grid-template-columns:1fr;padding:16px;}.sidebar{order:-1;}}
+  .filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+  .filter-chip{font-size:12px;font-weight:600;padding:6px 14px;border-radius:99px;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:all 0.12s;}
+  .filter-chip:hover{border-color:var(--green);color:var(--green);}
+  .filter-chip.active{background:var(--green);border-color:var(--green);color:#fff;}
+  .req-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:14px;transition:border-color 0.15s;}
+  .req-card:hover{border-color:var(--border-hover);}
+  .req-card.closed{opacity:0.75;border-color:var(--green);}
+  .req-card-header{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px;}
+  .req-title{font-size:16px;font-weight:600;color:var(--text);}
+  .req-meta{font-size:12px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
+  .req-desc{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:12px;}
+  .cat-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--green-light);color:var(--green-dark);white-space:nowrap;}
+  .offers-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;background:#F0EFF8;color:#534AB7;white-space:nowrap;}
+  .closed-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--green-light);color:var(--green-dark);white-space:nowrap;}
+  .req-actions{display:flex;gap:8px;margin-top:12px;border-top:1px solid var(--border);padding-top:12px;}
+  .offers-section{border-top:1px solid var(--border);padding-top:12px;display:flex;flex-direction:column;gap:8px;}
+  .offer-row{padding:12px;background:var(--bg);border-radius:var(--radius-sm);}
+  .offer-row-top{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .offer-seller{font-size:13px;font-weight:600;}
+  .offer-desc{font-size:12px;color:var(--muted);}
+  .offer-price{font-size:15px;font-weight:600;color:var(--green-dark);white-space:nowrap;}
+  .offer-photos{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+  .offer-photo{width:80px;height:80px;object-fit:cover;border-radius:var(--radius-sm);border:1px solid var(--border);cursor:pointer;transition:opacity 0.15s;}
+  .offer-photo:hover{opacity:0.85;}
+  .photo-upload-area{border:2px dashed var(--border-hover);border-radius:var(--radius-sm);padding:14px;text-align:center;cursor:pointer;transition:border-color 0.15s;position:relative;}
+  .photo-upload-area:hover{border-color:var(--green);}
+  .photo-upload-area input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;padding:0;border:none;}
+  .photo-upload-label{font-size:13px;color:var(--muted);pointer-events:none;}
+  .photo-previews{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+  .photo-preview-wrap{position:relative;}
+  .photo-preview{width:72px;height:72px;object-fit:cover;border-radius:var(--radius-sm);border:1px solid var(--border);}
+  .photo-remove{position:absolute;top:-6px;right:-6px;width:18px;height:18px;background:#c0392b;color:#fff;border:none;border-radius:50%;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:300;align-items:center;justify-content:center;}
+  .lightbox.open{display:flex;}
+  .lightbox img{max-width:90vw;max-height:90vh;border-radius:var(--radius);}
+  .lightbox-close{position:absolute;top:20px;right:24px;background:none;border:none;color:#fff;font-size:32px;cursor:pointer;line-height:1;}
+  .add-offer-toggle{font-size:12px;font-weight:600;color:var(--green);background:none;border:none;cursor:pointer;padding:8px 0 0;display:flex;align-items:center;gap:4px;}
+  .add-offer-toggle:hover{color:var(--green-dark);}
+  .offer-form{margin-top:10px;padding:14px;background:var(--bg);border-radius:var(--radius-sm);display:none;flex-direction:column;gap:10px;}
+  .offer-form.open{display:flex;}
+  .form-row{display:flex;gap:8px;}
+  .form-row input{flex:1;}
+  input,textarea,select{font-family:'Manrope',sans-serif;font-size:14px;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);width:100%;transition:border-color 0.15s;outline:none;}
+  input:focus,textarea:focus,select:focus{border-color:var(--green);}
+  textarea{resize:vertical;min-height:80px;}
+  .sidebar-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;position:sticky;top:80px;}
+  .sidebar-card h2{font-family:'Unbounded',sans-serif;font-size:14px;font-weight:600;margin-bottom:18px;color:var(--text);}
+  .field-group{margin-bottom:14px;}
+  .field-label{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;}
+  .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;align-items:center;justify-content:center;}
+  .modal-bg.open{display:flex;}
+  .modal{background:var(--surface);border-radius:var(--radius);padding:32px;width:100%;max-width:400px;margin:16px;}
+  .modal h2{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:600;margin-bottom:20px;}
+  .modal-tabs{display:flex;margin-bottom:20px;border:1.5px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;}
+  .modal-tab{flex:1;padding:9px;font-size:13px;font-weight:600;background:transparent;border:none;cursor:pointer;color:var(--muted);}
+  .modal-tab.active{background:var(--green);color:#fff;}
+  .modal-close{float:right;background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);line-height:1;margin-top:-8px;}
+  .confirm-modal{background:var(--surface);border-radius:var(--radius);padding:28px;width:100%;max-width:360px;margin:16px;}
+  .confirm-modal h3{font-size:16px;font-weight:600;margin-bottom:10px;}
+  .confirm-modal p{font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.5;}
+  .confirm-actions{display:flex;gap:10px;}
+  .confirm-actions .btn{flex:1;text-align:center;}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:#fff;font-size:13px;font-weight:500;padding:12px 22px;border-radius:99px;opacity:0;transition:all 0.25s;z-index:999;white-space:nowrap;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast.error{background:#c0392b;}
+  .empty{text-align:center;padding:48px 24px;color:var(--muted);}
+  .empty-icon{font-size:40px;margin-bottom:12px;}
+  .spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin 0.7s linear infinite;margin:48px auto;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .user-pill{font-size:12px;font-weight:600;padding:6px 14px;border-radius:99px;background:var(--green-light);color:var(--green-dark);}
 </style>
 </head>
 <body>
@@ -126,38 +107,34 @@
   <div class="logo">Хочу<span>Купити</span></div>
   <div class="topbar-right">
     <span id="user-pill" class="user-pill" style="display:none"></span>
-    <button class="btn btn-sm" id="auth-btn" onclick="openAuth()">Увійти</button>
-    <button class="btn btn-sm btn-primary" id="logout-btn" style="display:none" onclick="logout()">Вийти</button>
+    <button class="btn btn-sm" id="auth-btn">Увійти</button>
+    <button class="btn btn-sm btn-primary" id="logout-btn" style="display:none">Вийти</button>
   </div>
 </header>
 
 <main class="layout">
   <section>
-    <div class="filter-row">
-      <button class="filter-chip active" onclick="filterCat(this,'')">Всі</button>
-      <button class="filter-chip" onclick="filterCat(this,'Електроніка')">Електроніка</button>
-      <button class="filter-chip" onclick="filterCat(this,'Авто')">Авто</button>
-      <button class="filter-chip" onclick="filterCat(this,'Одяг')">Одяг</button>
-      <button class="filter-chip" onclick="filterCat(this,'Меблі')">Меблі</button>
-      <button class="filter-chip" onclick="filterCat(this,'Спорт')">Спорт</button>
-      <button class="filter-chip" onclick="filterCat(this,'Інше')">Інше</button>
+    <div class="filter-row" id="filter-row">
+      <button class="filter-chip active" data-cat="">Всі</button>
+      <button class="filter-chip" data-cat="Електроніка">Електроніка</button>
+      <button class="filter-chip" data-cat="Авто">Авто</button>
+      <button class="filter-chip" data-cat="Одяг">Одяг</button>
+      <button class="filter-chip" data-cat="Меблі">Меблі</button>
+      <button class="filter-chip" data-cat="Спорт">Спорт</button>
+      <button class="filter-chip" data-cat="Інше">Інше</button>
     </div>
     <div id="requests-container"><div class="spinner"></div></div>
   </section>
-
   <aside class="sidebar">
     <div class="sidebar-card">
       <h2>+ Новий запит</h2>
       <div class="field-group"><div class="field-label">Що шукаєте?</div><input type="text" id="new-title" placeholder="Наприклад: iPhone 13 Pro 256GB"></div>
       <div class="field-group"><div class="field-label">Деталі (необов.)</div><textarea id="new-desc" placeholder="Стан, комплектація, побажання..."></textarea></div>
       <div class="field-group"><div class="field-label">Категорія</div>
-        <select id="new-cat">
-          <option>Електроніка</option><option>Авто</option><option>Одяг</option>
-          <option>Меблі</option><option>Спорт</option><option>Інше</option>
-        </select>
+        <select id="new-cat"><option>Електроніка</option><option>Авто</option><option>Одяг</option><option>Меблі</option><option>Спорт</option><option>Інше</option></select>
       </div>
       <div class="field-group"><div class="field-label">Бюджет (необов.)</div><input type="number" id="new-budget" placeholder="50000"></div>
-      <button class="btn btn-primary" style="width:100%;margin-top:4px" onclick="submitRequest()">Опублікувати запит</button>
+      <button class="btn btn-primary" style="width:100%;margin-top:4px" id="submit-request-btn">Опублікувати запит</button>
     </div>
   </aside>
 </main>
@@ -165,22 +142,22 @@
 <!-- AUTH MODAL -->
 <div class="modal-bg" id="auth-modal">
   <div class="modal">
-    <button class="modal-close" onclick="closeAuth()">×</button>
+    <button class="modal-close" id="close-auth-btn">×</button>
     <h2>Вхід / Реєстрація</h2>
     <div class="modal-tabs">
-      <button class="modal-tab active" id="tab-login" onclick="switchTab('login')">Увійти</button>
-      <button class="modal-tab" id="tab-register" onclick="switchTab('register')">Реєстрація</button>
+      <button class="modal-tab active" id="tab-login">Увійти</button>
+      <button class="modal-tab" id="tab-register">Реєстрація</button>
     </div>
     <div id="login-form">
       <div class="field-group"><div class="field-label">Email</div><input type="email" id="login-email" placeholder="you@example.com"></div>
       <div class="field-group"><div class="field-label">Пароль</div><input type="password" id="login-pass" placeholder="••••••••"></div>
-      <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="doLogin()">Увійти</button>
+      <button class="btn btn-primary" style="width:100%;margin-top:8px" id="do-login-btn">Увійти</button>
     </div>
     <div id="register-form" style="display:none">
       <div class="field-group"><div class="field-label">Ім'я</div><input type="text" id="reg-name" placeholder="Ваше ім'я"></div>
       <div class="field-group"><div class="field-label">Email</div><input type="email" id="reg-email" placeholder="you@example.com"></div>
       <div class="field-group"><div class="field-label">Пароль</div><input type="password" id="reg-pass" placeholder="Мінімум 6 символів"></div>
-      <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="doRegister()">Зареєструватись</button>
+      <button class="btn btn-primary" style="width:100%;margin-top:8px" id="do-register-btn">Зареєструватись</button>
     </div>
   </div>
 </div>
@@ -191,15 +168,15 @@
     <h3 id="confirm-title">Підтвердження</h3>
     <p id="confirm-text">Ви впевнені?</p>
     <div class="confirm-actions">
-      <button class="btn" onclick="closeConfirm()">Скасувати</button>
-      <button class="btn btn-danger" id="confirm-ok">Підтвердити</button>
+      <button class="btn" id="confirm-cancel-btn">Скасувати</button>
+      <button class="btn btn-danger" id="confirm-ok-btn">Підтвердити</button>
     </div>
   </div>
 </div>
 
 <!-- LIGHTBOX -->
-<div class="lightbox" id="lightbox" onclick="closeLightbox()">
-  <button class="lightbox-close">×</button>
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightbox-close-btn">×</button>
   <img id="lightbox-img" src="" alt="">
 </div>
 
@@ -218,127 +195,169 @@ const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentUser = null;
 let currentCat  = '';
+let confirmCb   = null;
 const photoState = {};
 
 // ---- TOAST ----
-function toast(msg, isError = false) {
+function toast(msg, isError) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.className = 'toast show' + (isError ? ' error' : '');
-  setTimeout(() => { t.className = 'toast'; }, 3000);
+  setTimeout(function() { t.className = 'toast'; }, 3000);
 }
 
 // ---- LIGHTBOX ----
-function openLightbox(url) { document.getElementById('lightbox-img').src = url; document.getElementById('lightbox').classList.add('open'); }
-function closeLightbox()   { document.getElementById('lightbox').classList.remove('open'); }
+function openLightbox(url) {
+  document.getElementById('lightbox-img').src = url;
+  document.getElementById('lightbox').classList.add('open');
+}
+document.getElementById('lightbox-close-btn').addEventListener('click', function() {
+  document.getElementById('lightbox').classList.remove('open');
+});
+document.getElementById('lightbox').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('open');
+});
 
-// ---- CONFIRM MODAL ----
-let confirmCallback = null;
-function showConfirm(title, text, onOk) {
+// ---- CONFIRM ----
+function showConfirm(title, text, cb) {
   document.getElementById('confirm-title').textContent = title;
   document.getElementById('confirm-text').textContent  = text;
-  confirmCallback = onOk;
+  confirmCb = cb;
   document.getElementById('confirm-modal').classList.add('open');
 }
-function closeConfirm() { document.getElementById('confirm-modal').classList.remove('open'); confirmCallback = null; }
-document.getElementById('confirm-ok').addEventListener('click', function() { closeConfirm(); if (confirmCallback) confirmCallback(); });
+document.getElementById('confirm-cancel-btn').addEventListener('click', function() {
+  document.getElementById('confirm-modal').classList.remove('open');
+  confirmCb = null;
+});
+document.getElementById('confirm-ok-btn').addEventListener('click', function() {
+  document.getElementById('confirm-modal').classList.remove('open');
+  if (confirmCb) confirmCb();
+  confirmCb = null;
+});
 
-// ---- AUTH UI ----
+// ---- AUTH ----
 function openAuth()  { document.getElementById('auth-modal').classList.add('open'); }
 function closeAuth() { document.getElementById('auth-modal').classList.remove('open'); }
-function switchTab(tab) {
-  document.getElementById('login-form').style.display    = tab === 'login'    ? '' : 'none';
-  document.getElementById('register-form').style.display = tab === 'register' ? '' : 'none';
-  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
-  document.getElementById('tab-register').classList.toggle('active', tab === 'register');
-}
+
+document.getElementById('auth-btn').addEventListener('click', openAuth);
+document.getElementById('logout-btn').addEventListener('click', function() {
+  db.auth.signOut();
+  setUserUI(null);
+  toast('До побачення!');
+});
+document.getElementById('close-auth-btn').addEventListener('click', closeAuth);
+
+document.getElementById('tab-login').addEventListener('click', function() {
+  document.getElementById('login-form').style.display = '';
+  document.getElementById('register-form').style.display = 'none';
+  document.getElementById('tab-login').classList.add('active');
+  document.getElementById('tab-register').classList.remove('active');
+});
+document.getElementById('tab-register').addEventListener('click', function() {
+  document.getElementById('login-form').style.display = 'none';
+  document.getElementById('register-form').style.display = '';
+  document.getElementById('tab-login').classList.remove('active');
+  document.getElementById('tab-register').classList.add('active');
+});
+
+document.getElementById('do-login-btn').addEventListener('click', async function() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-pass').value;
+  const { error } = await db.auth.signInWithPassword({ email: email, password: pass });
+  if (error) { toast(error.message, true); return; }
+  closeAuth(); toast('Вітаємо!');
+});
+
+document.getElementById('do-register-btn').addEventListener('click', async function() {
+  const name  = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pass  = document.getElementById('reg-pass').value;
+  if (!name) { toast("Введіть ім'я", true); return; }
+  const res = await db.auth.signUp({ email: email, password: pass, options: { data: { name: name } } });
+  if (res.error) { toast(res.error.message, true); return; }
+  if (res.data.user) await db.from('profiles').upsert({ id: res.data.user.id, name: name });
+  closeAuth(); toast('Акаунт створено!');
+});
+
 function setUserUI(user) {
   currentUser = user;
-  const pill = document.getElementById('user-pill');
+  const pill    = document.getElementById('user-pill');
   const authBtn = document.getElementById('auth-btn');
   const outBtn  = document.getElementById('logout-btn');
   if (user) {
-    pill.textContent = user.user_metadata?.name || user.email.split('@')[0];
+    pill.textContent   = user.user_metadata && user.user_metadata.name ? user.user_metadata.name : user.email.split('@')[0];
     pill.style.display = '';
     authBtn.style.display = 'none';
     outBtn.style.display  = '';
   } else {
-    pill.style.display = 'none';
+    pill.style.display    = 'none';
     authBtn.style.display = '';
     outBtn.style.display  = 'none';
   }
 }
 
-async function doLogin() {
-  const email = document.getElementById('login-email').value.trim();
-  const pass  = document.getElementById('login-pass').value;
-  const { error } = await db.auth.signInWithPassword({ email, password: pass });
-  if (error) { toast(error.message, true); return; }
-  closeAuth(); toast('Вітаємо!');
-}
+// ---- FILTER CHIPS ----
+document.getElementById('filter-row').addEventListener('click', function(e) {
+  const chip = e.target.closest('.filter-chip');
+  if (!chip) return;
+  document.querySelectorAll('.filter-chip').forEach(function(b) { b.classList.remove('active'); });
+  chip.classList.add('active');
+  currentCat = chip.dataset.cat;
+  loadRequests();
+});
 
-async function doRegister() {
-  const name  = document.getElementById('reg-name').value.trim();
-  const email = document.getElementById('reg-email').value.trim();
-  const pass  = document.getElementById('reg-pass').value;
-  if (!name) { toast("Введіть ім'я", true); return; }
-  const { data, error } = await db.auth.signUp({ email, password: pass, options: { data: { name } } });
-  if (error) { toast(error.message, true); return; }
-  if (data.user) await db.from('profiles').upsert({ id: data.user.id, name });
-  closeAuth(); toast('Акаунт створено!');
-}
-
-async function logout() { await db.auth.signOut(); setUserUI(null); toast('До побачення!'); }
-
+// ---- ENSURE PROFILE ----
 async function ensureProfile(user) {
-  const { data } = await db.from('profiles').select('id').eq('id', user.id).single();
-  if (!data) {
-    const name = user.user_metadata?.name || user.email.split('@')[0];
-    await db.from('profiles').insert({ id: user.id, name });
+  const res = await db.from('profiles').select('id').eq('id', user.id).single();
+  if (!res.data) {
+    const name = user.user_metadata && user.user_metadata.name ? user.user_metadata.name : user.email.split('@')[0];
+    await db.from('profiles').insert({ id: user.id, name: name });
   }
 }
 
 // ---- PHOTO HELPERS ----
-function initPhotoUpload(formId) { if (!photoState[formId]) photoState[formId] = []; }
-
+function initPhotoUpload(formId) {
+  if (!photoState[formId]) photoState[formId] = [];
+}
 function handlePhotoSelect(formId, input) {
   initPhotoUpload(formId);
-  const files = Array.from(input.files);
+  const files     = Array.from(input.files);
   const remaining = 3 - photoState[formId].length;
   if (remaining <= 0) { toast('Максимум 3 фото', true); return; }
-  files.slice(0, remaining).forEach(file => {
+  files.slice(0, remaining).forEach(function(file) {
     if (!file.type.startsWith('image/')) return;
-    photoState[formId].push({ file, previewUrl: URL.createObjectURL(file) });
+    photoState[formId].push({ file: file, previewUrl: URL.createObjectURL(file) });
   });
   renderPhotoPreviews(formId);
   input.value = '';
 }
-
-function removePhoto(formId, idx) { photoState[formId].splice(idx, 1); renderPhotoPreviews(formId); }
-
+function removePhoto(formId, idx) {
+  photoState[formId].splice(idx, 1);
+  renderPhotoPreviews(formId);
+}
 function renderPhotoPreviews(formId) {
   const container = document.getElementById('previews-' + formId);
   if (!container) return;
   const photos = photoState[formId] || [];
-  container.innerHTML = photos.map((p, i) => `
-    <div class="photo-preview-wrap">
-      <img class="photo-preview" src="${p.previewUrl}" alt="">
-      <button class="photo-remove" onclick="removePhoto('${formId}',${i})">×</button>
-    </div>`).join('');
+  var html = '';
+  for (var i = 0; i < photos.length; i++) {
+    html += '<div class="photo-preview-wrap"><img class="photo-preview" src="' + photos[i].previewUrl + '" alt=""><button class="photo-remove" data-action="remove-photo" data-formid="' + formId + '" data-idx="' + i + '">×</button></div>';
+  }
+  container.innerHTML = html;
   const label = document.getElementById('upload-label-' + formId);
   if (label) label.textContent = photos.length >= 3 ? 'Максимум 3 фото додано' : '📷 Додати фото (до 3 шт.)';
 }
-
 async function uploadPhotos(formId) {
   const photos = photoState[formId] || [];
-  const urls = [];
-  for (const p of photos) {
-    const ext  = p.file.name.split('.').pop();
-    const path = `${currentUser.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-    const { error } = await db.storage.from('offers-photos').upload(path, p.file, { contentType: p.file.type });
-    if (error) { toast('Помилка фото: ' + error.message, true); continue; }
-    const { data } = db.storage.from('offers-photos').getPublicUrl(path);
-    urls.push(data.publicUrl);
+  const urls   = [];
+  for (var i = 0; i < photos.length; i++) {
+    var p    = photos[i];
+    var ext  = p.file.name.split('.').pop();
+    var path = currentUser.id + '/' + Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + ext;
+    var up   = await db.storage.from('offers-photos').upload(path, p.file, { contentType: p.file.type });
+    if (up.error) { toast('Помилка фото: ' + up.error.message, true); continue; }
+    var pub  = db.storage.from('offers-photos').getPublicUrl(path);
+    urls.push(pub.data.publicUrl);
   }
   return urls;
 }
@@ -346,14 +365,14 @@ async function uploadPhotos(formId) {
 // ---- LOAD REQUESTS ----
 async function loadRequests() {
   document.getElementById('requests-container').innerHTML = '<div class="spinner"></div>';
-  let query = db.from('requests')
+  var query = db.from('requests')
     .select('*, profiles(name), offers(id, description, price, photos, profiles(name))')
     .order('closed_at', { ascending: true, nullsFirst: true })
     .order('created_at', { ascending: false });
   if (currentCat) query = query.eq('category', currentCat);
-  const { data, error } = await query;
-  if (error) { toast('Помилка завантаження', true); return; }
-  renderRequests(data || []);
+  const res = await query;
+  if (res.error) { toast('Помилка завантаження', true); return; }
+  renderRequests(res.data || []);
 }
 
 function renderRequests(requests) {
@@ -362,88 +381,120 @@ function renderRequests(requests) {
     c.innerHTML = '<div class="empty"><div class="empty-icon">🔍</div><p>Запитів ще немає.<br>Будьте першим!</p></div>';
     return;
   }
-  c.innerHTML = requests.map(r => {
-    const isClosed = !!r.closed_at;
-    const isOwner  = currentUser && currentUser.id === r.user_id;
-    return `
-    <div class="req-card${isClosed ? ' closed' : ''}" id="rcard-${r.id}">
-      <div class="req-card-header">
-        <div class="req-title">${esc(r.title)}</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">
-          <span class="cat-badge">${esc(r.category||'Інше')}</span>
-          ${isClosed
-            ? '<span class="closed-badge">✓ Знайдено</span>'
-            : `<span class="offers-badge">${r.offers?.length||0} пропозицій</span>`}
-        </div>
-      </div>
-      <div class="req-meta">
-        <span>👤 ${esc(r.profiles?.name||'Анонім')}</span>
-        <span>🕐 ${timeAgo(r.created_at)}</span>
-        ${r.budget ? `<span>💰 до ${Number(r.budget).toLocaleString('uk')} ₴</span>` : ''}
-        ${isClosed ? `<span>✓ Закрито ${timeAgo(r.closed_at)}</span>` : ''}
-      </div>
-      ${r.description ? `<div class="req-desc">${esc(r.description)}</div>` : ''}
-      ${r.offers?.length ? `
-        <div class="offers-section">
-          ${r.offers.map(o => `
-            <div class="offer-row">
-              <div class="offer-row-top">
-                <div>
-                  <div class="offer-seller">${esc(o.profiles?.name||'Анонім')}</div>
-                  <div class="offer-desc">${esc(o.description)}</div>
-                </div>
-                <div class="offer-price">${Number(o.price).toLocaleString('uk')} ₴</div>
-              </div>
-              ${o.photos?.length ? `<div class="offer-photos">${o.photos.map(url => `<img class="offer-photo" src="${url}" alt="фото" onclick="openLightbox('${url}')">`).join('')}</div>` : ''}
-            </div>`).join('')}
-        </div>` : ''}
-      ${!isClosed ? `<button class="add-offer-toggle" onclick="toggleOfferForm('${r.id}')">＋ Зробити пропозицію</button>
-      <div class="offer-form" id="oform-${r.id}">
-        <input type="text" id="odesc-${r.id}" placeholder="Опис: модель, стан, комплектація...">
-        <div class="form-row">
-          <input type="number" id="oprice-${r.id}" placeholder="Ціна, ₴" style="max-width:160px">
-          <button class="btn btn-primary btn-sm" onclick="submitOffer('${r.id}')">Запропонувати</button>
-        </div>
-        <div class="photo-upload-area">
-          <input type="file" accept="image/*" multiple onchange="handlePhotoSelect('${r.id}', this)">
-          <div class="photo-upload-label" id="upload-label-${r.id}">📷 Додати фото (до 3 шт.)</div>
-        </div>
-        <div class="photo-previews" id="previews-${r.id}"></div>
-      </div>` : ''}
-      ${isOwner ? `
-        <div class="req-actions">
-          ${!isClosed ? `<button class="btn btn-sm btn-primary" data-action="close" data-id="${r.id}">✓ Знайдено</button>
-<button class="btn btn-sm btn-danger" data-action="delete" data-id="${r.id}">Видалити</button>
-        </div>` : ''}
-    </div>`;
-  }).join('');
+  var html = '';
+  for (var i = 0; i < requests.length; i++) {
+    var r        = requests[i];
+    var isClosed = !!r.closed_at;
+    var isOwner  = currentUser && currentUser.id === r.user_id;
+    var offers   = r.offers || [];
+
+    var offersHtml = '';
+    for (var j = 0; j < offers.length; j++) {
+      var o = offers[j];
+      var photosHtml = '';
+      if (o.photos && o.photos.length) {
+        photosHtml = '<div class="offer-photos">';
+        for (var k = 0; k < o.photos.length; k++) {
+          photosHtml += '<img class="offer-photo" src="' + o.photos[k] + '" alt="фото" data-action="lightbox" data-url="' + o.photos[k] + '">';
+        }
+        photosHtml += '</div>';
+      }
+      offersHtml += '<div class="offer-row"><div class="offer-row-top"><div><div class="offer-seller">' + esc(o.profiles ? o.profiles.name : 'Анонім') + '</div><div class="offer-desc">' + esc(o.description) + '</div></div><div class="offer-price">' + Number(o.price).toLocaleString('uk') + ' ₴</div></div>' + photosHtml + '</div>';
+    }
+
+    var actionsHtml = '';
+    if (isOwner) {
+      actionsHtml = '<div class="req-actions">';
+      if (!isClosed) actionsHtml += '<button class="btn btn-sm btn-primary" data-action="close-req" data-id="' + r.id + '">✓ Знайдено</button>';
+      actionsHtml += '<button class="btn btn-sm btn-danger" data-action="delete-req" data-id="' + r.id + '">Видалити</button></div>';
+    }
+
+    var offerFormHtml = '';
+    if (!isClosed) {
+      offerFormHtml = '<button class="add-offer-toggle" data-action="offer-toggle" data-id="' + r.id + '">＋ Зробити пропозицію</button><div class="offer-form" id="oform-' + r.id + '"><input type="text" id="odesc-' + r.id + '" placeholder="Опис: модель, стан, комплектація..."><div class="form-row"><input type="number" id="oprice-' + r.id + '" placeholder="Ціна, ₴" style="max-width:160px"><button class="btn btn-primary btn-sm" data-action="offer-submit" data-id="' + r.id + '">Запропонувати</button></div><div class="photo-upload-area"><input type="file" accept="image/*" multiple data-formid="' + r.id + '" class="photo-file-input"><div class="photo-upload-label" id="upload-label-' + r.id + '">📷 Додати фото (до 3 шт.)</div></div><div class="photo-previews" id="previews-' + r.id + '"></div></div>';
+    }
+
+    html += '<div class="req-card' + (isClosed ? ' closed' : '') + '" id="rcard-' + r.id + '"><div class="req-card-header"><div class="req-title">' + esc(r.title) + '</div><div style="display:flex;gap:6px;flex-wrap:wrap"><span class="cat-badge">' + esc(r.category || 'Інше') + '</span>' + (isClosed ? '<span class="closed-badge">✓ Знайдено</span>' : '<span class="offers-badge">' + offers.length + ' пропозицій</span>') + '</div></div><div class="req-meta"><span>👤 ' + esc(r.profiles ? r.profiles.name : 'Анонім') + '</span><span>🕐 ' + timeAgo(r.created_at) + '</span>' + (r.budget ? '<span>💰 до ' + Number(r.budget).toLocaleString('uk') + ' ₴</span>' : '') + (isClosed ? '<span>✓ Закрито ' + timeAgo(r.closed_at) + '</span>' : '') + '</div>' + (r.description ? '<div class="req-desc">' + esc(r.description) + '</div>' : '') + (offers.length ? '<div class="offers-section">' + offersHtml + '</div>' : '') + offerFormHtml + actionsHtml + '</div>';
+  }
+  c.innerHTML = html;
+
+  // bind file inputs
+  var fileInputs = c.querySelectorAll('.photo-file-input');
+  fileInputs.forEach(function(inp) {
+    inp.addEventListener('change', function() {
+      handlePhotoSelect(this.dataset.formid, this);
+    });
+  });
 }
 
-// ---- FILTER ----
-function filterCat(btn, cat) {
-  document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  currentCat = cat;
+// ---- EVENT DELEGATION ----
+document.addEventListener('click', function(e) {
+  var btn    = e.target.closest('[data-action]');
+  if (!btn) return;
+  var action = btn.dataset.action;
+  var id     = btn.dataset.id;
+
+  if (action === 'close-req')    { closeRequest(id); }
+  if (action === 'delete-req')   { deleteRequest(id); }
+  if (action === 'offer-toggle') { toggleOfferForm(id); }
+  if (action === 'offer-submit') { submitOffer(id); }
+  if (action === 'remove-photo') { removePhoto(btn.dataset.formid, Number(btn.dataset.idx)); }
+  if (action === 'lightbox')     { openLightbox(btn.dataset.url); }
+});
+
+// ---- SUBMIT REQUEST ----
+document.getElementById('submit-request-btn').addEventListener('click', async function() {
+  if (!currentUser) { openAuth(); return; }
+  var title  = document.getElementById('new-title').value.trim();
+  var desc   = document.getElementById('new-desc').value.trim();
+  var cat    = document.getElementById('new-cat').value;
+  var budget = document.getElementById('new-budget').value;
+  if (!title) { toast('Вкажіть що шукаєте', true); return; }
+  await ensureProfile(currentUser);
+  var res = await db.from('requests').insert({ user_id: currentUser.id, title: title, description: desc || null, category: cat, budget: budget ? Number(budget) : null });
+  if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
+  toast('Запит опубліковано!');
+  document.getElementById('new-title').value  = '';
+  document.getElementById('new-desc').value   = '';
+  document.getElementById('new-budget').value = '';
   loadRequests();
-}
+});
 
 // ---- TOGGLE OFFER FORM ----
 function toggleOfferForm(id) {
-  const f = document.getElementById('oform-' + id);
+  var f = document.getElementById('oform-' + id);
+  if (!f) return;
   f.classList.toggle('open');
   if (f.classList.contains('open')) initPhotoUpload(id);
 }
 
+// ---- SUBMIT OFFER ----
+async function submitOffer(requestId) {
+  if (!currentUser) { openAuth(); return; }
+  var desc  = document.getElementById('odesc-'  + requestId).value.trim();
+  var price = document.getElementById('oprice-' + requestId).value;
+  if (!desc || !price) { toast('Заповніть опис та ціну', true); return; }
+  await ensureProfile(currentUser);
+  var btn = document.querySelector('[data-action="offer-submit"][data-id="' + requestId + '"]');
+  if (btn) { btn.textContent = 'Завантаження...'; btn.disabled = true; }
+  var photoUrls = await uploadPhotos(requestId);
+  var res = await db.from('offers').insert({ request_id: requestId, user_id: currentUser.id, description: desc, price: Number(price), photos: photoUrls.length ? photoUrls : null });
+  if (btn) { btn.textContent = 'Запропонувати'; btn.disabled = false; }
+  if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
+  toast('Пропозицію надіслано!');
+  document.getElementById('odesc-'  + requestId).value = '';
+  document.getElementById('oprice-' + requestId).value = '';
+  photoState[requestId] = [];
+  var f = document.getElementById('oform-' + requestId);
+  if (f) f.classList.remove('open');
+  loadRequests();
+}
+
 // ---- CLOSE REQUEST ----
 async function closeRequest(requestId) {
-  showConfirm('Закрити запит?', 'Позначити як "Знайдено"? Нові пропозиції більше не надходитимуть.', async () => {
-    console.log('Closing request:', requestId, 'User:', currentUser?.id)
-    const { data, error } = await db.from('requests')
-      .update({ closed_at: new Date().toISOString(), is_active: false })
-      .eq('id', requestId)
-      .select()
-    console.log('Result:', data, 'Error:', error)
-    if (error) { toast('Помилка: ' + error.message, true); return; }
+  showConfirm('Закрити запит?', 'Позначити як "Знайдено"? Нові пропозиції більше не надходитимуть.', async function() {
+    var res = await db.from('requests').update({ closed_at: new Date().toISOString(), is_active: false }).eq('id', requestId);
+    if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
     toast('Запит закрито! 🎉');
     loadRequests();
   });
@@ -451,59 +502,12 @@ async function closeRequest(requestId) {
 
 // ---- DELETE REQUEST ----
 async function deleteRequest(requestId) {
-  showConfirm('Видалити запит?', 'Цю дію не можна скасувати. Всі пропозиції також будуть видалені.', async () => {
-    const { error } = await db.from('requests').delete().eq('id', requestId);
-    if (error) { toast('Помилка: ' + error.message, true); return; }
+  showConfirm('Видалити запит?', 'Цю дію не можна скасувати. Всі пропозиції також будуть видалені.', async function() {
+    var res = await db.from('requests').delete().eq('id', requestId);
+    if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
     toast('Запит видалено');
     loadRequests();
   });
-}
-
-// ---- SUBMIT OFFER ----
-async function submitOffer(requestId) {
-  if (!currentUser) { openAuth(); return; }
-  const desc  = document.getElementById('odesc-'  + requestId).value.trim();
-  const price = document.getElementById('oprice-' + requestId).value;
-  if (!desc || !price) { toast('Заповніть опис та ціну', true); return; }
-  await ensureProfile(currentUser);
-  const btn = document.querySelector(`#oform-${requestId} .btn-primary`);
-  btn.textContent = 'Завантаження...'; btn.disabled = true;
-  const photoUrls = await uploadPhotos(requestId);
-  const { error } = await db.from('offers').insert({
-    request_id: requestId, user_id: currentUser.id,
-    description: desc, price: Number(price),
-    photos: photoUrls.length ? photoUrls : null
-  });
-  btn.textContent = 'Запропонувати'; btn.disabled = false;
-  if (error) { toast('Помилка: ' + error.message, true); return; }
-  toast('Пропозицію надіслано!');
-  document.getElementById('odesc-'  + requestId).value = '';
-  document.getElementById('oprice-' + requestId).value = '';
-  photoState[requestId] = [];
-  document.getElementById('oform-' + requestId).classList.remove('open');
-  loadRequests();
-}
-
-// ---- SUBMIT REQUEST ----
-async function submitRequest() {
-  if (!currentUser) { openAuth(); return; }
-  const title  = document.getElementById('new-title').value.trim();
-  const desc   = document.getElementById('new-desc').value.trim();
-  const cat    = document.getElementById('new-cat').value;
-  const budget = document.getElementById('new-budget').value;
-  if (!title) { toast('Вкажіть що шукаєте', true); return; }
-  await ensureProfile(currentUser);
-  const { error } = await db.from('requests').insert({
-    user_id: currentUser.id, title,
-    description: desc || null, category: cat,
-    budget: budget ? Number(budget) : null
-  });
-  if (error) { toast('Помилка: ' + error.message, true); return; }
-  toast('Запит опубліковано!');
-  document.getElementById('new-title').value  = '';
-  document.getElementById('new-desc').value   = '';
-  document.getElementById('new-budget').value = '';
-  loadRequests();
 }
 
 // ---- HELPERS ----
@@ -512,23 +516,12 @@ function esc(str) {
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 function timeAgo(dateStr) {
-  const diff = Math.floor((Date.now() - new Date(dateStr)) / 1000);
+  var diff = Math.floor((Date.now() - new Date(dateStr)) / 1000);
   if (diff < 60)    return 'щойно';
   if (diff < 3600)  return Math.floor(diff/60) + ' хв тому';
   if (diff < 86400) return Math.floor(diff/3600) + ' год тому';
   return Math.floor(diff/86400) + ' дн тому';
 }
-
-// ---- EVENT DELEGATION ----
-document.addEventListener('click', function(e) {
-  const action = e.target.dataset.action;
-  const id     = e.target.dataset.id;
-  if (!action || !id) return;
-  if (action === 'close')  closeRequest(id);
-  if (action === 'delete') deleteRequest(id);
-  if (action === 'offer-toggle') toggleOfferForm(id);
-  if (action === 'offer-submit') submitOffer(id);
-});
 
 // ---- REALTIME ----
 db.channel('public-changes')
@@ -537,8 +530,8 @@ db.channel('public-changes')
   .subscribe();
 
 // ---- INIT ----
-db.auth.getSession().then(({ data }) => { if (data.session?.user) setUserUI(data.session.user); });
-db.auth.onAuthStateChange((_e, session) => { setUserUI(session?.user || null); loadRequests(); });
+db.auth.getSession().then(function(res) { if (res.data.session && res.data.session.user) setUserUI(res.data.session.user); });
+db.auth.onAuthStateChange(function(_e, session) { setUserUI(session ? session.user : null); loadRequests(); });
 loadRequests();
 </script>
 </body>
