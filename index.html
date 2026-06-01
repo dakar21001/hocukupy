@@ -134,6 +134,28 @@
   .rating-summary{display:flex;align-items:center;gap:16px;padding:16px;background:var(--bg);border-radius:var(--radius-sm);margin-bottom:16px;}
   .review-modal{background:var(--surface);border-radius:var(--radius);padding:28px;width:100%;max-width:420px;margin:16px;}
   .review-modal h3{font-size:16px;font-weight:600;margin-bottom:16px;}
+
+  /* CHAT */
+  .chat-page{max-width:700px;margin:0 auto;padding:32px 24px;}
+  .chat-list-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:border-color 0.15s;}
+  .chat-list-item:hover{border-color:var(--border-hover);}
+  .chat-list-name{font-size:14px;font-weight:600;}
+  .chat-list-preview{font-size:12px;color:var(--muted);margin-top:2px;}
+  .chat-list-time{font-size:11px;color:var(--muted);white-space:nowrap;}
+  .chat-window{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);display:flex;flex-direction:column;height:calc(100vh - 180px);}
+  .chat-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
+  .chat-header-name{font-size:15px;font-weight:600;}
+  .chat-header-sub{font-size:12px;color:var(--muted);}
+  .chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;}
+  .msg{max-width:70%;padding:10px 14px;border-radius:12px;font-size:14px;line-height:1.5;word-break:break-word;}
+  .msg-mine{background:var(--green);color:#fff;align-self:flex-end;border-bottom-right-radius:4px;}
+  .msg-other{background:var(--bg);color:var(--text);align-self:flex-start;border-bottom-left-radius:4px;}
+  .msg-time{font-size:10px;opacity:0.7;margin-top:4px;text-align:right;}
+  .chat-input-row{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center;}
+  .chat-input-row input{flex:1;border-radius:99px;padding:10px 16px;}
+  .chat-send-btn{background:var(--green);border:none;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:18px;flex-shrink:0;}
+  .chat-send-btn:hover{background:var(--green-dark);}
+  .unread-dot{width:8px;height:8px;background:var(--green);border-radius:50%;flex-shrink:0;}
 </style>
 </head>
 <body>
@@ -142,6 +164,7 @@
   <div class="logo" id="logo-btn">Хочу<span>Купити</span></div>
   <div class="topbar-right">
     <span id="user-pill" class="user-pill" style="display:none"></span>
+    <button class="btn btn-sm" id="chats-btn" style="display:none">💬 Чати</button>
     <button class="btn btn-sm" id="auth-btn">Увійти</button>
     <button class="btn btn-sm btn-primary" id="logout-btn" style="display:none">Вийти</button>
   </div>
@@ -215,6 +238,37 @@
     <div id="profile-reviews-section" style="margin-top:24px">
       <div class="profile-section-title">Відгуки</div>
       <div id="profile-reviews"><div class="spinner"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- CHAT LIST PAGE -->
+<div id="chat-list-page" style="display:none">
+  <div class="chat-page">
+    <button class="back-btn" id="back-from-chats-btn">← Назад</button>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div style="font-family:'Unbounded',sans-serif;font-size:16px;font-weight:600;">Мої чати</div>
+    </div>
+    <div id="chat-list-container"><div class="spinner"></div></div>
+  </div>
+</div>
+
+<!-- CHAT WINDOW PAGE -->
+<div id="chat-window-page" style="display:none">
+  <div class="chat-page">
+    <button class="back-btn" id="back-from-chat-btn">← До чатів</button>
+    <div class="chat-window">
+      <div class="chat-header">
+        <div>
+          <div class="chat-header-name" id="chat-header-name">—</div>
+          <div class="chat-header-sub" id="chat-header-sub"></div>
+        </div>
+      </div>
+      <div class="chat-messages" id="chat-messages"></div>
+      <div class="chat-input-row">
+        <input type="text" id="chat-input" placeholder="Напишіть повідомлення...">
+        <button class="chat-send-btn" id="chat-send-btn">➤</button>
+      </div>
     </div>
   </div>
 </div>
@@ -305,8 +359,10 @@ const photoState = {};
 
 // ---- PAGES ----
 function showPage(page) {
-  document.getElementById('main-page').style.display    = page === 'main'    ? '' : 'none';
-  document.getElementById('profile-page').style.display = page === 'profile' ? '' : 'none';
+  document.getElementById('main-page').style.display       = page === 'main'      ? '' : 'none';
+  document.getElementById('profile-page').style.display    = page === 'profile'   ? '' : 'none';
+  document.getElementById('chat-list-page').style.display  = page === 'chat-list' ? '' : 'none';
+  document.getElementById('chat-window-page').style.display= page === 'chat-win'  ? '' : 'none';
 }
 
 // ---- TOAST ----
@@ -401,10 +457,12 @@ function setUserUI(user) {
     pill.style.display = '';
     authBtn.style.display = 'none';
     outBtn.style.display  = '';
+    document.getElementById('chats-btn').style.display = '';
   } else {
     pill.style.display    = 'none';
     authBtn.style.display = '';
     outBtn.style.display  = 'none';
+    document.getElementById('chats-btn').style.display = 'none';
   }
 }
 
@@ -613,7 +671,11 @@ function renderRequests(requests) {
         }
         photosHtml += '</div>';
       }
-      offersHtml += '<div class="offer-row"><div class="offer-row-top"><div><div class="offer-seller">' + esc(o.profiles ? o.profiles.name : 'Анонім') + '</div><div class="offer-desc">' + esc(o.description) + '</div></div><div class="offer-price">' + Number(o.price).toLocaleString('uk') + ' ₴</div></div>' + photosHtml + '</div>';
+      var writeBtn = '';
+      if (currentUser && currentUser.id === r.user_id && o.user_id && o.user_id !== currentUser.id) {
+        writeBtn = '<button class="btn btn-sm" style="margin-top:8px" data-action="open-chat" data-seller="' + o.user_id + '" data-reqid="' + r.id + '" data-selname="' + esc(o.profiles ? o.profiles.name : 'Продавець') + '" data-reqtitle="' + esc(r.title) + '">💬 Написати</button>';
+      }
+      offersHtml += '<div class="offer-row"><div class="offer-row-top"><div><div class="offer-seller">' + esc(o.profiles ? o.profiles.name : 'Анонім') + '</div><div class="offer-desc">' + esc(o.description) + '</div></div><div class="offer-price">' + Number(o.price).toLocaleString('uk') + ' ₴</div></div>' + photosHtml + writeBtn + '</div>';
     }
     var actionsHtml = '';
     if (isOwner) {
@@ -654,6 +716,8 @@ document.addEventListener('click', function(e) {
   if (action === 'remove-photo') { removePhoto(btn.dataset.formid, Number(btn.dataset.idx)); }
   if (action === 'lightbox')     { openLightbox(btn.dataset.url); }
   if (action === 'leave-review') { openReviewModal(btn.dataset.seller, btn.dataset.reqid); }
+  if (action === 'open-chat')    { openOrCreateChat(btn.dataset.seller, btn.dataset.reqid, btn.dataset.selname, btn.dataset.reqtitle); }
+  if (action === 'open-chat-id') { openChatWindow(btn.dataset.chatid, btn.dataset.partner, btn.dataset.title); }
 });
 
 // ---- SUBMIT REQUEST ----
@@ -823,6 +887,104 @@ async function loadReviews(userId) {
   // update stat
   document.getElementById('stat-rating') && (document.getElementById('stat-rating').textContent = avg);
 }
+
+// ---- CHAT ----
+var currentChatId    = null;
+var chatRealtimeSub  = null;
+
+document.getElementById('chats-btn').addEventListener('click', function() { openChatList(); });
+document.getElementById('back-from-chats-btn').addEventListener('click', function() { showPage('main'); loadRequests(); });
+document.getElementById('back-from-chat-btn').addEventListener('click', function() { openChatList(); if (chatRealtimeSub) { chatRealtimeSub.unsubscribe(); chatRealtimeSub = null; } });
+
+async function openChatList() {
+  showPage('chat-list');
+  if (!currentUser) return;
+  document.getElementById('chat-list-container').innerHTML = '<div class="spinner"></div>';
+  var res = await db.from('chats')
+    .select('*, buyer:buyer_id(name), seller:seller_id(name), request:request_id(title), messages(text, created_at, sender_id)')
+    .or('buyer_id.eq.' + currentUser.id + ',seller_id.eq.' + currentUser.id)
+    .order('created_at', { ascending: false });
+  var chats = res.data || [];
+  if (!chats.length) {
+    document.getElementById('chat-list-container').innerHTML = '<div class="empty"><div class="empty-icon">💬</div><p>Чатів ще немає.<br>Напишіть продавцю!</p></div>';
+    return;
+  }
+  var html = '';
+  for (var i = 0; i < chats.length; i++) {
+    var c       = chats[i];
+    var isbuyer = currentUser.id === c.buyer_id;
+    var partner = isbuyer ? (c.seller ? c.seller.name : 'Продавець') : (c.buyer ? c.buyer.name : 'Покупець');
+    var msgs    = c.messages || [];
+    var last    = msgs.length ? msgs[msgs.length-1].text : 'Немає повідомлень';
+    var lastTime= msgs.length ? timeAgo(msgs[msgs.length-1].created_at) : '';
+    html += '<div class="chat-list-item" data-action="open-chat-id" data-chatid="' + c.id + '" data-partner="' + esc(partner) + '" data-title="' + esc(c.request ? c.request.title : '') + '"><div><div class="chat-list-name">' + esc(partner) + '</div><div class="chat-list-preview">' + esc(last.substring(0,40)) + '</div></div><div class="chat-list-time">' + lastTime + '</div></div>';
+  }
+  document.getElementById('chat-list-container').innerHTML = html;
+}
+
+async function openOrCreateChat(sellerId, requestId, sellerName, reqTitle) {
+  if (!currentUser) { openAuth(); return; }
+  // Check if chat exists
+  var res = await db.from('chats').select('id')
+    .eq('request_id', requestId)
+    .eq('buyer_id', currentUser.id)
+    .eq('seller_id', sellerId)
+    .maybeSingle();
+  var chatId = res.data ? res.data.id : null;
+  if (!chatId) {
+    var ins = await db.from('chats').insert({ request_id: requestId, buyer_id: currentUser.id, seller_id: sellerId }).select('id').single();
+    if (ins.error) { toast('Помилка: ' + ins.error.message, true); return; }
+    chatId = ins.data.id;
+  }
+  openChatWindow(chatId, sellerName, reqTitle);
+}
+
+function openChatWindow(chatId, partnerName, reqTitle) {
+  currentChatId = chatId;
+  showPage('chat-win');
+  document.getElementById('chat-header-name').textContent = partnerName || 'Чат';
+  document.getElementById('chat-header-sub').textContent  = reqTitle   || '';
+  document.getElementById('chat-messages').innerHTML = '<div class="spinner"></div>';
+  loadMessages(chatId);
+
+  if (chatRealtimeSub) chatRealtimeSub.unsubscribe();
+  chatRealtimeSub = db.channel('chat-' + chatId)
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: 'chat_id=eq.' + chatId }, function() {
+      loadMessages(chatId);
+    })
+    .subscribe();
+}
+
+async function loadMessages(chatId) {
+  var res = await db.from('messages').select('*, sender:sender_id(name)').eq('chat_id', chatId).order('created_at', { ascending: true });
+  var msgs = res.data || [];
+  var c    = document.getElementById('chat-messages');
+  if (!msgs.length) { c.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:13px;padding:20px">Напишіть перше повідомлення!</div>'; return; }
+  var html = '';
+  for (var i = 0; i < msgs.length; i++) {
+    var m    = msgs[i];
+    var mine = currentUser && m.sender_id === currentUser.id;
+    html += '<div class="msg ' + (mine ? 'msg-mine' : 'msg-other') + '">' + esc(m.text) + '<div class="msg-time">' + timeAgo(m.created_at) + '</div></div>';
+  }
+  c.innerHTML = html;
+  c.scrollTop = c.scrollHeight;
+}
+
+async function sendMessage() {
+  if (!currentUser || !currentChatId) return;
+  var input = document.getElementById('chat-input');
+  var text  = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  var res = await db.from('messages').insert({ chat_id: currentChatId, sender_id: currentUser.id, text: text });
+  if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
+  loadMessages(currentChatId);
+}
+
+document.getElementById('chat-send-btn').addEventListener('click', sendMessage);
+document.getElementById('chat-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
 
 // ---- REALTIME ----
 db.channel('public-changes')
