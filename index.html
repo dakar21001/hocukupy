@@ -412,8 +412,8 @@ function renderRequests(requests) {
       </div>` : ''}
       ${isOwner ? `
         <div class="req-actions">
-          ${!isClosed ? `<button class="btn btn-sm btn-primary" onclick="closeRequest('${r.id}')">✓ Знайдено</button>` : ''}
-          <button class="btn btn-sm btn-danger" onclick="deleteRequest('${r.id}')">Видалити</button>
+          ${!isClosed ? `<button class="btn btn-sm btn-primary" data-action="close" data-id="${r.id}">✓ Знайдено</button>
+<button class="btn btn-sm btn-danger" data-action="delete" data-id="${r.id}">Видалити</button>
         </div>` : ''}
     </div>`;
   }).join('');
@@ -518,6 +518,17 @@ function timeAgo(dateStr) {
   if (diff < 86400) return Math.floor(diff/3600) + ' год тому';
   return Math.floor(diff/86400) + ' дн тому';
 }
+
+// ---- EVENT DELEGATION ----
+document.addEventListener('click', function(e) {
+  const action = e.target.dataset.action;
+  const id     = e.target.dataset.id;
+  if (!action || !id) return;
+  if (action === 'close')  closeRequest(id);
+  if (action === 'delete') deleteRequest(id);
+  if (action === 'offer-toggle') toggleOfferForm(id);
+  if (action === 'offer-submit') submitOffer(id);
+});
 
 // ---- REALTIME ----
 db.channel('public-changes')
