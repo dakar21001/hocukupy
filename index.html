@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ХочуКупити — реверс-маркетплейс</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ====== ЗАМІНИ ЦІ ДВА РЯДКИ ====== */
+  /* SUPABASE_URL і SUPABASE_KEY вставляються нижче в <script> */
+
+  :root {
+    --green: #1D9E75;
+    --green-light: #E1F5EE;
+    --green-dark: #0F6E56;
+    --bg: #F7F6F2;
+    --surface: #FFFFFF;
+    --border: rgba(0,0,0,0.08);
+    --border-hover: rgba(0,0,0,0.16);
+    --text: #1A1A18;
+    --muted: #6B6B66;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Manrope', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ---- TOPBAR ---- */
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+  }
+  .logo span { color: var(--green); }
+  .topbar-right { display: flex; gap: 10px; align-items: center; }
+
+  /* ---- BUTTONS ---- */
+  .btn {
+    font-family: 'Manrope', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 18px;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--border-hover);
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn:hover { background: var(--bg); }
+  .btn-primary {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+  }
+  .btn-primary:hover { background: var(--green-dark); border-color: var(--green-dark); }
+  .btn-sm { font-size: 12px; padding: 5px 12px; border-radius: 6px; }
+
+  /* ---- LAYOUT ---- */
+  .layout {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 24px;
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 24px;
+    align-items: start;
+  }
+  @media (max-width: 700px) {
+    .layout { grid-template-columns: 1fr; padding: 16px; }
+    .sidebar { order: -1; }
+  }
+
+  /* ---- FILTERS ---- */
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .filter-chip {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 99px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .filter-chip:hover { border-color: var(--green); color: var(--green); }
+  .filter-chip.active { background: var(--green); border-color: var(--green); color: #fff; }
+
+  /* ---- REQUEST CARD ---- */
+  .req-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 14px;
+    transition: border-color 0.15s;
+  }
+  .req-card:hover { border-color: var(--border-hover); }
+  .req-card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+  .req-title { font-size: 16px; font-weight: 600; color: var(--text); }
+  .req-meta { font-size: 12px; color: var(--muted); display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+  .req-desc { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 12px; }
+  .cat-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 99px;
+    background: var(--green-light);
+    color: var(--green-dark);
+    white-space: nowrap;
+  }
+  .offers-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 99px;
+    background: #F0EFF8;
+    color: #534AB7;
+    white-space: nowrap;
+  }
+
+  /* ---- OFFERS ---- */
+  .offers-section { border-top: 1px solid var(--border); padding-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .offer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+  }
+  .offer-seller { font-size: 13px; font-weight: 600; }
+  .offer-desc { font-size: 12px; color: var(--muted); }
+  .offer-price { font-size: 15px; font-weight: 600; color: var(--green-dark); white-space: nowrap; }
+
+  /* ---- ADD OFFER TOGGLE ---- */
+  .add-offer-toggle {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--green);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .add-offer-toggle:hover { color: var(--green-dark); }
+  .offer-form {
+    margin-top: 10px;
+    padding: 14px;
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .offer-form.open { display: flex; }
+  .form-row { display: flex; gap: 8px; }
+  .form-row input { flex: 1; }
+
+  /* ---- FORM ELEMENTS ---- */
+  input, textarea, select {
+    font-family: 'Manrope', sans-serif;
+    font-size: 14px;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text);
+    width: 100%;
+    transition: border-color 0.15s;
+    outline: none;
+  }
+  input:focus, textarea:focus, select:focus { border-color: var(--green); }
+  textarea { resize: vertical; min-height: 80px; }
+
+  /* ---- SIDEBAR CARD ---- */
+  .sidebar-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    position: sticky;
+    top: 80px;
+  }
+  .sidebar-card h2 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 18px;
+    color: var(--text);
+  }
+  .field-group { margin-bottom: 14px; }
+  .field-label { font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+
+  /* ---- AUTH MODAL ---- */
+  .modal-bg {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-bg.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 32px;
+    width: 100%;
+    max-width: 400px;
+    margin: 16px;
+  }
+  .modal h2 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+  .modal-tabs { display: flex; gap: 0; margin-bottom: 20px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+  .modal-tab {
+    flex: 1; padding: 9px; font-size: 13px; font-weight: 600;
+    background: transparent; border: none; cursor: pointer; color: var(--muted);
+  }
+  .modal-tab.active { background: var(--green); color: #fff; }
+  .modal-close {
+    float: right; background: none; border: none; font-size: 20px;
+    cursor: pointer; color: var(--muted); line-height: 1; margin-top: -8px;
+  }
+
+  /* ---- TOAST ---- */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--text);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 12px 22px;
+    border-radius: 99px;
+    opacity: 0;
+    transition: all 0.25s;
+    z-index: 999;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.error { background: #c0392b; }
+
+  /* ---- EMPTY / LOADING ---- */
+  .empty { text-align: center; padding: 48px 24px; color: var(--muted); }
+  .empty-icon { font-size: 40px; margin-bottom: 12px; }
+  .spinner {
+    width: 32px; height: 32px; border: 3px solid var(--border);
+    border-top-color: var(--green); border-radius: 50%;
+    animation: spin 0.7s linear infinite; margin: 48px auto;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .user-pill {
+    font-size: 12px; font-weight: 600; padding: 6px 14px;
+    border-radius: 99px; background: var(--green-light); color: var(--green-dark);
+  }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="logo">Хочу<span>Купити</span></div>
+  <div class="topbar-right">
+    <span id="user-pill" class="user-pill" style="display:none"></span>
+    <button class="btn btn-sm" id="auth-btn" onclick="openAuth()">Увійти</button>
+    <button class="btn btn-sm btn-primary" id="logout-btn" style="display:none" onclick="logout()">Вийти</button>
+  </div>
+</header>
+
+<!-- MAIN LAYOUT -->
+<main class="layout">
+  <!-- LEFT: запити -->
+  <section>
+    <div class="filter-row" id="filter-row">
+      <button class="filter-chip active" onclick="filterCat(this,'')">Всі</button>
+      <button class="filter-chip" onclick="filterCat(this,'Електроніка')">Електроніка</button>
+      <button class="filter-chip" onclick="filterCat(this,'Авто')">Авто</button>
+      <button class="filter-chip" onclick="filterCat(this,'Одяг')">Одяг</button>
+      <button class="filter-chip" onclick="filterCat(this,'Меблі')">Меблі</button>
+      <button class="filter-chip" onclick="filterCat(this,'Спорт')">Спорт</button>
+      <button class="filter-chip" onclick="filterCat(this,'Інше')">Інше</button>
+    </div>
+    <div id="requests-container"><div class="spinner"></div></div>
+  </section>
+
+  <!-- RIGHT: форма нового запиту -->
+  <aside class="sidebar">
+    <div class="sidebar-card">
+      <h2>+ Новий запит</h2>
+      <div class="field-group">
+        <div class="field-label">Що шукаєте?</div>
+        <input type="text" id="new-title" placeholder="Наприклад: iPhone 13 Pro 256GB">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Деталі (необов.)</div>
+        <textarea id="new-desc" placeholder="Стан, комплектація, побажання..."></textarea>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Категорія</div>
+        <select id="new-cat">
+          <option>Електроніка</option>
+          <option>Авто</option>
+          <option>Одяг</option>
+          <option>Меблі</option>
+          <option>Спорт</option>
+          <option>Інше</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Бюджет (необов.)</div>
+        <input type="number" id="new-budget" placeholder="50000">
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-top:4px" onclick="submitRequest()">Опублікувати запит</button>
+    </div>
+  </aside>
+</main>
+
+<!-- AUTH MODAL -->
+<div class="modal-bg" id="auth-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeAuth()">×</button>
+    <h2>Вхід / Реєстрація</h2>
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tab-login" onclick="switchTab('login')">Увійти</button>
+      <button class="modal-tab" id="tab-register" onclick="switchTab('register')">Реєстрація</button>
+    </div>
+    <div id="login-form">
+      <div class="field-group"><div class="field-label">Email</div><input type="email" id="login-email" placeholder="you@example.com"></div>
+      <div class="field-group"><div class="field-label">Пароль</div><input type="password" id="login-pass" placeholder="••••••••"></div>
+      <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="doLogin()">Увійти</button>
+    </div>
+    <div id="register-form" style="display:none">
+      <div class="field-group"><div class="field-label">Ім'я</div><input type="text" id="reg-name" placeholder="Ваше ім'я"></div>
+      <div class="field-group"><div class="field-label">Email</div><input type="email" id="reg-email" placeholder="you@example.com"></div>
+      <div class="field-group"><div class="field-label">Пароль</div><input type="password" id="reg-pass" placeholder="Мінімум 6 символів"></div>
+      <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="doRegister()">Зареєструватись</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// =============================================
+//  ЗАМІНИ ЦІ ДВА РЯДКИ НА СВОЇ ДАНІ!
+// =============================================
+const SUPABASE_URL  = 'https://dvjmqgzpxpfwuxpjrsdx.supabase.co';
+const SUPABASE_KEY  = 'sb_publishable_h6yGHLcCUJNZRRp6gxjhoQ_UW_G8zod';
+// =============================================
+
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let currentUser = null;
+let currentCat  = '';
+
+// ---- TOAST ----
+function toast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => { t.className = 'toast'; }, 3000);
+}
+
+// ---- AUTH UI ----
+function openAuth()  { document.getElementById('auth-modal').classList.add('open'); }
+function closeAuth() { document.getElementById('auth-modal').classList.remove('open'); }
+function switchTab(tab) {
+  document.getElementById('login-form').style.display    = tab === 'login'    ? '' : 'none';
+  document.getElementById('register-form').style.display = tab === 'register' ? '' : 'none';
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+}
+
+function setUserUI(user) {
+  currentUser = user;
+  const pill    = document.getElementById('user-pill');
+  const authBtn = document.getElementById('auth-btn');
+  const outBtn  = document.getElementById('logout-btn');
+  if (user) {
+    pill.textContent = user.user_metadata?.name || user.email.split('@')[0];
+    pill.style.display = '';
+    authBtn.style.display = 'none';
+    outBtn.style.display  = '';
+  } else {
+    pill.style.display = 'none';
+    authBtn.style.display = '';
+    outBtn.style.display  = 'none';
+  }
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-pass').value;
+  const { error } = await db.auth.signInWithPassword({ email, password: pass });
+  if (error) { toast(error.message, true); return; }
+  closeAuth();
+  toast('Вітаємо!');
+}
+
+async function doRegister() {
+  const name  = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pass  = document.getElementById('reg-pass').value;
+  if (!name) { toast('Введіть ім\'я', true); return; }
+  const { data, error } = await db.auth.signUp({
+    email, password: pass,
+    options: { data: { name } }
+  });
+  if (error) { toast(error.message, true); return; }
+  if (data.user) {
+    await db.from('profiles').upsert({ id: data.user.id, name });
+  }
+  closeAuth();
+  toast('Акаунт створено!');
+}
+
+async function logout() {
+  await db.auth.signOut();
+  setUserUI(null);
+  toast('До побачення!');
+}
+
+// ---- LOAD REQUESTS ----
+async function loadRequests() {
+  document.getElementById('requests-container').innerHTML = '<div class="spinner"></div>';
+  let query = db.from('requests')
+    .select(`*, profiles(name), offers(id, description, price, profiles(name))`)
+    .eq('is_active', true)
+    .order('created_at', { ascending: false });
+  if (currentCat) query = query.eq('category', currentCat);
+  const { data, error } = await query;
+  if (error) { toast('Помилка завантаження', true); return; }
+  renderRequests(data || []);
+}
+
+function renderRequests(requests) {
+  const c = document.getElementById('requests-container');
+  if (!requests.length) {
+    c.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><p>Запитів ще немає.<br>Будьте першим!</p></div>`;
+    return;
+  }
+  c.innerHTML = requests.map(r => `
+    <div class="req-card" id="rcard-${r.id}">
+      <div class="req-card-header">
+        <div class="req-title">${esc(r.title)}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <span class="cat-badge">${esc(r.category || 'Інше')}</span>
+          <span class="offers-badge">${r.offers?.length || 0} пропозицій</span>
+        </div>
+      </div>
+      <div class="req-meta">
+        <span>👤 ${esc(r.profiles?.name || 'Анонім')}</span>
+        <span>🕐 ${timeAgo(r.created_at)}</span>
+        ${r.budget ? `<span>💰 до ${Number(r.budget).toLocaleString('uk')} ₴</span>` : ''}
+      </div>
+      ${r.description ? `<div class="req-desc">${esc(r.description)}</div>` : ''}
+      ${r.offers?.length ? `
+        <div class="offers-section">
+          ${r.offers.map(o => `
+            <div class="offer-row">
+              <div>
+                <div class="offer-seller">${esc(o.profiles?.name || 'Анонім')}</div>
+                <div class="offer-desc">${esc(o.description)}</div>
+              </div>
+              <div class="offer-price">${Number(o.price).toLocaleString('uk')} ₴</div>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+      <button class="add-offer-toggle" onclick="toggleOfferForm('${r.id}')">
+        ＋ Зробити пропозицію
+      </button>
+      <div class="offer-form" id="oform-${r.id}">
+        <input type="text" id="odesc-${r.id}" placeholder="Опис: модель, стан, комплектація...">
+        <div class="form-row">
+          <input type="number" id="oprice-${r.id}" placeholder="Ціна, ₴" style="max-width:160px">
+          <button class="btn btn-primary btn-sm" onclick="submitOffer('${r.id}')">Запропонувати</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ---- FILTER ----
+function filterCat(btn, cat) {
+  document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentCat = cat;
+  loadRequests();
+}
+
+// ---- TOGGLE OFFER FORM ----
+function toggleOfferForm(id) {
+  const f = document.getElementById('oform-' + id);
+  f.classList.toggle('open');
+}
+
+// ---- ENSURE PROFILE EXISTS ----
+async function ensureProfile(user) {
+  const { data } = await db.from('profiles').select('id').eq('id', user.id).single();
+  if (!data) {
+    const name = user.user_metadata?.name || user.email.split('@')[0];
+    await db.from('profiles').insert({ id: user.id, name });
+  }
+}
+
+// ---- SUBMIT OFFER ----
+async function submitOffer(requestId) {
+  if (!currentUser) { openAuth(); return; }
+  const desc  = document.getElementById('odesc-'  + requestId).value.trim();
+  const price = document.getElementById('oprice-' + requestId).value;
+  if (!desc || !price) { toast('Заповніть опис та ціну', true); return; }
+
+  await ensureProfile(currentUser);
+
+  const { error } = await db.from('offers').insert({
+    request_id: requestId,
+    user_id: currentUser.id,
+    description: desc,
+    price: Number(price)
+  });
+  if (error) { toast('Помилка: ' + error.message, true); return; }
+  toast('Пропозицію надіслано!');
+  document.getElementById('odesc-'  + requestId).value = '';
+  document.getElementById('oprice-' + requestId).value = '';
+  document.getElementById('oform-'  + requestId).classList.remove('open');
+  loadRequests();
+}
+
+// ---- SUBMIT REQUEST ----
+async function submitRequest() {
+  if (!currentUser) { openAuth(); return; }
+  const title  = document.getElementById('new-title').value.trim();
+  const desc   = document.getElementById('new-desc').value.trim();
+  const cat    = document.getElementById('new-cat').value;
+  const budget = document.getElementById('new-budget').value;
+  if (!title) { toast('Вкажіть що шукаєте', true); return; }
+
+  await ensureProfile(currentUser);
+
+  const { error } = await db.from('requests').insert({
+    user_id: currentUser.id,
+    title,
+    description: desc || null,
+    category: cat,
+    budget: budget ? Number(budget) : null
+  });
+  if (error) { toast('Помилка: ' + error.message, true); return; }
+  toast('Запит опубліковано!');
+  document.getElementById('new-title').value  = '';
+  document.getElementById('new-desc').value   = '';
+  document.getElementById('new-budget').value = '';
+  loadRequests();
+}
+
+// ---- HELPERS ----
+function esc(str) {
+  if (!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function timeAgo(dateStr) {
+  const diff = Math.floor((Date.now() - new Date(dateStr)) / 1000);
+  if (diff < 60)   return 'щойно';
+  if (diff < 3600) return Math.floor(diff/60) + ' хв тому';
+  if (diff < 86400)return Math.floor(diff/3600) + ' год тому';
+  return Math.floor(diff/86400) + ' дн тому';
+}
+
+// ---- REALTIME (автооновлення) ----
+db.channel('public-changes')
+  .on('postgres_changes', { event: '*', schema: 'public', table: 'requests' }, loadRequests)
+  .on('postgres_changes', { event: '*', schema: 'public', table: 'offers'   }, loadRequests)
+  .subscribe();
+
+// ---- INIT ----
+db.auth.getSession().then(({ data }) => {
+  if (data.session?.user) setUserUI(data.session.user);
+});
+db.auth.onAuthStateChange((_e, session) => {
+  setUserUI(session?.user || null);
+});
+
+loadRequests();
+</script>
+</body>
+</html>
