@@ -117,6 +117,23 @@
   .profile-section-title{font-size:14px;font-weight:600;margin-bottom:12px;color:var(--text);}
   .back-btn{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;margin-bottom:16px;padding:0;}
   .back-btn:hover{color:var(--text);}
+
+  /* REVIEWS */
+  .rating-stars{display:flex;gap:4px;margin-bottom:16px;}
+  .star{font-size:24px;cursor:pointer;color:#ddd;transition:color 0.1s;line-height:1;}
+  .star.active,.star.hover{color:#F5A623;}
+  .review-card{background:var(--bg);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px;}
+  .review-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+  .review-author{font-size:13px;font-weight:600;}
+  .review-stars{color:#F5A623;font-size:13px;letter-spacing:1px;}
+  .review-date{font-size:11px;color:var(--muted);}
+  .review-text{font-size:13px;color:var(--muted);line-height:1.5;}
+  .rating-avg{font-family:'Unbounded',sans-serif;font-size:28px;font-weight:600;color:var(--text);}
+  .rating-avg-stars{color:#F5A623;font-size:16px;letter-spacing:1px;}
+  .rating-count{font-size:12px;color:var(--muted);margin-top:2px;}
+  .rating-summary{display:flex;align-items:center;gap:16px;padding:16px;background:var(--bg);border-radius:var(--radius-sm);margin-bottom:16px;}
+  .review-modal{background:var(--surface);border-radius:var(--radius);padding:28px;width:100%;max-width:420px;margin:16px;}
+  .review-modal h3{font-size:16px;font-weight:600;margin-bottom:16px;}
 </style>
 </head>
 <body>
@@ -195,6 +212,10 @@
     </div>
     <div class="profile-section-title">Мої запити</div>
     <div id="profile-requests"><div class="spinner"></div></div>
+    <div id="profile-reviews-section" style="margin-top:24px">
+      <div class="profile-section-title">Відгуки</div>
+      <div id="profile-reviews"><div class="spinner"></div></div>
+    </div>
   </div>
 </div>
 
@@ -229,6 +250,31 @@
     <div class="confirm-actions">
       <button class="btn" id="confirm-cancel-btn">Скасувати</button>
       <button class="btn btn-danger" id="confirm-ok-btn">Підтвердити</button>
+    </div>
+  </div>
+</div>
+
+<!-- REVIEW MODAL -->
+<div class="modal-bg" id="review-modal">
+  <div class="review-modal">
+    <h3>Залишити відгук</h3>
+    <div class="field-label" style="margin-bottom:8px">Оцінка</div>
+    <div class="rating-stars" id="review-stars">
+      <span class="star" data-val="1">★</span>
+      <span class="star" data-val="2">★</span>
+      <span class="star" data-val="3">★</span>
+      <span class="star" data-val="4">★</span>
+      <span class="star" data-val="5">★</span>
+    </div>
+    <div class="field-group">
+      <div class="field-label">Коментар (необов.)</div>
+      <textarea id="review-comment" placeholder="Розкажіть про угоду..." style="min-height:80px"></textarea>
+    </div>
+    <input type="hidden" id="review-seller-id">
+    <input type="hidden" id="review-request-id">
+    <div style="display:flex;gap:10px;margin-top:4px">
+      <button class="btn btn-primary" id="submit-review-btn">Надіслати відгук</button>
+      <button class="btn" id="cancel-review-btn">Скасувати</button>
     </div>
   </div>
 </div>
@@ -413,6 +459,19 @@ async function openProfile(userId) {
     editWrap.innerHTML = '';
   }
 
+  // Update rating stat card
+  var ratingRes = await db.from('reviews').select('rating').eq('seller_id', userId);
+  var ratingData = ratingRes.data || [];
+  if (ratingData.length) {
+    var avgRating = (ratingData.reduce(function(s,r){return s+r.rating;},0) / ratingData.length).toFixed(1);
+    document.getElementById('stat-requests').parentElement.parentElement.innerHTML =
+      '<div class="stat-card"><div class="stat-num">' + requests.length + '</div><div class="stat-label">Запитів</div></div>' +
+      '<div class="stat-card"><div class="stat-num">' + (offRes.data||[]).length + '</div><div class="stat-label">Пропозицій</div></div>' +
+      '<div class="stat-card"><div class="stat-num" id="stat-rating">' + avgRating + '</div><div class="stat-label">⭐ Рейтинг</div></div>';
+  }
+
+  loadReviews(userId);
+
   // Profile requests
   var rRes = await db.from('requests')
     .select('*, offers(id)')
@@ -522,7 +581,7 @@ async function uploadPhotos(formId) {
 async function loadRequests() {
   document.getElementById('requests-container').innerHTML = '<div class="spinner"></div>';
   var query = db.from('requests')
-    .select('*, profiles(name), offers(id, description, price, photos, profiles(name))')
+    .select('*, profiles(name), offers(id, user_id, description, price, photos, profiles(name))')
     .order('closed_at', { ascending: true, nullsFirst: true })
     .order('created_at', { ascending: false });
   if (currentCat) query = query.eq('category', currentCat);
@@ -560,6 +619,13 @@ function renderRequests(requests) {
     if (isOwner) {
       actionsHtml = '<div class="req-actions">';
       if (!isClosed) actionsHtml += '<button class="btn btn-sm btn-primary" data-action="close-req" data-id="' + r.id + '">✓ Знайдено</button>';
+      if (isClosed && offers.length) {
+        for (var oi = 0; oi < offers.length; oi++) {
+          if (offers[oi].profiles) {
+            actionsHtml += '<button class="btn btn-sm" data-action="leave-review" data-seller="' + offers[oi].user_id + '" data-reqid="' + r.id + '">⭐ Відгук для ' + esc(offers[oi].profiles.name) + '</button>';
+          }
+        }
+      }
       actionsHtml += '<button class="btn btn-sm btn-danger" data-action="delete-req" data-id="' + r.id + '">Видалити</button></div>';
     }
     var offerFormHtml = '';
@@ -587,6 +653,7 @@ document.addEventListener('click', function(e) {
   if (action === 'offer-submit') { submitOffer(id); }
   if (action === 'remove-photo') { removePhoto(btn.dataset.formid, Number(btn.dataset.idx)); }
   if (action === 'lightbox')     { openLightbox(btn.dataset.url); }
+  if (action === 'leave-review') { openReviewModal(btn.dataset.seller, btn.dataset.reqid); }
 });
 
 // ---- SUBMIT REQUEST ----
@@ -666,6 +733,95 @@ function timeAgo(dateStr) {
   if (diff < 3600)  return Math.floor(diff/60) + ' хв тому';
   if (diff < 86400) return Math.floor(diff/3600) + ' год тому';
   return Math.floor(diff/86400) + ' дн тому';
+}
+
+// ---- REVIEWS ----
+var selectedRating = 0;
+
+function initStars() {
+  var stars = document.querySelectorAll('#review-stars .star');
+  stars.forEach(function(star) {
+    star.addEventListener('mouseover', function() {
+      var val = Number(this.dataset.val);
+      stars.forEach(function(s) {
+        s.classList.toggle('hover', Number(s.dataset.val) <= val);
+      });
+    });
+    star.addEventListener('mouseout', function() {
+      stars.forEach(function(s) { s.classList.remove('hover'); });
+    });
+    star.addEventListener('click', function() {
+      selectedRating = Number(this.dataset.val);
+      stars.forEach(function(s) {
+        s.classList.toggle('active', Number(s.dataset.val) <= selectedRating);
+      });
+    });
+  });
+}
+initStars();
+
+function openReviewModal(sellerId, requestId) {
+  if (!currentUser) { openAuth(); return; }
+  selectedRating = 0;
+  document.querySelectorAll('#review-stars .star').forEach(function(s) { s.classList.remove('active','hover'); });
+  document.getElementById('review-comment').value = '';
+  document.getElementById('review-seller-id').value  = sellerId;
+  document.getElementById('review-request-id').value = requestId;
+  document.getElementById('review-modal').classList.add('open');
+}
+
+document.getElementById('cancel-review-btn').addEventListener('click', function() {
+  document.getElementById('review-modal').classList.remove('open');
+});
+
+document.getElementById('submit-review-btn').addEventListener('click', async function() {
+  if (!selectedRating) { toast('Оберіть оцінку', true); return; }
+  var sellerId   = document.getElementById('review-seller-id').value;
+  var requestId  = document.getElementById('review-request-id').value;
+  var comment    = document.getElementById('review-comment').value.trim();
+  var res = await db.from('reviews').insert({
+    reviewer_id: currentUser.id,
+    seller_id:   sellerId,
+    request_id:  requestId,
+    rating:      selectedRating,
+    comment:     comment || null
+  });
+  if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
+  toast('Відгук надіслано! ⭐');
+  document.getElementById('review-modal').classList.remove('open');
+  openProfile(sellerId);
+});
+
+async function loadReviews(userId) {
+  var res = await db.from('reviews')
+    .select('*, reviewer:reviewer_id(name)')
+    .eq('seller_id', userId)
+    .order('created_at', { ascending: false });
+  var reviews = res.data || [];
+  var container = document.getElementById('profile-reviews');
+
+  if (!reviews.length) {
+    container.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:12px 0">Відгуків ще немає</div>';
+    return;
+  }
+
+  var total = reviews.reduce(function(sum, r) { return sum + r.rating; }, 0);
+  var avg   = (total / reviews.length).toFixed(1);
+  var stars = '';
+  for (var i = 1; i <= 5; i++) stars += i <= Math.round(avg) ? '★' : '☆';
+
+  var html = '<div class="rating-summary"><div><div class="rating-avg">' + avg + '</div><div class="rating-avg-stars">' + stars + '</div><div class="rating-count">' + reviews.length + ' відгуків</div></div></div>';
+
+  for (var j = 0; j < reviews.length; j++) {
+    var r   = reviews[j];
+    var rStars = '';
+    for (var k = 1; k <= 5; k++) rStars += k <= r.rating ? '★' : '☆';
+    html += '<div class="review-card"><div class="review-header"><div><div class="review-author">' + esc(r.reviewer ? r.reviewer.name : 'Анонім') + '</div><div class="review-stars">' + rStars + '</div></div><div class="review-date">' + timeAgo(r.created_at) + '</div></div>' + (r.comment ? '<div class="review-text">' + esc(r.comment) + '</div>' : '') + '</div>';
+  }
+  container.innerHTML = html;
+
+  // update stat
+  document.getElementById('stat-rating') && (document.getElementById('stat-rating').textContent = avg);
 }
 
 // ---- REALTIME ----
