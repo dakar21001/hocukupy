@@ -8,9 +8,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  /* ====== ЗАМІНИ ЦІ ДВА РЯДКИ ====== */
-  /* SUPABASE_URL і SUPABASE_KEY вставляються нижче в <script> */
-
   :root {
     --green: #1D9E75;
     --green-light: #E1F5EE;
@@ -24,294 +21,128 @@
     --radius: 14px;
     --radius-sm: 8px;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Manrope', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-  body {
-    font-family: 'Manrope', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-  }
-
-  /* ---- TOPBAR ---- */
-  .topbar {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 0 24px;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  .logo {
-    font-family: 'Unbounded', sans-serif;
-    font-size: 16px;
-    font-weight: 600;
-    letter-spacing: -0.5px;
-  }
+  /* TOPBAR */
+  .topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .logo { font-family: 'Unbounded', sans-serif; font-size: 16px; font-weight: 600; letter-spacing: -0.5px; }
   .logo span { color: var(--green); }
   .topbar-right { display: flex; gap: 10px; align-items: center; }
 
-  /* ---- BUTTONS ---- */
-  .btn {
-    font-family: 'Manrope', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 8px 18px;
-    border-radius: var(--radius-sm);
-    border: 1.5px solid var(--border-hover);
-    background: transparent;
-    color: var(--text);
-    cursor: pointer;
-    transition: all 0.15s;
-  }
+  /* BUTTONS */
+  .btn { font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 600; padding: 8px 18px; border-radius: var(--radius-sm); border: 1.5px solid var(--border-hover); background: transparent; color: var(--text); cursor: pointer; transition: all 0.15s; }
   .btn:hover { background: var(--bg); }
-  .btn-primary {
-    background: var(--green);
-    border-color: var(--green);
-    color: #fff;
-  }
+  .btn-primary { background: var(--green); border-color: var(--green); color: #fff; }
   .btn-primary:hover { background: var(--green-dark); border-color: var(--green-dark); }
   .btn-sm { font-size: 12px; padding: 5px 12px; border-radius: 6px; }
 
-  /* ---- LAYOUT ---- */
-  .layout {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 32px 24px;
-    display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: 24px;
-    align-items: start;
-  }
-  @media (max-width: 700px) {
-    .layout { grid-template-columns: 1fr; padding: 16px; }
-    .sidebar { order: -1; }
-  }
+  /* LAYOUT */
+  .layout { max-width: 900px; margin: 0 auto; padding: 32px 24px; display: grid; grid-template-columns: 1fr 340px; gap: 24px; align-items: start; }
+  @media (max-width: 700px) { .layout { grid-template-columns: 1fr; padding: 16px; } .sidebar { order: -1; } }
 
-  /* ---- FILTERS ---- */
-  .filter-row {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
-  }
-  .filter-chip {
-    font-size: 12px;
-    font-weight: 600;
-    padding: 6px 14px;
-    border-radius: 99px;
-    border: 1.5px solid var(--border);
-    background: var(--surface);
-    color: var(--muted);
-    cursor: pointer;
-    transition: all 0.12s;
-  }
+  /* FILTERS */
+  .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+  .filter-chip { font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 99px; border: 1.5px solid var(--border); background: var(--surface); color: var(--muted); cursor: pointer; transition: all 0.12s; }
   .filter-chip:hover { border-color: var(--green); color: var(--green); }
   .filter-chip.active { background: var(--green); border-color: var(--green); color: #fff; }
 
-  /* ---- REQUEST CARD ---- */
-  .req-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 14px;
-    transition: border-color 0.15s;
-  }
+  /* REQUEST CARD */
+  .req-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 14px; transition: border-color 0.15s; }
   .req-card:hover { border-color: var(--border-hover); }
   .req-card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
   .req-title { font-size: 16px; font-weight: 600; color: var(--text); }
   .req-meta { font-size: 12px; color: var(--muted); display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
   .req-desc { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 12px; }
-  .cat-badge {
-    font-size: 11px;
-    font-weight: 600;
-    padding: 3px 10px;
-    border-radius: 99px;
-    background: var(--green-light);
-    color: var(--green-dark);
-    white-space: nowrap;
-  }
-  .offers-badge {
-    font-size: 11px;
-    font-weight: 600;
-    padding: 3px 10px;
-    border-radius: 99px;
-    background: #F0EFF8;
-    color: #534AB7;
-    white-space: nowrap;
-  }
+  .cat-badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 99px; background: var(--green-light); color: var(--green-dark); white-space: nowrap; }
+  .offers-badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 99px; background: #F0EFF8; color: #534AB7; white-space: nowrap; }
 
-  /* ---- OFFERS ---- */
+  /* OFFERS */
   .offers-section { border-top: 1px solid var(--border); padding-top: 12px; display: flex; flex-direction: column; gap: 8px; }
-  .offer-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 10px 12px;
-    background: var(--bg);
-    border-radius: var(--radius-sm);
-  }
+  .offer-row { padding: 12px; background: var(--bg); border-radius: var(--radius-sm); }
+  .offer-row-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .offer-seller { font-size: 13px; font-weight: 600; }
   .offer-desc { font-size: 12px; color: var(--muted); }
   .offer-price { font-size: 15px; font-weight: 600; color: var(--green-dark); white-space: nowrap; }
 
-  /* ---- ADD OFFER TOGGLE ---- */
-  .add-offer-toggle {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--green);
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 8px 0 0;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
+  /* PHOTO GRID */
+  .offer-photos { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .offer-photo { width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border); cursor: pointer; transition: opacity 0.15s; }
+  .offer-photo:hover { opacity: 0.85; }
+
+  /* PHOTO UPLOAD */
+  .photo-upload-area { border: 2px dashed var(--border-hover); border-radius: var(--radius-sm); padding: 14px; text-align: center; cursor: pointer; transition: border-color 0.15s; position: relative; }
+  .photo-upload-area:hover { border-color: var(--green); }
+  .photo-upload-area input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; padding: 0; border: none; }
+  .photo-upload-label { font-size: 13px; color: var(--muted); pointer-events: none; }
+  .photo-previews { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .photo-preview-wrap { position: relative; }
+  .photo-preview { width: 72px; height: 72px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+  .photo-remove { position: absolute; top: -6px; right: -6px; width: 18px; height: 18px; background: #c0392b; color: #fff; border: none; border-radius: 50%; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+  /* LIGHTBOX */
+  .lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 300; align-items: center; justify-content: center; }
+  .lightbox.open { display: flex; }
+  .lightbox img { max-width: 90vw; max-height: 90vh; border-radius: var(--radius); }
+  .lightbox-close { position: absolute; top: 20px; right: 24px; background: none; border: none; color: #fff; font-size: 32px; cursor: pointer; line-height: 1; }
+
+  /* ADD OFFER TOGGLE */
+  .add-offer-toggle { font-size: 12px; font-weight: 600; color: var(--green); background: none; border: none; cursor: pointer; padding: 8px 0 0; display: flex; align-items: center; gap: 4px; }
   .add-offer-toggle:hover { color: var(--green-dark); }
-  .offer-form {
-    margin-top: 10px;
-    padding: 14px;
-    background: var(--bg);
-    border-radius: var(--radius-sm);
-    display: none;
-    flex-direction: column;
-    gap: 10px;
-  }
+  .offer-form { margin-top: 10px; padding: 14px; background: var(--bg); border-radius: var(--radius-sm); display: none; flex-direction: column; gap: 10px; }
   .offer-form.open { display: flex; }
   .form-row { display: flex; gap: 8px; }
   .form-row input { flex: 1; }
 
-  /* ---- FORM ELEMENTS ---- */
-  input, textarea, select {
-    font-family: 'Manrope', sans-serif;
-    font-size: 14px;
-    padding: 10px 14px;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    background: var(--surface);
-    color: var(--text);
-    width: 100%;
-    transition: border-color 0.15s;
-    outline: none;
-  }
+  /* FORM ELEMENTS */
+  input, textarea, select { font-family: 'Manrope', sans-serif; font-size: 14px; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); width: 100%; transition: border-color 0.15s; outline: none; }
   input:focus, textarea:focus, select:focus { border-color: var(--green); }
   textarea { resize: vertical; min-height: 80px; }
 
-  /* ---- SIDEBAR CARD ---- */
-  .sidebar-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 24px;
-    position: sticky;
-    top: 80px;
-  }
-  .sidebar-card h2 {
-    font-family: 'Unbounded', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 18px;
-    color: var(--text);
-  }
+  /* SIDEBAR */
+  .sidebar-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; position: sticky; top: 80px; }
+  .sidebar-card h2 { font-family: 'Unbounded', sans-serif; font-size: 14px; font-weight: 600; margin-bottom: 18px; color: var(--text); }
   .field-group { margin-bottom: 14px; }
   .field-label { font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
 
-  /* ---- AUTH MODAL ---- */
-  .modal-bg {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.4);
-    z-index: 200;
-    align-items: center;
-    justify-content: center;
-  }
+  /* AUTH MODAL */
+  .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; align-items: center; justify-content: center; }
   .modal-bg.open { display: flex; }
-  .modal {
-    background: var(--surface);
-    border-radius: var(--radius);
-    padding: 32px;
-    width: 100%;
-    max-width: 400px;
-    margin: 16px;
-  }
-  .modal h2 {
-    font-family: 'Unbounded', sans-serif;
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 20px;
-  }
+  .modal { background: var(--surface); border-radius: var(--radius); padding: 32px; width: 100%; max-width: 400px; margin: 16px; }
+  .modal h2 { font-family: 'Unbounded', sans-serif; font-size: 16px; font-weight: 600; margin-bottom: 20px; }
   .modal-tabs { display: flex; gap: 0; margin-bottom: 20px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
-  .modal-tab {
-    flex: 1; padding: 9px; font-size: 13px; font-weight: 600;
-    background: transparent; border: none; cursor: pointer; color: var(--muted);
-  }
+  .modal-tab { flex: 1; padding: 9px; font-size: 13px; font-weight: 600; background: transparent; border: none; cursor: pointer; color: var(--muted); }
   .modal-tab.active { background: var(--green); color: #fff; }
-  .modal-close {
-    float: right; background: none; border: none; font-size: 20px;
-    cursor: pointer; color: var(--muted); line-height: 1; margin-top: -8px;
-  }
+  .modal-close { float: right; background: none; border: none; font-size: 20px; cursor: pointer; color: var(--muted); line-height: 1; margin-top: -8px; }
 
-  /* ---- TOAST ---- */
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--text);
-    color: #fff;
-    font-size: 13px;
-    font-weight: 500;
-    padding: 12px 22px;
-    border-radius: 99px;
-    opacity: 0;
-    transition: all 0.25s;
-    z-index: 999;
-    white-space: nowrap;
-  }
+  /* TOAST */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--text); color: #fff; font-size: 13px; font-weight: 500; padding: 12px 22px; border-radius: 99px; opacity: 0; transition: all 0.25s; z-index: 999; white-space: nowrap; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   .toast.error { background: #c0392b; }
 
-  /* ---- EMPTY / LOADING ---- */
+  /* MISC */
   .empty { text-align: center; padding: 48px 24px; color: var(--muted); }
   .empty-icon { font-size: 40px; margin-bottom: 12px; }
-  .spinner {
-    width: 32px; height: 32px; border: 3px solid var(--border);
-    border-top-color: var(--green); border-radius: 50%;
-    animation: spin 0.7s linear infinite; margin: 48px auto;
-  }
+  .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 0.7s linear infinite; margin: 48px auto; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .user-pill {
-    font-size: 12px; font-weight: 600; padding: 6px 14px;
-    border-radius: 99px; background: var(--green-light); color: var(--green-dark);
-  }
+  .user-pill { font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 99px; background: var(--green-light); color: var(--green-dark); }
+  .uploading-indicator { font-size: 12px; color: var(--muted); text-align: center; padding: 4px; }
 </style>
 </head>
 <body>
 
-<!-- TOPBAR -->
 <header class="topbar">
   <div class="logo">Хочу<span>Купити</span></div>
   <div class="topbar-right">
     <span id="user-pill" class="user-pill" style="display:none"></span>
     <button class="btn btn-sm" id="auth-btn" onclick="openAuth()">Увійти</button>
-    <button class="btn btn-sm btn-primary" id="logout-btn" style="display:none" onclick="logout()">Вийти23</button>
+    <button class="btn btn-sm btn-primary" id="logout-btn" style="display:none" onclick="logout()">Вийти</button>
   </div>
 </header>
 
-<!-- MAIN LAYOUT -->
 <main class="layout">
-  <!-- LEFT: запити -->
   <section>
-    <div class="filter-row" id="filter-row">
+    <div class="filter-row">
       <button class="filter-chip active" onclick="filterCat(this,'')">Всі</button>
       <button class="filter-chip" onclick="filterCat(this,'Електроніка')">Електроніка</button>
       <button class="filter-chip" onclick="filterCat(this,'Авто')">Авто</button>
@@ -323,7 +154,6 @@
     <div id="requests-container"><div class="spinner"></div></div>
   </section>
 
-  <!-- RIGHT: форма нового запиту -->
   <aside class="sidebar">
     <div class="sidebar-card">
       <h2>+ Новий запит</h2>
@@ -378,14 +208,20 @@
   </div>
 </div>
 
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close">×</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 // =============================================
 //  ЗАМІНИ ЦІ ДВА РЯДКИ НА СВОЇ ДАНІ!
 // =============================================
-const SUPABASE_URL  = 'https://dvjmqgzpxpfwuxpjrsdx.supabase.co';
-const SUPABASE_KEY  = 'sb_publishable_h6yGHLcCUJNZRRp6gxjhoQ_UW_G8zod';
+const SUPABASE_URL = 'https://dvjmqgzpxpfwuxpjrsdx.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_h6yGHLcCUJNZRRp6gxjhoQ_UW_G8zod';
 // =============================================
 
 const { createClient } = supabase;
@@ -394,12 +230,24 @@ const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 let currentUser = null;
 let currentCat  = '';
 
+// per-form photo state: { formId: [ {file, previewUrl} ] }
+const photoState = {};
+
 // ---- TOAST ----
 function toast(msg, isError = false) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.className = 'toast show' + (isError ? ' error' : '');
   setTimeout(() => { t.className = 'toast'; }, 3000);
+}
+
+// ---- LIGHTBOX ----
+function openLightbox(url) {
+  document.getElementById('lightbox-img').src = url;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
 }
 
 // ---- AUTH UI ----
@@ -411,10 +259,9 @@ function switchTab(tab) {
   document.getElementById('tab-login').classList.toggle('active', tab === 'login');
   document.getElementById('tab-register').classList.toggle('active', tab === 'register');
 }
-
 function setUserUI(user) {
   currentUser = user;
-  const pill    = document.getElementById('user-pill');
+  const pill = document.getElementById('user-pill');
   const authBtn = document.getElementById('auth-btn');
   const outBtn  = document.getElementById('logout-btn');
   if (user) {
@@ -434,25 +281,18 @@ async function doLogin() {
   const pass  = document.getElementById('login-pass').value;
   const { error } = await db.auth.signInWithPassword({ email, password: pass });
   if (error) { toast(error.message, true); return; }
-  closeAuth();
-  toast('Вітаємо!');
+  closeAuth(); toast('Вітаємо!');
 }
 
 async function doRegister() {
   const name  = document.getElementById('reg-name').value.trim();
   const email = document.getElementById('reg-email').value.trim();
   const pass  = document.getElementById('reg-pass').value;
-  if (!name) { toast('Введіть ім\'я', true); return; }
-  const { data, error } = await db.auth.signUp({
-    email, password: pass,
-    options: { data: { name } }
-  });
+  if (!name) { toast("Введіть ім'я", true); return; }
+  const { data, error } = await db.auth.signUp({ email, password: pass, options: { data: { name } } });
   if (error) { toast(error.message, true); return; }
-  if (data.user) {
-    await db.from('profiles').upsert({ id: data.user.id, name });
-  }
-  closeAuth();
-  toast('Акаунт створено!');
+  if (data.user) await db.from('profiles').upsert({ id: data.user.id, name });
+  closeAuth(); toast('Акаунт створено!');
 }
 
 async function logout() {
@@ -461,11 +301,72 @@ async function logout() {
   toast('До побачення!');
 }
 
+// ---- ENSURE PROFILE ----
+async function ensureProfile(user) {
+  const { data } = await db.from('profiles').select('id').eq('id', user.id).single();
+  if (!data) {
+    const name = user.user_metadata?.name || user.email.split('@')[0];
+    await db.from('profiles').insert({ id: user.id, name });
+  }
+}
+
+// ---- PHOTO UPLOAD HELPERS ----
+function initPhotoUpload(formId) {
+  if (!photoState[formId]) photoState[formId] = [];
+}
+
+function handlePhotoSelect(formId, input) {
+  initPhotoUpload(formId);
+  const files = Array.from(input.files);
+  const remaining = 3 - photoState[formId].length;
+  if (remaining <= 0) { toast('Максимум 3 фото', true); return; }
+  files.slice(0, remaining).forEach(file => {
+    if (!file.type.startsWith('image/')) return;
+    const url = URL.createObjectURL(file);
+    photoState[formId].push({ file, previewUrl: url });
+  });
+  renderPhotoPreviews(formId);
+  input.value = '';
+}
+
+function removePhoto(formId, idx) {
+  photoState[formId].splice(idx, 1);
+  renderPhotoPreviews(formId);
+}
+
+function renderPhotoPreviews(formId) {
+  const container = document.getElementById('previews-' + formId);
+  if (!container) return;
+  const photos = photoState[formId] || [];
+  container.innerHTML = photos.map((p, i) => `
+    <div class="photo-preview-wrap">
+      <img class="photo-preview" src="${p.previewUrl}" alt="">
+      <button class="photo-remove" onclick="removePhoto('${formId}',${i})">×</button>
+    </div>
+  `).join('');
+  const label = document.getElementById('upload-label-' + formId);
+  if (label) label.textContent = photos.length >= 3 ? 'Максимум 3 фото додано' : '📷 Додати фото (до 3 шт.)';
+}
+
+async function uploadPhotos(formId) {
+  const photos = photoState[formId] || [];
+  const urls = [];
+  for (const p of photos) {
+    const ext  = p.file.name.split('.').pop();
+    const path = `${currentUser.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const { error } = await db.storage.from('offers-photos').upload(path, p.file, { contentType: p.file.type });
+    if (error) { toast('Помилка завантаження фото: ' + error.message, true); continue; }
+    const { data } = db.storage.from('offers-photos').getPublicUrl(path);
+    urls.push(data.publicUrl);
+  }
+  return urls;
+}
+
 // ---- LOAD REQUESTS ----
 async function loadRequests() {
   document.getElementById('requests-container').innerHTML = '<div class="spinner"></div>';
   let query = db.from('requests')
-    .select(`*, profiles(name), offers(id, description, price, profiles(name))`)
+    .select('*, profiles(name), offers(id, description, price, photos, profiles(name))')
     .eq('is_active', true)
     .order('created_at', { ascending: false });
   if (currentCat) query = query.eq('category', currentCat);
@@ -477,20 +378,22 @@ async function loadRequests() {
 function renderRequests(requests) {
   const c = document.getElementById('requests-container');
   if (!requests.length) {
-    c.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><p>Запитів ще немає.<br>Будьте першим!</p></div>`;
+    c.innerHTML = '<div class="empty"><div class="empty-icon">🔍</div><p>Запитів ще немає.<br>Будьте першим!</p></div>';
     return;
   }
-  c.innerHTML = requests.map(r => `
+  c.innerHTML = requests.map(r => {
+    const formId = 'f-' + r.id;
+    return `
     <div class="req-card" id="rcard-${r.id}">
       <div class="req-card-header">
         <div class="req-title">${esc(r.title)}</div>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
-          <span class="cat-badge">${esc(r.category || 'Інше')}</span>
-          <span class="offers-badge">${r.offers?.length || 0} пропозицій</span>
+          <span class="cat-badge">${esc(r.category||'Інше')}</span>
+          <span class="offers-badge">${r.offers?.length||0} пропозицій</span>
         </div>
       </div>
       <div class="req-meta">
-        <span>👤 ${esc(r.profiles?.name || 'Анонім')}</span>
+        <span>👤 ${esc(r.profiles?.name||'Анонім')}</span>
         <span>🕐 ${timeAgo(r.created_at)}</span>
         ${r.budget ? `<span>💰 до ${Number(r.budget).toLocaleString('uk')} ₴</span>` : ''}
       </div>
@@ -499,27 +402,35 @@ function renderRequests(requests) {
         <div class="offers-section">
           ${r.offers.map(o => `
             <div class="offer-row">
-              <div>
-                <div class="offer-seller">${esc(o.profiles?.name || 'Анонім')}</div>
-                <div class="offer-desc">${esc(o.description)}</div>
+              <div class="offer-row-top">
+                <div>
+                  <div class="offer-seller">${esc(o.profiles?.name||'Анонім')}</div>
+                  <div class="offer-desc">${esc(o.description)}</div>
+                </div>
+                <div class="offer-price">${Number(o.price).toLocaleString('uk')} ₴</div>
               </div>
-              <div class="offer-price">${Number(o.price).toLocaleString('uk')} ₴</div>
+              ${o.photos?.length ? `
+                <div class="offer-photos">
+                  ${o.photos.map(url => `<img class="offer-photo" src="${url}" alt="фото" onclick="openLightbox('${url}')">`).join('')}
+                </div>` : ''}
             </div>
           `).join('')}
-        </div>
-      ` : ''}
-      <button class="add-offer-toggle" onclick="toggleOfferForm('${r.id}')">
-        ＋ Зробити пропозицію
-      </button>
+        </div>` : ''}
+      <button class="add-offer-toggle" onclick="toggleOfferForm('${r.id}')">＋ Зробити пропозицію</button>
       <div class="offer-form" id="oform-${r.id}">
         <input type="text" id="odesc-${r.id}" placeholder="Опис: модель, стан, комплектація...">
         <div class="form-row">
           <input type="number" id="oprice-${r.id}" placeholder="Ціна, ₴" style="max-width:160px">
           <button class="btn btn-primary btn-sm" onclick="submitOffer('${r.id}')">Запропонувати</button>
         </div>
+        <div class="photo-upload-area">
+          <input type="file" accept="image/*" multiple onchange="handlePhotoSelect('${r.id}', this)">
+          <div class="photo-upload-label" id="upload-label-${r.id}">📷 Додати фото (до 3 шт.)</div>
+        </div>
+        <div class="photo-previews" id="previews-${r.id}"></div>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 // ---- FILTER ----
@@ -534,15 +445,7 @@ function filterCat(btn, cat) {
 function toggleOfferForm(id) {
   const f = document.getElementById('oform-' + id);
   f.classList.toggle('open');
-}
-
-// ---- ENSURE PROFILE EXISTS ----
-async function ensureProfile(user) {
-  const { data } = await db.from('profiles').select('id').eq('id', user.id).single();
-  if (!data) {
-    const name = user.user_metadata?.name || user.email.split('@')[0];
-    await db.from('profiles').insert({ id: user.id, name });
-  }
+  if (f.classList.contains('open')) initPhotoUpload(id);
 }
 
 // ---- SUBMIT OFFER ----
@@ -554,17 +457,31 @@ async function submitOffer(requestId) {
 
   await ensureProfile(currentUser);
 
+  // upload photos first
+  const btn = document.querySelector(`#oform-${requestId} .btn-primary`);
+  btn.textContent = 'Завантаження...';
+  btn.disabled = true;
+
+  const photoUrls = await uploadPhotos(requestId);
+
   const { error } = await db.from('offers').insert({
     request_id: requestId,
     user_id: currentUser.id,
     description: desc,
-    price: Number(price)
+    price: Number(price),
+    photos: photoUrls.length ? photoUrls : null
   });
+
+  btn.textContent = 'Запропонувати';
+  btn.disabled = false;
+
   if (error) { toast('Помилка: ' + error.message, true); return; }
+
   toast('Пропозицію надіслано!');
   document.getElementById('odesc-'  + requestId).value = '';
   document.getElementById('oprice-' + requestId).value = '';
-  document.getElementById('oform-'  + requestId).classList.remove('open');
+  photoState[requestId] = [];
+  document.getElementById('oform-' + requestId).classList.remove('open');
   loadRequests();
 }
 
@@ -580,8 +497,7 @@ async function submitRequest() {
   await ensureProfile(currentUser);
 
   const { error } = await db.from('requests').insert({
-    user_id: currentUser.id,
-    title,
+    user_id: currentUser.id, title,
     description: desc || null,
     category: cat,
     budget: budget ? Number(budget) : null
@@ -601,26 +517,21 @@ function esc(str) {
 }
 function timeAgo(dateStr) {
   const diff = Math.floor((Date.now() - new Date(dateStr)) / 1000);
-  if (diff < 60)   return 'щойно';
-  if (diff < 3600) return Math.floor(diff/60) + ' хв тому';
-  if (diff < 86400)return Math.floor(diff/3600) + ' год тому';
+  if (diff < 60)    return 'щойно';
+  if (diff < 3600)  return Math.floor(diff/60) + ' хв тому';
+  if (diff < 86400) return Math.floor(diff/3600) + ' год тому';
   return Math.floor(diff/86400) + ' дн тому';
 }
 
-// ---- REALTIME (автооновлення) ----
+// ---- REALTIME ----
 db.channel('public-changes')
   .on('postgres_changes', { event: '*', schema: 'public', table: 'requests' }, loadRequests)
   .on('postgres_changes', { event: '*', schema: 'public', table: 'offers'   }, loadRequests)
   .subscribe();
 
 // ---- INIT ----
-db.auth.getSession().then(({ data }) => {
-  if (data.session?.user) setUserUI(data.session.user);
-});
-db.auth.onAuthStateChange((_e, session) => {
-  setUserUI(session?.user || null);
-});
-
+db.auth.getSession().then(({ data }) => { if (data.session?.user) setUserUI(data.session.user); });
+db.auth.onAuthStateChange((_e, session) => { setUserUI(session?.user || null); });
 loadRequests();
 </script>
 </body>
