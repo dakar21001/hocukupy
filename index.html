@@ -409,6 +409,14 @@
       </select>
     </div>
     <div class="field-group"><div class="field-label">Бюджет (необов.)</div><input type="number" id="fab-budget" placeholder="50000"></div>
+    <div class="field-group">
+      <div class="field-label">Фото (необов., до 3 шт.)</div>
+      <div class="photo-upload-area" style="position:relative">
+        <input type="file" accept="image/*" multiple id="fab-photo-input" style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer">
+        <div class="photo-upload-label" id="fab-upload-label">📷 Додати фото</div>
+      </div>
+      <div class="photo-previews" id="fab-previews" style="margin-top:8px"></div>
+    </div>
     <button class="btn btn-primary" style="width:100%" id="fab-submit-btn">Опублікувати запит</button>
   </div>
 </div>
@@ -704,7 +712,7 @@ function handlePhotoSelect(formId, input) {
 }
 function removePhoto(formId, idx) { photoState[formId].splice(idx, 1); renderPhotoPreviews(formId); }
 function renderPhotoPreviews(formId) {
-  var container = document.getElementById('previews-' + formId) || document.getElementById(formId + '-previews');
+  var container = document.getElementById('previews-' + formId);
   if (!container) return;
   var photos = photoState[formId] || [];
   var html = '';
@@ -734,7 +742,7 @@ async function uploadPhotos(formId) {
 async function loadRequests() {
   document.getElementById('requests-container').innerHTML = '<div class="spinner"></div>';
   var query = db.from('requests')
-    .select('*, profiles(name), offers(id, user_id, description, price, photos, profiles(name))')
+    .select('*, profiles(name), photos, offers(id, user_id, description, price, photos, profiles(name))')
     .order('closed_at', { ascending: true, nullsFirst: true })
     .order('created_at', { ascending: false });
   if (currentCat)  query = query.eq('category', currentCat);
@@ -1038,6 +1046,13 @@ async function openRequestPage(requestId) {
   html += '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px"><span class="cat-badge">' + esc(r.category || 'Інше') + '</span>' + (isClosed ? '<span class="closed-badge">✓ Знайдено</span>' : '<span class="offers-badge">' + offers.length + ' пропозицій</span>') + '</div>';
   html += '<div class="req-meta"><span>👤 ' + esc(r.profiles ? r.profiles.name : 'Анонім') + '</span><span>🕐 ' + timeAgo(r.created_at) + '</span>' + (r.budget ? '<span>💰 до ' + Number(r.budget).toLocaleString('uk') + ' ₴</span>' : '') + '</div>';
   html += r.description ? '<div class="req-desc" style="margin-top:10px">' + esc(r.description) + '</div>' : '';
+  if (r.photos && r.photos.length) {
+    html += '<div class="offer-photos" style="margin-top:12px">';
+    for (var pi = 0; pi < r.photos.length; pi++) {
+      html += '<img class="offer-photo" src="' + r.photos[pi] + '" alt="фото запиту" data-action="lightbox" data-url="' + r.photos[pi] + '">';
+    }
+    html += '</div>';
+  }
   html += actionsHtml + '</div>';
 
   if (offers.length) {
@@ -1061,7 +1076,7 @@ async function openRequestPage(requestId) {
   // bind photo input
   var photoInput = document.getElementById('modal-photo-input');
   if (photoInput) {
-    photoInput.addEventListener('change', function() { handlePhotoSelect('modal', this); });
+    photoInput.addEventListener('change', function() { handlePhotoSelect('modal-' + r.id, this); });
   }
 
   // bind submit
@@ -1074,12 +1089,12 @@ async function openRequestPage(requestId) {
       if (!desc || !price) { toast('Заповніть опис та ціну', true); return; }
       await ensureProfile(currentUser);
       submitBtn.textContent = 'Завантаження...'; submitBtn.disabled = true;
-      var photoUrls = await uploadPhotos('modal');
+      var photoUrls = await uploadPhotos('modal-' + r.id);
       var res2 = await db.from('offers').insert({ request_id: r.id, user_id: currentUser.id, description: desc, price: Number(price), photos: photoUrls.length ? photoUrls : null });
       submitBtn.textContent = 'Запропонувати'; submitBtn.disabled = false;
       if (res2.error) { toast('Помилка: ' + res2.error.message, true); return; }
       toast('Пропозицію надіслано!');
-      photoState['modal'] = [];
+      photoState['modal-' + r.id] = [];
       document.getElementById('modal-odesc').value = '';
       document.getElementById('modal-oprice').value = '';
       openRequestPage(r.id);
@@ -1199,6 +1214,8 @@ document.getElementById('fab-btn').addEventListener('click', function() {
   document.getElementById('fab-desc').value   = '';
   document.getElementById('fab-budget').value = '';
   document.getElementById('new-req-modal').classList.add('open');
+  photoState['fab'] = [];
+  renderPhotoPreviews('fab');
   setTimeout(function() { document.getElementById('fab-title').focus(); }, 100);
 });
 
@@ -1208,6 +1225,10 @@ document.getElementById('close-new-req-btn').addEventListener('click', function(
 
 document.getElementById('new-req-modal').addEventListener('click', function(e) {
   if (e.target === this) this.classList.remove('open');
+});
+
+document.getElementById('fab-photo-input').addEventListener('change', function() {
+  handlePhotoSelect('fab', this);
 });
 
 document.getElementById('fab-submit-btn').addEventListener('click', async function() {
@@ -1220,13 +1241,16 @@ document.getElementById('fab-submit-btn').addEventListener('click', async functi
   await ensureProfile(currentUser);
   var btn = document.getElementById('fab-submit-btn');
   btn.textContent = 'Публікуємо...'; btn.disabled = true;
+  var reqPhotoUrls = await uploadPhotos('fab');
   var res = await db.from('requests').insert({
     user_id: currentUser.id, title: title,
     description: desc || null, category: cat,
-    budget: budget ? Number(budget) : null
+    budget: budget ? Number(budget) : null,
+    photos: reqPhotoUrls.length ? reqPhotoUrls : null
   });
   btn.textContent = 'Опублікувати запит'; btn.disabled = false;
   if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
+  photoState['fab'] = [];
   document.getElementById('new-req-modal').classList.remove('open');
   toast('Запит опубліковано! 🎉');
   showPage('main');
