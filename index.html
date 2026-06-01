@@ -704,7 +704,7 @@ function handlePhotoSelect(formId, input) {
 }
 function removePhoto(formId, idx) { photoState[formId].splice(idx, 1); renderPhotoPreviews(formId); }
 function renderPhotoPreviews(formId) {
-  var container = document.getElementById('previews-' + formId);
+  var container = document.getElementById('previews-' + formId) || document.getElementById(formId + '-previews');
   if (!container) return;
   var photos = photoState[formId] || [];
   var html = '';
