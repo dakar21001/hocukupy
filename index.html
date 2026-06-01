@@ -792,6 +792,9 @@ document.getElementById('submit-request-btn').addEventListener('click', async fu
 // ---- TOGGLE OFFER FORM ----
 function toggleOfferForm(id) {
   var f = document.getElementById('oform-' + id);
+  if (!f) {
+    f = document.getElementById('oform-rp-' + id);
+  }
   if (!f) return;
   f.classList.toggle('open');
   if (f.classList.contains('open')) initPhotoUpload(id);
@@ -799,6 +802,8 @@ function toggleOfferForm(id) {
 
 // ---- SUBMIT OFFER ----
 async function submitOffer(requestId) {
+  var realId = requestId.startsWith('rp-') ? requestId.replace('rp-', '') : requestId;
+  requestId = requestId; // keep as-is for DOM lookups
   if (!currentUser) { openAuth(); return; }
   var desc  = document.getElementById('odesc-'  + requestId).value.trim();
   var price = document.getElementById('oprice-' + requestId).value;
@@ -807,7 +812,7 @@ async function submitOffer(requestId) {
   var btn = document.querySelector('[data-action="offer-submit"][data-id="' + requestId + '"]');
   if (btn) { btn.textContent = 'Завантаження...'; btn.disabled = true; }
   var photoUrls = await uploadPhotos(requestId);
-  var res = await db.from('offers').insert({ request_id: requestId, user_id: currentUser.id, description: desc, price: Number(price), photos: photoUrls.length ? photoUrls : null });
+  var res = await db.from('offers').insert({ request_id: realId, user_id: currentUser.id, description: desc, price: Number(price), photos: photoUrls.length ? photoUrls : null });
   if (btn) { btn.textContent = 'Запропонувати'; btn.disabled = false; }
   if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
   toast('Пропозицію надіслано!');
@@ -957,12 +962,11 @@ document.getElementById('share-btn').addEventListener('click', function() {
 });
 
 async function openRequestPage(requestId) {
-   // ensure user is loaded
-   if (!currentUser) {
+  // ensure user is loaded
+  if (!currentUser) {
     var sess = await db.auth.getSession();
     if (sess.data.session) setUserUI(sess.data.session.user);
   }
-  window._currentRequestId = requestId;
   window._currentRequestId = requestId;
   showPage('request');
   history.pushState({}, '', '?request=' + requestId);
@@ -998,7 +1002,7 @@ async function openRequestPage(requestId) {
     if (currentUser && currentUser.id === r.user_id && o.user_id && o.user_id !== currentUser.id) {
       writeBtn = '<button class="btn btn-sm" style="margin-top:8px" data-action="open-chat" data-seller="' + o.user_id + '" data-reqid="' + r.id + '" data-selname="' + esc(o.profiles ? o.profiles.name : 'Продавець') + '" data-reqtitle="' + esc(r.title) + '">💬 Написати</button>';
     }
-    offersHtml += '<div class="offer-row" style="margin-bottom:10px"><div class="offer-row-top"><div><div class="offer-seller">' + esc(o.profiles ? o.profiles.name : 'Анонім') + '</div><div class="offer-desc">' + esc(o.description) + '</div></div><div class="offer-price">' + Number(o.price).toLocaleString('uk') + ' ₴</div></div>' + photosHtml + writeBtn + '</div>';
+    offerFormHtml = '<button class="add-offer-toggle" data-action="offer-toggle" data-id="rp-' + r.id + '">＋ Зробити пропозицію</button><div class="offer-form" id="oform-rp-' + r.id + '"><input type="text" id="odesc-rp-' + r.id + '" placeholder="Опис: модель, стан, комплектація..."><div class="form-row"><input type="number" id="oprice-rp-' + r.id + '" placeholder="Ціна, ₴" style="max-width:160px"><button class="btn btn-primary btn-sm" data-action="offer-submit" data-id="rp-' + r.id + '">Запропонувати</button></div><div class="photo-upload-area"><input type="file" accept="image/*" multiple data-formid="rp-' + r.id + '" class="photo-file-input"><div class="photo-upload-label" id="upload-label-rp-' + r.id + '">📷 Додати фото (до 3 шт.)</div></div><div class="photo-previews" id="previews-rp-' + r.id + '"></div></div>';
   }
 
   var actionsHtml = '';
