@@ -742,7 +742,7 @@ function renderRequests(requests) {
     }
     var offerFormHtml = '';
     if (!isClosed) {
-      offerFormHtml = '<button class="add-offer-toggle" data-action="offer-toggle" data-id="' + r.id + '">＋ Зробити пропозицію</button><div class="offer-form" id="oform-' + r.id + '"><input type="text" id="odesc-' + r.id + '" placeholder="Опис: модель, стан, комплектація..."><div class="form-row"><input type="number" id="oprice-' + r.id + '" placeholder="Ціна, ₴" style="max-width:160px"><button class="btn btn-primary btn-sm" data-action="offer-submit" data-id="' + r.id + '">Запропонувати</button></div><div class="photo-upload-area"><input type="file" accept="image/*" multiple data-formid="' + r.id + '" class="photo-file-input"><div class="photo-upload-label" id="upload-label-' + r.id + '">📷 Додати фото (до 3 шт.)</div></div><div class="photo-previews" id="previews-' + r.id + '"></div></div>';
+      offerFormHtml = '<button class="add-offer-toggle" id="rp-toggle-' + r.id + '">＋ Зробити пропозицію</button><div class="offer-form" id="rp-oform-' + r.id + '"><input type="text" id="rp-odesc-' + r.id + '" placeholder="Опис: модель, стан, комплектація..."><div class="form-row"><input type="number" id="rp-oprice-' + r.id + '" placeholder="Ціна, ₴" style="max-width:160px"><button class="btn btn-primary btn-sm" id="rp-submit-' + r.id + '">Запропонувати</button></div><div class="photo-upload-area"><input type="file" accept="image/*" multiple data-formid="rp-' + r.id + '" class="rp-photo-file-input"><div class="photo-upload-label" id="rp-upload-label-' + r.id + '">📷 Додати фото (до 3 шт.)</div></div><div class="photo-previews" id="rp-previews-' + r.id + '"></div></div>';
     }
     html += '<div class="req-card' + (isClosed ? ' closed' : '') + '" id="rcard-' + r.id + '"><div class="req-card-header"><div class="req-title" style="cursor:pointer" data-action="open-request" data-id="' + r.id + '">' + esc(r.title) + '</div><div style="display:flex;gap:6px;flex-wrap:wrap"><span class="cat-badge">' + esc(r.category || 'Інше') + '</span>' + (isClosed ? '<span class="closed-badge">✓ Знайдено</span>' : '<span class="offers-badge">' + offers.length + ' пропозицій</span>') + '</div></div><div class="req-meta"><span>👤 ' + esc(r.profiles ? r.profiles.name : 'Анонім') + '</span><span>🕐 ' + timeAgo(r.created_at) + '</span>' + (r.budget ? '<span>💰 до ' + Number(r.budget).toLocaleString('uk') + ' ₴</span>' : '') + '</div>' + (r.description ? '<div class="req-desc">' + esc(r.description) + '</div>' : '') + (offers.length ? '<div class="offers-section">' + offersHtml + '</div>' : '') + offerFormHtml + actionsHtml + '</div>';
   }
@@ -792,9 +792,6 @@ document.getElementById('submit-request-btn').addEventListener('click', async fu
 // ---- TOGGLE OFFER FORM ----
 function toggleOfferForm(id) {
   var f = document.getElementById('oform-' + id);
-  if (!f) {
-    f = document.getElementById('oform-rp-' + id);
-  }
   if (!f) return;
   f.classList.toggle('open');
   if (f.classList.contains('open')) initPhotoUpload(id);
@@ -802,8 +799,6 @@ function toggleOfferForm(id) {
 
 // ---- SUBMIT OFFER ----
 async function submitOffer(requestId) {
-  var realId = requestId.startsWith('rp-') ? requestId.replace('rp-', '') : requestId;
-  requestId = requestId; // keep as-is for DOM lookups
   if (!currentUser) { openAuth(); return; }
   var desc  = document.getElementById('odesc-'  + requestId).value.trim();
   var price = document.getElementById('oprice-' + requestId).value;
@@ -812,7 +807,7 @@ async function submitOffer(requestId) {
   var btn = document.querySelector('[data-action="offer-submit"][data-id="' + requestId + '"]');
   if (btn) { btn.textContent = 'Завантаження...'; btn.disabled = true; }
   var photoUrls = await uploadPhotos(requestId);
-  var res = await db.from('offers').insert({ request_id: realId, user_id: currentUser.id, description: desc, price: Number(price), photos: photoUrls.length ? photoUrls : null });
+  var res = await db.from('offers').insert({ request_id: requestId, user_id: currentUser.id, description: desc, price: Number(price), photos: photoUrls.length ? photoUrls : null });
   if (btn) { btn.textContent = 'Запропонувати'; btn.disabled = false; }
   if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
   toast('Пропозицію надіслано!');
@@ -962,11 +957,6 @@ document.getElementById('share-btn').addEventListener('click', function() {
 });
 
 async function openRequestPage(requestId) {
-  // ensure user is loaded
-  if (!currentUser) {
-    var sess = await db.auth.getSession();
-    if (sess.data.session) setUserUI(sess.data.session.user);
-  }
   window._currentRequestId = requestId;
   showPage('request');
   history.pushState({}, '', '?request=' + requestId);
@@ -1002,7 +992,7 @@ async function openRequestPage(requestId) {
     if (currentUser && currentUser.id === r.user_id && o.user_id && o.user_id !== currentUser.id) {
       writeBtn = '<button class="btn btn-sm" style="margin-top:8px" data-action="open-chat" data-seller="' + o.user_id + '" data-reqid="' + r.id + '" data-selname="' + esc(o.profiles ? o.profiles.name : 'Продавець') + '" data-reqtitle="' + esc(r.title) + '">💬 Написати</button>';
     }
-    offerFormHtml = '<button class="add-offer-toggle" data-action="offer-toggle" data-id="rp-' + r.id + '">＋ Зробити пропозицію</button><div class="offer-form" id="oform-rp-' + r.id + '"><input type="text" id="odesc-rp-' + r.id + '" placeholder="Опис: модель, стан, комплектація..."><div class="form-row"><input type="number" id="oprice-rp-' + r.id + '" placeholder="Ціна, ₴" style="max-width:160px"><button class="btn btn-primary btn-sm" data-action="offer-submit" data-id="rp-' + r.id + '">Запропонувати</button></div><div class="photo-upload-area"><input type="file" accept="image/*" multiple data-formid="rp-' + r.id + '" class="photo-file-input"><div class="photo-upload-label" id="upload-label-rp-' + r.id + '">📷 Додати фото (до 3 шт.)</div></div><div class="photo-previews" id="previews-rp-' + r.id + '"></div></div>';
+    offersHtml += '<div class="offer-row" style="margin-bottom:10px"><div class="offer-row-top"><div><div class="offer-seller">' + esc(o.profiles ? o.profiles.name : 'Анонім') + '</div><div class="offer-desc">' + esc(o.description) + '</div></div><div class="offer-price">' + Number(o.price).toLocaleString('uk') + ' ₴</div></div>' + photosHtml + writeBtn + '</div>';
   }
 
   var actionsHtml = '';
@@ -1020,8 +1010,8 @@ async function openRequestPage(requestId) {
   }
 
   var offerFormHtml = '';
-  if (!isClosed) {
-    offerFormHtml = '<button class="add-offer-toggle" data-action="offer-toggle" data-id="' + r.id + '">＋ Зробити пропозицію</button><div class="offer-form" id="oform-' + r.id + '"><input type="text" id="odesc-' + r.id + '" placeholder="Опис: модель, стан, комплектація..."><div class="form-row"><input type="number" id="oprice-' + r.id + '" placeholder="Ціна, ₴" style="max-width:160px"><button class="btn btn-primary btn-sm" data-action="offer-submit" data-id="' + r.id + '">Запропонувати</button></div><div class="photo-upload-area"><input type="file" accept="image/*" multiple data-formid="' + r.id + '" class="photo-file-input"><div class="photo-upload-label" id="upload-label-' + r.id + '">📷 Додати фото (до 3 шт.)</div></div><div class="photo-previews" id="previews-' + r.id + '"></div></div>';
+  if (!isClosed && currentUser && currentUser.id !== r.user_id) {
+    offerFormHtml = '<button class="add-offer-toggle" id="rp-toggle-' + r.id + '">＋ Зробити пропозицію</button><div class="offer-form" id="rp-oform-' + r.id + '"><input type="text" id="rp-odesc-' + r.id + '" placeholder="Опис: модель, стан, комплектація..."><div class="form-row"><input type="number" id="rp-oprice-' + r.id + '" placeholder="Ціна, ₴" style="max-width:160px"><button class="btn btn-primary btn-sm" id="rp-submit-' + r.id + '">Запропонувати</button></div><div class="photo-upload-area"><input type="file" accept="image/*" multiple data-formid="rp-' + r.id + '" class="rp-photo-file-input"><div class="photo-upload-label" id="rp-upload-label-' + r.id + '">📷 Додати фото (до 3 шт.)</div></div><div class="photo-previews" id="rp-previews-' + r.id + '"></div></div>';
   }
 
   var html = '<div class="req-full-card">';
@@ -1043,8 +1033,33 @@ async function openRequestPage(requestId) {
 
   document.getElementById('request-page-content').innerHTML = html;
 
-  // bind file inputs
-  var fileInputs = document.querySelectorAll('#request-page-content .photo-file-input');
+  // bind request page form events
+  var rpToggle = document.getElementById('rp-toggle-' + r.id);
+  var rpForm   = document.getElementById('rp-oform-' + r.id);
+  if (rpToggle && rpForm) {
+    rpToggle.addEventListener('click', function() {
+      rpForm.classList.toggle('open');
+      if (rpForm.classList.contains('open')) initPhotoUpload('rp-' + r.id);
+    });
+  }
+  var rpSubmit = document.getElementById('rp-submit-' + r.id);
+  if (rpSubmit) {
+    rpSubmit.addEventListener('click', async function() {
+      if (!currentUser) { openAuth(); return; }
+      var desc  = document.getElementById('rp-odesc-'  + r.id).value.trim();
+      var price = document.getElementById('rp-oprice-' + r.id).value;
+      if (!desc || !price) { toast('Заповніть опис та ціну', true); return; }
+      await ensureProfile(currentUser);
+      rpSubmit.textContent = 'Завантаження...'; rpSubmit.disabled = true;
+      var photoUrls = await uploadPhotos('rp-' + r.id);
+      var res = await db.from('offers').insert({ request_id: r.id, user_id: currentUser.id, description: desc, price: Number(price), photos: photoUrls.length ? photoUrls : null });
+      rpSubmit.textContent = 'Запропонувати'; rpSubmit.disabled = false;
+      if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
+      toast('Пропозицію надіслано!');
+      openRequestPage(r.id);
+    });
+  }
+  var fileInputs = document.querySelectorAll('#request-page-content .rp-photo-file-input');
   fileInputs.forEach(function(inp) {
     inp.addEventListener('change', function() { handlePhotoSelect(this.dataset.formid, this); });
   });
