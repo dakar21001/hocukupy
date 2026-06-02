@@ -3,253 +3,344 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ХочуКупити — реверс-маркетплейс</title>
+<title>ХочуКупити</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --green:#1D9E75;--green-light:#E1F5EE;--green-dark:#0F6E56;
-    --bg:#F7F6F2;--surface:#FFFFFF;
-    --border:rgba(0,0,0,0.08);--border-hover:rgba(0,0,0,0.16);
-    --text:#1A1A18;--muted:#6B6B66;--radius:14px;--radius-sm:8px;
-  }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-  .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 16px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-  @media(max-width:480px){
-    .topbar-right{gap:6px;}
-    #chats-btn span{display:none;}
-    .btn-sm{padding:5px 10px;font-size:12px;}
-    .user-pill{padding:5px 10px;font-size:11px;}
-    .modal{padding:20px;margin:8px;}
-    .modal h2{font-size:14px;}
-  }
-  .logo{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:600;letter-spacing:-0.5px;cursor:pointer;}
-  .logo span{color:var(--green);}
-  .topbar-right{display:flex;gap:10px;align-items:center;}
-  .btn{font-family:'Manrope',sans-serif;font-size:13px;font-weight:600;padding:8px 18px;border-radius:var(--radius-sm);border:1.5px solid var(--border-hover);background:transparent;color:var(--text);cursor:pointer;transition:all 0.15s;}
-  .btn:hover{background:var(--bg);}
-  .btn-primary{background:var(--green);border-color:var(--green);color:#fff;}
-  .btn-primary:hover{background:var(--green-dark);border-color:var(--green-dark);}
-  .btn-sm{font-size:12px;padding:5px 12px;border-radius:6px;}
-  .btn-danger{background:#fff0f0;border-color:#ffcccc;color:#c0392b;}
-  .btn-danger:hover{background:#ffe0e0;}
-  .layout{max-width:900px;margin:0 auto;padding:32px 24px;display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start;}
-  @media(max-width:700px){.layout{grid-template-columns:1fr;padding:12px;gap:12px;}.sidebar{display:none;}}
-  .filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
-  .filter-chip{font-size:12px;font-weight:600;padding:6px 14px;border-radius:99px;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:all 0.12s;}
-  .filter-chip:hover{border-color:var(--green);color:var(--green);}
-  .filter-chip.active{background:var(--green);border-color:var(--green);color:#fff;}
-  .req-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:14px;transition:border-color 0.15s;}
-  .req-card:hover{border-color:var(--border-hover);}
-  .req-card.closed{opacity:0.75;border-color:var(--green);}
-  .req-card-header{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px;}
-  .req-title{font-size:16px;font-weight:600;color:var(--text);}
-  .req-meta{font-size:12px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
-  .req-desc{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:12px;}
-  .cat-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--green-light);color:var(--green-dark);white-space:nowrap;}
-  .offers-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;background:#F0EFF8;color:#534AB7;white-space:nowrap;}
-  .closed-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--green-light);color:var(--green-dark);white-space:nowrap;}
-  .req-actions{display:flex;gap:8px;margin-top:12px;border-top:1px solid var(--border);padding-top:12px;}
-  .offers-section{border-top:1px solid var(--border);padding-top:12px;display:flex;flex-direction:column;gap:8px;}
-  .offer-row{padding:12px;background:var(--bg);border-radius:var(--radius-sm);}
-  .offer-row-top{display:flex;align-items:center;justify-content:space-between;gap:10px;}
-  .offer-seller{font-size:13px;font-weight:600;}
-  .offer-desc{font-size:12px;color:var(--muted);}
-  .offer-price{font-size:15px;font-weight:600;color:var(--green-dark);white-space:nowrap;}
-  .offer-photos{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
-  .offer-photo{width:80px;height:80px;object-fit:cover;border-radius:var(--radius-sm);border:1px solid var(--border);cursor:pointer;transition:opacity 0.15s;}
-  .offer-photo:hover{opacity:0.85;}
-  .photo-upload-area{border:2px dashed var(--border-hover);border-radius:var(--radius-sm);padding:14px;text-align:center;cursor:pointer;transition:border-color 0.15s;position:relative;}
-  .photo-upload-area:hover{border-color:var(--green);}
-  .photo-upload-area input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;padding:0;border:none;}
-  .photo-upload-label{font-size:13px;color:var(--muted);pointer-events:none;}
-  .photo-previews{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
-  .photo-preview-wrap{position:relative;}
-  .photo-preview{width:72px;height:72px;object-fit:cover;border-radius:var(--radius-sm);border:1px solid var(--border);}
-  .photo-remove{position:absolute;top:-6px;right:-6px;width:18px;height:18px;background:#c0392b;color:#fff;border:none;border-radius:50%;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-  .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:300;align-items:center;justify-content:center;}
-  .lightbox.open{display:flex;}
-  .lightbox img{max-width:90vw;max-height:90vh;border-radius:var(--radius);}
-  .lightbox-close{position:absolute;top:20px;right:24px;background:none;border:none;color:#fff;font-size:32px;cursor:pointer;line-height:1;}
-  .add-offer-toggle{font-size:12px;font-weight:600;color:var(--green);background:none;border:none;cursor:pointer;padding:8px 0 0;display:flex;align-items:center;gap:4px;}
-  .add-offer-toggle:hover{color:var(--green-dark);}
-  .offer-form{margin-top:10px;padding:14px;background:var(--bg);border-radius:var(--radius-sm);display:none;flex-direction:column;gap:10px;}
-  .offer-form.open{display:flex;}
-  .form-row{display:flex;gap:8px;}
-  .form-row input{flex:1;}
-  input,textarea,select{font-family:'Manrope',sans-serif;font-size:14px;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);width:100%;transition:border-color 0.15s;outline:none;}
-  input:focus,textarea:focus,select:focus{border-color:var(--green);}
-  textarea{resize:vertical;min-height:80px;}
-  .sidebar-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;position:sticky;top:80px;}
-  .sidebar-card h2{font-family:'Unbounded',sans-serif;font-size:14px;font-weight:600;margin-bottom:18px;color:var(--text);}
-  .field-group{margin-bottom:14px;}
-  .field-label{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;}
-  .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;align-items:center;justify-content:center;}
-  .modal-bg.open{display:flex;}
-  .modal{background:var(--surface);border-radius:var(--radius);padding:32px;width:100%;max-width:400px;margin:16px;}
-  .modal h2{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:600;margin-bottom:20px;}
-  .modal-tabs{display:flex;margin-bottom:20px;border:1.5px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;}
-  .modal-tab{flex:1;padding:9px;font-size:13px;font-weight:600;background:transparent;border:none;cursor:pointer;color:var(--muted);}
-  .modal-tab.active{background:var(--green);color:#fff;}
-  .modal-close{float:right;background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);line-height:1;margin-top:-8px;}
-  .confirm-modal{background:var(--surface);border-radius:var(--radius);padding:28px;width:100%;max-width:360px;margin:16px;}
-  .confirm-modal h3{font-size:16px;font-weight:600;margin-bottom:10px;}
-  .confirm-modal p{font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.5;}
-  .confirm-actions{display:flex;gap:10px;}
-  .confirm-actions .btn{flex:1;text-align:center;}
-  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:#fff;font-size:13px;font-weight:500;padding:12px 22px;border-radius:99px;opacity:0;transition:all 0.25s;z-index:999;white-space:nowrap;}
-  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-  .toast.error{background:#c0392b;}
-  .empty{text-align:center;padding:48px 24px;color:var(--muted);}
-  .empty-icon{font-size:40px;margin-bottom:12px;}
-  .spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin 0.7s linear infinite;margin:48px auto;}
-  @keyframes spin{to{transform:rotate(360deg);}}
-  .user-pill{font-size:12px;font-weight:600;padding:6px 14px;border-radius:99px;background:var(--green-light);color:var(--green-dark);cursor:pointer;}
+:root {
+  --green:#1DB954;--green-dark:#158a3e;--green-light:#E8F8EE;
+  --bg:#F5F5F5;--surface:#FFFFFF;--surface2:#F9F9F9;
+  --border:rgba(0,0,0,0.07);--border2:rgba(0,0,0,0.13);
+  --text:#111;--text2:#555;--text3:#999;
+  --radius:16px;--radius-sm:10px;--radius-xs:6px;
+  --nav-h:64px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;}
 
-  /* PROFILE PAGE */
-  .profile-page{max-width:700px;margin:0 auto;padding:32px 24px;}
-  .profile-header{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin-bottom:20px;}
-  .profile-top{display:flex;align-items:center;gap:20px;margin-bottom:20px;}
-  .avatar{width:72px;height:72px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-family:'Unbounded',sans-serif;font-size:24px;font-weight:600;color:var(--green-dark);flex-shrink:0;overflow:hidden;}
-  .avatar img{width:100%;height:100%;object-fit:cover;}
-  .profile-name{font-family:'Unbounded',sans-serif;font-size:20px;font-weight:600;margin-bottom:4px;}
-  .profile-meta{font-size:13px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap;}
-  .profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
-  .stat-card{background:var(--bg);border-radius:var(--radius-sm);padding:14px;text-align:center;}
-  .stat-num{font-family:'Unbounded',sans-serif;font-size:22px;font-weight:600;color:var(--text);}
-  .stat-label{font-size:11px;color:var(--muted);margin-top:2px;}
-  .profile-edit-form{display:none;flex-direction:column;gap:12px;border-top:1px solid var(--border);padding-top:20px;margin-top:4px;}
-  .profile-edit-form.open{display:flex;}
-  .profile-section-title{font-size:14px;font-weight:600;margin-bottom:12px;color:var(--text);}
-  .back-btn{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;margin-bottom:16px;padding:0;}
-  .back-btn:hover{color:var(--text);}
+/* TOPBAR (desktop) */
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:none;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.logo{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:700;letter-spacing:-0.5px;cursor:pointer;}
+.logo span{color:var(--green);}
+.topbar-right{display:flex;gap:10px;align-items:center;}
+@media(min-width:701px){.topbar{display:flex;}}
 
-  /* REVIEWS */
-  .rating-stars{display:flex;gap:4px;margin-bottom:16px;}
-  .star{font-size:24px;cursor:pointer;color:#ddd;transition:color 0.1s;line-height:1;}
-  .star.active,.star.hover{color:#F5A623;}
-  .review-card{background:var(--bg);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px;}
-  .review-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
-  .review-author{font-size:13px;font-weight:600;}
-  .review-stars{color:#F5A623;font-size:13px;letter-spacing:1px;}
-  .review-date{font-size:11px;color:var(--muted);}
-  .review-text{font-size:13px;color:var(--muted);line-height:1.5;}
-  .rating-avg{font-family:'Unbounded',sans-serif;font-size:28px;font-weight:600;color:var(--text);}
-  .rating-avg-stars{color:#F5A623;font-size:16px;letter-spacing:1px;}
-  .rating-count{font-size:12px;color:var(--muted);margin-top:2px;}
-  .rating-summary{display:flex;align-items:center;gap:16px;padding:16px;background:var(--bg);border-radius:var(--radius-sm);margin-bottom:16px;}
-  .review-modal{background:var(--surface);border-radius:var(--radius);padding:28px;width:100%;max-width:420px;margin:16px;}
-  .review-modal h3{font-size:16px;font-weight:600;margin-bottom:16px;}
+/* MOBILE HEADER */
+.mobile-header{background:var(--surface);padding:16px 20px 12px;position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border);}
+.mobile-header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.greeting{font-size:12px;color:var(--text3);margin-bottom:2px;}
+.greeting-name{font-family:'Unbounded',sans-serif;font-size:17px;font-weight:700;color:var(--text);letter-spacing:-0.3px;}
+.avatar-btn{width:44px;height:44px;border-radius:50%;background:var(--green-light);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Unbounded',sans-serif;font-size:16px;font-weight:700;color:var(--green-dark);overflow:hidden;flex-shrink:0;}
+.avatar-btn img{width:100%;height:100%;object-fit:cover;}
+.search-row{display:flex;gap:10px;align-items:center;}
+.search-wrap{flex:1;position:relative;}
+.search-wrap input{width:100%;padding:11px 16px 11px 40px;border:1.5px solid var(--border2);border-radius:99px;font-family:'Manrope',sans-serif;font-size:14px;background:var(--surface);color:var(--text);outline:none;transition:border-color 0.15s;}
+.search-wrap input:focus{border-color:var(--green);}
+.search-wrap input::placeholder{color:var(--text3);}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:15px;pointer-events:none;}
+.search-clear{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;display:none;line-height:1;}
+.search-clear.visible{display:block;}
+.filter-btn{width:46px;height:46px;border-radius:12px;background:var(--green);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.filter-btn svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;}
+@media(min-width:701px){.mobile-header{display:none;}}
 
-  /* CHAT */
-  .chat-page{max-width:700px;margin:0 auto;padding:32px 24px;}
-  .chat-list-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:border-color 0.15s;}
-  .chat-list-item:hover{border-color:var(--border-hover);}
-  .chat-list-name{font-size:14px;font-weight:600;}
-  .chat-list-preview{font-size:12px;color:var(--muted);margin-top:2px;}
-  .chat-list-time{font-size:11px;color:var(--muted);white-space:nowrap;}
-  .chat-window{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);display:flex;flex-direction:column;height:calc(100vh - 180px);}
-  .chat-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
-  .chat-header-name{font-size:15px;font-weight:600;}
-  .chat-header-sub{font-size:12px;color:var(--muted);}
-  .chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;}
-  .msg{max-width:70%;padding:10px 14px;border-radius:12px;font-size:14px;line-height:1.5;word-break:break-word;}
-  .msg-mine{background:var(--green);color:#fff;align-self:flex-end;border-bottom-right-radius:4px;}
-  .msg-other{background:var(--bg);color:var(--text);align-self:flex-start;border-bottom-left-radius:4px;}
-  .msg-time{font-size:10px;opacity:0.7;margin-top:4px;text-align:right;}
-  .chat-input-row{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center;}
-  .chat-input-row input{flex:1;border-radius:99px;padding:10px 16px;}
-  .chat-send-btn{background:var(--green);border:none;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:18px;flex-shrink:0;}
-  .chat-send-btn:hover{background:var(--green-dark);}
-  .unread-dot{width:8px;height:8px;background:var(--green);border-radius:50%;flex-shrink:0;}
+/* CATEGORIES */
+.categories-scroll{display:flex;gap:8px;overflow-x:auto;padding:12px 16px;scrollbar-width:none;background:var(--surface);border-bottom:1px solid var(--border);}
+.categories-scroll::-webkit-scrollbar{display:none;}
+.cat-chip{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:99px;border:1.5px solid var(--border2);background:var(--surface);white-space:nowrap;font-family:'Manrope',sans-serif;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;transition:all 0.15s;flex-shrink:0;}
+.cat-chip.active{background:var(--green);border-color:var(--green);color:#fff;}
+.cat-chip:hover:not(.active){border-color:var(--green);color:var(--green);}
 
-  /* FAB */
-  .fab{position:fixed;bottom:24px;right:24px;width:56px;height:56px;border-radius:50%;background:var(--green);border:none;color:#fff;font-size:28px;cursor:pointer;box-shadow:0 4px 16px rgba(29,158,117,0.4);display:flex;align-items:center;justify-content:center;z-index:150;transition:all 0.2s;line-height:1;}
-  .fab:hover{background:var(--green-dark);transform:scale(1.08);box-shadow:0 6px 20px rgba(29,158,117,0.5);}
-  .fab:active{transform:scale(0.95);}
-  .new-req-modal{background:var(--surface);border-radius:var(--radius);padding:28px;width:100%;max-width:460px;margin:16px;max-height:90vh;overflow-y:auto;}
-  .new-req-modal h3{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:600;margin-bottom:20px;}
+/* MAIN */
+.main-content{padding:14px 14px calc(var(--nav-h)+14px);}
+@media(min-width:701px){.main-content{max-width:900px;margin:0 auto;padding:24px;display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start;}}
 
-  /* SEARCH */
-  .search-wrap{position:relative;margin-bottom:16px;}
-  .search-wrap input{padding-left:40px;border-radius:99px;background:var(--surface);}
-  .search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:16px;pointer-events:none;}
-  .search-clear{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;display:none;line-height:1;}
-  .search-clear.visible{display:block;}
+/* CARD GRID */
+.cards-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(min-width:701px){.cards-grid{grid-template-columns:1fr;}}
 
-  /* REQUEST PAGE */
-  .request-page{max-width:700px;margin:0 auto;padding:32px 24px;}
-  .share-btn{font-size:12px;font-weight:600;padding:5px 12px;border-radius:6px;border:1.5px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:5px;}
-  .share-btn:hover{border-color:var(--green);color:var(--green);}
-  .req-full-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin-bottom:20px;}
-  .req-full-title{font-family:'Unbounded',sans-serif;font-size:20px;font-weight:600;margin-bottom:12px;}
+/* REQUEST CARD */
+.req-card-new{background:var(--surface);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:transform 0.15s;}
+.req-card-new:active{transform:scale(0.97);}
+.req-card-new.closed{opacity:0.65;}
+.card-img-wrap{position:relative;aspect-ratio:1/1;background:#E8E8E8;overflow:hidden;}
+.card-img-wrap img{width:100%;height:100%;object-fit:cover;}
+.card-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F0F0F0,#E2E2E2);}
+.card-img-placeholder svg{width:38px;height:38px;}
+.card-time{position:absolute;bottom:8px;left:8px;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);color:#fff;font-size:11px;font-weight:500;padding:3px 8px;border-radius:99px;}
+.card-save-btn{position:absolute;top:8px;right:8px;width:32px;height:32px;border-radius:50%;background:var(--green);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.2);transition:transform 0.15s;}
+.card-save-btn:active{transform:scale(0.88);}
+.card-save-btn.saved{background:#e74c3c;}
+.card-save-btn svg{width:15px;height:15px;fill:none;stroke:#fff;stroke-width:2.5;}
+.card-save-btn.saved svg{fill:#fff;}
+.card-found-badge{position:absolute;top:8px;left:8px;background:var(--green);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;}
+.card-body{padding:10px 10px 12px;}
+.card-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.card-cat-tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--text2);padding:3px 8px;border-radius:99px;border:1px solid var(--border2);margin-bottom:6px;}
+.card-offers-tag{display:inline-block;font-size:11px;font-weight:600;color:var(--text2);padding:3px 8px;border-radius:99px;border:1px solid var(--border2);}
+.card-offers-tag.empty{color:var(--text3);border-style:dashed;}
+.card-budget{font-family:'Unbounded',sans-serif;font-size:12px;font-weight:700;color:var(--text);margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:4px;}
+.card-arrow{width:24px;height:24px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.card-arrow svg{width:11px;height:11px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 8px calc(env(safe-area-inset-bottom));z-index:100;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;padding:8px 4px;border:none;background:none;}
+.nav-item svg{width:24px;height:24px;stroke:var(--text3);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:stroke 0.15s;}
+.nav-item.active svg{stroke:var(--green);}
+.nav-item span{font-size:10px;font-weight:600;color:var(--text3);transition:color 0.15s;}
+.nav-item.active span{color:var(--green);}
+@media(min-width:701px){.bottom-nav{display:none;}}
+
+/* FAB */
+.fab{position:fixed;bottom:calc(var(--nav-h)+14px);right:16px;width:52px;height:52px;border-radius:50%;background:var(--green);border:none;color:#fff;font-size:26px;cursor:pointer;box-shadow:0 4px 18px rgba(29,185,84,0.45);display:flex;align-items:center;justify-content:center;z-index:150;transition:all 0.2s;}
+.fab:hover{background:var(--green-dark);transform:scale(1.06);}
+.fab:active{transform:scale(0.94);}
+@media(min-width:701px){.fab{bottom:24px;right:24px;}}
+
+/* BUTTONS */
+.btn{font-family:'Manrope',sans-serif;font-size:13px;font-weight:600;padding:10px 18px;border-radius:var(--radius-sm);border:1.5px solid var(--border2);background:transparent;color:var(--text);cursor:pointer;transition:all 0.15s;}
+.btn:hover{background:var(--bg);}
+.btn-primary{background:var(--green);border-color:var(--green);color:#fff;}
+.btn-primary:hover{background:var(--green-dark);border-color:var(--green-dark);}
+.btn-sm{font-size:12px;padding:6px 12px;border-radius:6px;}
+.btn-danger{background:#fff0f0;border-color:#ffcccc;color:#c0392b;}
+.btn-full{width:100%;padding:14px;font-size:15px;font-weight:700;border-radius:var(--radius-sm);}
+.user-pill{font-size:12px;font-weight:600;padding:6px 14px;border-radius:99px;background:var(--green-light);color:var(--green-dark);cursor:pointer;}
+
+/* FORM */
+input,textarea,select{font-family:'Manrope',sans-serif;font-size:14px;padding:12px 14px;border:1.5px solid var(--border2);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);width:100%;transition:border-color 0.15s;outline:none;}
+input:focus,textarea:focus,select:focus{border-color:var(--green);}
+textarea{resize:vertical;min-height:80px;}
+.field-group{margin-bottom:14px;}
+.field-label{font-size:11px;font-weight:700;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.3px;}
+
+/* MODALS */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:flex-end;justify-content:center;}
+.modal-bg.open{display:flex;}
+@media(min-width:701px){.modal-bg{align-items:center;}}
+.modal{background:var(--surface);border-radius:24px 24px 0 0;padding:8px 20px 32px;width:100%;max-height:92vh;overflow-y:auto;}
+@media(min-width:701px){.modal{border-radius:20px;max-width:460px;margin:16px;padding:28px;}}
+.modal-handle{width:36px;height:4px;background:var(--border2);border-radius:99px;margin:0 auto 20px;}
+.modal h2{font-family:'Unbounded',sans-serif;font-size:17px;font-weight:700;margin-bottom:20px;}
+.modal-tabs{display:flex;margin-bottom:20px;border:1.5px solid var(--border2);border-radius:10px;overflow:hidden;}
+.modal-tab{flex:1;padding:10px;font-size:13px;font-weight:600;background:transparent;border:none;cursor:pointer;color:var(--text2);font-family:'Manrope',sans-serif;}
+.modal-tab.active{background:var(--green);color:#fff;}
+.modal-close{float:right;background:none;border:none;font-size:22px;cursor:pointer;color:var(--text3);line-height:1;margin-top:-4px;}
+
+/* REQUEST MODAL */
+#request-modal .modal{padding:0;border-radius:24px 24px 0 0;max-height:92vh;}
+@media(min-width:701px){#request-modal .modal{border-radius:20px;max-width:580px;margin:16px;}}
+.req-modal-img{width:100%;height:220px;object-fit:cover;border-radius:24px 24px 0 0;}
+.req-modal-img-placeholder{width:100%;height:140px;background:linear-gradient(135deg,#F0F0F0,#E2E2E2);border-radius:24px 24px 0 0;display:flex;align-items:center;justify-content:center;}
+.req-modal-body{padding:20px 20px 28px;}
+.req-modal-handle{width:36px;height:4px;background:var(--border2);border-radius:99px;margin:12px auto 0;}
+.req-modal-title{font-family:'Unbounded',sans-serif;font-size:18px;font-weight:700;margin-bottom:8px;line-height:1.3;}
+.req-modal-meta{font-size:12px;color:var(--text3);display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.req-modal-desc{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:16px;}
+.req-modal-budget{font-family:'Unbounded',sans-serif;font-size:22px;font-weight:700;color:var(--text);margin-bottom:16px;}
+.req-modal-header-btns{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 0;}
+.back-link{font-size:13px;font-weight:600;color:var(--text2);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;}
+.share-btn{font-size:12px;font-weight:600;padding:6px 12px;border-radius:8px;border:1.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;display:flex;align-items:center;gap:5px;}
+
+/* OFFERS */
+.offer-item{background:var(--surface2);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px;}
+.offer-item-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.offer-item-seller{font-size:13px;font-weight:700;}
+.offer-item-price{font-family:'Unbounded',sans-serif;font-size:14px;font-weight:700;color:var(--green-dark);}
+.offer-item-desc{font-size:12px;color:var(--text2);}
+.offer-form-section{border-top:1px solid var(--border);padding-top:16px;margin-top:4px;}
+.form-row{display:flex;gap:8px;}
+.form-row input{flex:1;}
+.section-divider{height:1px;background:var(--border);margin:16px 0;}
+.section-label{font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px;}
+
+/* PHOTOS */
+.photo-upload-area{border:2px dashed var(--border2);border-radius:var(--radius-sm);padding:14px;text-align:center;cursor:pointer;transition:border-color 0.15s;position:relative;}
+.photo-upload-area:hover{border-color:var(--green);}
+.photo-upload-area input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;padding:0;border:none;}
+.photo-upload-label{font-size:13px;color:var(--text3);pointer-events:none;}
+.photo-previews{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+.photo-preview-wrap{position:relative;}
+.photo-preview{width:72px;height:72px;object-fit:cover;border-radius:var(--radius-xs);border:1px solid var(--border);}
+.photo-remove{position:absolute;top:-6px;right:-6px;width:18px;height:18px;background:#c0392b;color:#fff;border:none;border-radius:50%;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.offer-photos{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.offer-photo{width:76px;height:76px;object-fit:cover;border-radius:var(--radius-xs);cursor:pointer;transition:opacity 0.15s;}
+.offer-photo:hover{opacity:0.85;}
+
+/* LIGHTBOX */
+.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:300;align-items:center;justify-content:center;}
+.lightbox.open{display:flex;}
+.lightbox img{max-width:92vw;max-height:88vh;border-radius:12px;}
+.lightbox-close{position:absolute;top:20px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;cursor:pointer;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+
+/* TOAST */
+.toast{position:fixed;bottom:calc(var(--nav-h)+16px);left:50%;transform:translateX(-50%) translateY(20px);background:#111;color:#fff;font-size:13px;font-weight:600;padding:12px 20px;border-radius:99px;opacity:0;transition:all 0.25s;z-index:999;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.error{background:#c0392b;}
+@media(min-width:701px){.toast{bottom:24px;}}
+
+/* MISC */
+.empty{text-align:center;padding:40px 20px;color:var(--text3);}
+.empty-icon{font-size:40px;margin-bottom:12px;}
+.spinner{width:28px;height:28px;border:3px solid var(--border2);border-top-color:var(--green);border-radius:50%;animation:spin 0.7s linear infinite;margin:40px auto;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* PROFILE */
+.profile-page{max-width:700px;margin:0 auto;padding:16px 16px calc(var(--nav-h)+16px);}
+.profile-header{background:var(--surface);border-radius:var(--radius);padding:20px;margin-bottom:16px;}
+.profile-top{display:flex;align-items:center;gap:16px;margin-bottom:16px;}
+.avatar{width:64px;height:64px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-family:'Unbounded',sans-serif;font-size:22px;font-weight:700;color:var(--green-dark);flex-shrink:0;overflow:hidden;}
+.avatar img{width:100%;height:100%;object-fit:cover;}
+.profile-name{font-family:'Unbounded',sans-serif;font-size:18px;font-weight:700;margin-bottom:4px;}
+.profile-meta{font-size:12px;color:var(--text3);display:flex;gap:10px;flex-wrap:wrap;}
+.profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.stat-card{background:var(--bg);border-radius:var(--radius-sm);padding:12px;text-align:center;}
+.stat-num{font-family:'Unbounded',sans-serif;font-size:20px;font-weight:700;color:var(--text);}
+.stat-label{font-size:11px;color:var(--text3);margin-top:2px;}
+.profile-edit-form{display:none;flex-direction:column;gap:12px;border-top:1px solid var(--border);padding-top:16px;margin-top:4px;}
+.profile-edit-form.open{display:flex;}
+.profile-section-title{font-size:14px;font-weight:700;margin-bottom:12px;color:var(--text);}
+.back-btn{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--text2);background:none;border:none;cursor:pointer;margin-bottom:16px;padding:0;}
+.back-btn:hover{color:var(--text);}
+.req-actions{display:flex;gap:8px;margin-top:12px;border-top:1px solid var(--border);padding-top:12px;}
+
+/* CHAT */
+.chat-page{max-width:700px;margin:0 auto;padding:16px 16px calc(var(--nav-h)+16px);}
+.chat-list-item{background:var(--surface);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:background 0.15s;}
+.chat-list-item:active{background:var(--bg);}
+.chat-list-name{font-size:14px;font-weight:700;}
+.chat-list-preview{font-size:12px;color:var(--text3);margin-top:2px;}
+.chat-list-time{font-size:11px;color:var(--text3);white-space:nowrap;}
+.chat-window{background:var(--surface);border-radius:var(--radius);display:flex;flex-direction:column;height:calc(100vh - 160px);}
+.chat-header{padding:14px 16px;border-bottom:1px solid var(--border);}
+.chat-header-name{font-size:15px;font-weight:700;}
+.chat-header-sub{font-size:12px;color:var(--text3);}
+.chat-messages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px;}
+.msg{max-width:72%;padding:10px 14px;border-radius:16px;font-size:14px;line-height:1.5;word-break:break-word;}
+.msg-mine{background:var(--green);color:#fff;align-self:flex-end;border-bottom-right-radius:4px;}
+.msg-other{background:var(--bg);color:var(--text);align-self:flex-start;border-bottom-left-radius:4px;}
+.msg-time{font-size:10px;opacity:0.65;margin-top:3px;text-align:right;}
+.chat-input-row{padding:10px 12px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;}
+.chat-input-row input{flex:1;border-radius:99px;padding:10px 16px;}
+.chat-send-btn{background:var(--green);border:none;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:16px;flex-shrink:0;}
+
+/* REVIEWS */
+.rating-stars{display:flex;gap:6px;margin-bottom:16px;}
+.star{font-size:28px;cursor:pointer;color:#ddd;transition:color 0.1s;line-height:1;}
+.star.active,.star.hover{color:#F5A623;}
+.review-card{background:var(--bg);border-radius:var(--radius-sm);padding:12px;margin-bottom:10px;}
+.review-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.review-author{font-size:13px;font-weight:700;}
+.review-stars{color:#F5A623;font-size:13px;}
+.review-date{font-size:11px;color:var(--text3);}
+.review-text{font-size:13px;color:var(--text2);line-height:1.5;}
+.rating-summary{display:flex;align-items:center;gap:16px;padding:14px;background:var(--bg);border-radius:var(--radius-sm);margin-bottom:14px;}
+.rating-avg{font-family:'Unbounded',sans-serif;font-size:26px;font-weight:700;}
+.rating-avg-stars{color:#F5A623;font-size:15px;}
+.rating-count{font-size:12px;color:var(--text3);margin-top:2px;}
+
+/* SIDEBAR (desktop) */
+.sidebar-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;position:sticky;top:80px;}
+.sidebar-card h2{font-family:'Unbounded',sans-serif;font-size:14px;font-weight:600;margin-bottom:18px;color:var(--text);}
+
+/* NEW REQ / CONFIRM / REVIEW modals */
+.new-req-modal{background:var(--surface);border-radius:24px 24px 0 0;padding:8px 20px 32px;width:100%;max-height:92vh;overflow-y:auto;}
+@media(min-width:701px){.new-req-modal{border-radius:20px;max-width:460px;margin:16px;padding:28px;}}
+.new-req-modal h3{font-family:'Unbounded',sans-serif;font-size:17px;font-weight:700;margin-bottom:20px;}
+.review-modal{background:var(--surface);border-radius:24px 24px 0 0;padding:8px 20px 32px;width:100%;max-height:92vh;overflow-y:auto;}
+@media(min-width:701px){.review-modal{border-radius:20px;max-width:420px;margin:16px;padding:28px;}}
+.review-modal h3{font-size:16px;font-weight:700;margin-bottom:16px;}
+.confirm-modal{background:var(--surface);border-radius:24px 24px 0 0;padding:24px 20px 32px;width:100%;max-width:360px;}
+@media(min-width:701px){.confirm-modal{border-radius:20px;margin:16px;}}
+.confirm-modal h3{font-size:16px;font-weight:700;margin-bottom:10px;}
+.confirm-modal p{font-size:14px;color:var(--text2);margin-bottom:20px;line-height:1.5;}
+.confirm-actions{display:flex;gap:10px;}
+.confirm-actions .btn{flex:1;text-align:center;}
 </style>
 </head>
 <body>
 
+<!-- DESKTOP TOPBAR -->
 <header class="topbar">
   <div class="logo" id="logo-btn">Хочу<span>Купити</span></div>
   <div class="topbar-right">
     <span id="user-pill" class="user-pill" style="display:none"></span>
-    <button class="btn btn-sm" id="chats-btn" style="display:none">💬 <span>Чати</span></button>
+    <button class="btn btn-sm" id="chats-btn" style="display:none">💬 Чати</button>
     <button class="btn btn-sm" id="auth-btn">Увійти</button>
     <button class="btn btn-sm btn-primary" id="logout-btn" style="display:none">Вийти</button>
   </div>
 </header>
 
+<!-- MOBILE HEADER -->
+<div class="mobile-header">
+  <div class="mobile-header-top">
+    <div>
+      <div class="greeting">Привіт 👋</div>
+      <div class="greeting-name" id="greeting-name">ХочуКупити</div>
+    </div>
+    <button class="avatar-btn" id="mobile-avatar-btn">
+      <span id="mobile-avatar-letter">?</span>
+    </button>
+  </div>
+  <div class="search-row">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="Що вам потрібно сьогодні?">
+      <button class="search-clear" id="search-clear">×</button>
+    </div>
+    <button class="filter-btn" id="filter-btn">
+      <svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="16" y2="12"/><line x1="4" y1="18" x2="10" y2="18"/></svg>
+    </button>
+  </div>
+</div>
+
 <!-- MAIN PAGE -->
 <div id="main-page">
-  <main class="layout">
-    <section>
-      <div class="search-wrap">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="search-input" placeholder="Пошук запитів...">
-        <button class="search-clear" id="search-clear">×</button>
-      </div>
-      <div class="filter-row" id="filter-row">
-        <button class="filter-chip active" data-cat="">Всі</button>
-        <button class="filter-chip" data-cat="Електроніка">Електроніка</button>
-        <button class="filter-chip" data-cat="Авто">Авто</button>
-        <button class="filter-chip" data-cat="Одяг">Одяг</button>
-        <button class="filter-chip" data-cat="Меблі">Меблі</button>
-        <button class="filter-chip" data-cat="Спорт">Спорт</button>
-        <button class="filter-chip" data-cat="Інше">Інше</button>
-      </div>
+  <div class="categories-scroll" id="filter-row">
+    <button class="cat-chip active" data-cat=""><span>⊞</span> Всі</button>
+    <button class="cat-chip" data-cat="Авто"><span>🚗</span> Авто</button>
+    <button class="cat-chip" data-cat="Електроніка"><span>📱</span> Електроніка</button>
+    <button class="cat-chip" data-cat="Одяг"><span>👕</span> Одяг</button>
+    <button class="cat-chip" data-cat="Меблі"><span>🛋️</span> Меблі</button>
+    <button class="cat-chip" data-cat="Спорт"><span>⚽</span> Спорт</button>
+    <button class="cat-chip" data-cat="Інше"><span>📦</span> Інше</button>
+  </div>
+  <div class="main-content">
+    <section id="main-section">
       <div id="requests-container"><div class="spinner"></div></div>
     </section>
-    <aside class="sidebar">
+    <aside class="sidebar" style="display:none" id="desktop-sidebar">
       <div class="sidebar-card">
         <h2 id="sidebar-toggle" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between">
-          + Новий запит <span id="sidebar-arrow" style="font-size:16px;transition:transform 0.2s">▾</span>
+          + Новий запит <span id="sidebar-arrow">▾</span>
         </h2>
         <div id="sidebar-body">
-        <div class="field-group"><div class="field-label">Що шукаєте?</div><input type="text" id="new-title" placeholder="Наприклад: iPhone 13 Pro 256GB"></div>
-        <div class="field-group"><div class="field-label">Деталі (необов.)</div><textarea id="new-desc" placeholder="Стан, комплектація, побажання..."></textarea></div>
-        <div class="field-group"><div class="field-label">Категорія</div>
-          <select id="new-cat"><option>Електроніка</option><option>Авто</option><option>Одяг</option><option>Меблі</option><option>Спорт</option><option>Інше</option></select>
-        </div>
-        <div class="field-group"><div class="field-label">Бюджет (необов.)</div><input type="number" id="new-budget" placeholder="50000"></div>
-        <div class="field-group">
-          <div class="field-label">Фото (необов., до 3 шт.)</div>
-          <div class="photo-upload-area" style="position:relative">
-            <input type="file" accept="image/*" multiple id="sidebar-photo-input" style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer">
-            <div class="photo-upload-label" id="sidebar-upload-label">📷 Додати фото</div>
+          <div class="field-group"><div class="field-label">Що шукаєте?</div><input type="text" id="new-title" placeholder="iPhone 13 Pro 256GB"></div>
+          <div class="field-group"><div class="field-label">Деталі</div><textarea id="new-desc" placeholder="Стан, комплектація..."></textarea></div>
+          <div class="field-group"><div class="field-label">Категорія</div>
+            <select id="new-cat"><option>Електроніка</option><option>Авто</option><option>Одяг</option><option>Меблі</option><option>Спорт</option><option>Інше</option></select>
           </div>
-          <div class="photo-previews" id="previews-sidebar" style="margin-top:8px"></div>
-        </div>
-        <button class="btn btn-primary" style="width:100%;margin-top:4px" id="submit-request-btn">Опублікувати запит</button>
+          <div class="field-group"><div class="field-label">Бюджет</div><input type="number" id="new-budget" placeholder="50000"></div>
+          <div class="field-group">
+            <div class="field-label">Фото (до 3)</div>
+            <div class="photo-upload-area" style="position:relative">
+              <input type="file" accept="image/*" multiple id="sidebar-photo-input" style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;border:none;">
+              <div class="photo-upload-label">📷 Додати фото</div>
+            </div>
+            <div class="photo-previews" id="previews-sidebar" style="margin-top:8px"></div>
+          </div>
+          <button class="btn btn-primary" style="width:100%" id="submit-request-btn">Опублікувати запит</button>
         </div>
       </div>
     </aside>
-  </main>
+  </div>
 </div>
 
 <!-- PROFILE PAGE -->
 <div id="profile-page" style="display:none">
   <div class="profile-page">
-    <button class="back-btn" id="back-btn">← Назад</button>
+    <button class="back-btn" id="back-from-profile-btn">← Назад</button>
     <div class="profile-header">
       <div class="profile-top">
         <div class="avatar" id="profile-avatar">?</div>
@@ -259,7 +350,7 @@
             <span id="profile-city-show"></span>
             <span id="profile-joined"></span>
           </div>
-          <div style="margin-top:8px;font-size:13px;color:var(--muted)" id="profile-bio-show"></div>
+          <div style="margin-top:6px;font-size:13px;color:var(--text2)" id="profile-bio-show"></div>
         </div>
       </div>
       <div class="profile-stats">
@@ -269,10 +360,10 @@
       </div>
       <div id="edit-profile-wrap"></div>
       <div class="profile-edit-form" id="profile-edit-form">
-        <div class="profile-section-title">Редагувати профіль</div>
-        <div class="field-group"><div class="field-label">Ім'я</div><input type="text" id="edit-name" placeholder="Ваше ім'я"></div>
-        <div class="field-group"><div class="field-label">Місто</div><input type="text" id="edit-city" placeholder="Київ, Львів..."></div>
-        <div class="field-group"><div class="field-label">Про себе</div><textarea id="edit-bio" placeholder="Кілька слів про себе..." style="min-height:60px"></textarea></div>
+        <div class="field-label" style="font-size:14px;font-weight:700;text-transform:none">Редагувати профіль</div>
+        <div class="field-group"><div class="field-label">Ім'я</div><input type="text" id="edit-name"></div>
+        <div class="field-group"><div class="field-label">Місто</div><input type="text" id="edit-city" placeholder="Київ..."></div>
+        <div class="field-group"><div class="field-label">Про себе</div><textarea id="edit-bio" style="min-height:60px"></textarea></div>
         <div style="display:flex;gap:10px">
           <button class="btn btn-primary btn-sm" id="save-profile-btn">Зберегти</button>
           <button class="btn btn-sm" id="cancel-edit-btn">Скасувати</button>
@@ -281,9 +372,9 @@
     </div>
     <div class="profile-section-title">Мої запити</div>
     <div id="profile-requests"><div class="spinner"></div></div>
-    <div id="profile-reviews-section" style="margin-top:24px">
+    <div id="profile-reviews-section" style="margin-top:20px">
       <div class="profile-section-title">Відгуки</div>
-      <div id="profile-reviews"><div class="spinner"></div></div>
+      <div id="profile-reviews"></div>
     </div>
   </div>
 </div>
@@ -292,9 +383,7 @@
 <div id="chat-list-page" style="display:none">
   <div class="chat-page">
     <button class="back-btn" id="back-from-chats-btn">← Назад</button>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-      <div style="font-family:'Unbounded',sans-serif;font-size:16px;font-weight:600;">Мої чати</div>
-    </div>
+    <div style="font-family:'Unbounded',sans-serif;font-size:16px;font-weight:700;margin-bottom:16px;">Чати</div>
     <div id="chat-list-container"><div class="spinner"></div></div>
   </div>
 </div>
@@ -305,14 +394,12 @@
     <button class="back-btn" id="back-from-chat-btn">← До чатів</button>
     <div class="chat-window">
       <div class="chat-header">
-        <div>
-          <div class="chat-header-name" id="chat-header-name">—</div>
-          <div class="chat-header-sub" id="chat-header-sub"></div>
-        </div>
+        <div class="chat-header-name" id="chat-header-name">—</div>
+        <div class="chat-header-sub" id="chat-header-sub"></div>
       </div>
       <div class="chat-messages" id="chat-messages"></div>
       <div class="chat-input-row">
-        <input type="text" id="chat-input" placeholder="Напишіть повідомлення...">
+        <input type="text" id="chat-input" placeholder="Повідомлення...">
         <button class="chat-send-btn" id="chat-send-btn">➤</button>
       </div>
     </div>
@@ -321,18 +408,20 @@
 
 <!-- REQUEST MODAL -->
 <div class="modal-bg" id="request-modal">
-  <div class="modal" style="max-width:620px;max-height:90vh;overflow-y:auto;padding:24px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-      <button class="back-btn" style="margin:0" id="close-request-modal-btn">← Закрити</button>
+  <div class="modal" style="padding:0">
+    <div class="req-modal-handle" style="margin-top:10px"></div>
+    <div class="req-modal-header-btns">
+      <button class="back-link" id="close-request-modal-btn">← Закрити</button>
       <button class="share-btn" id="share-btn">🔗 Поділитись</button>
     </div>
-    <div id="request-modal-content"><div class="spinner"></div></div>
+    <div id="request-modal-content"><div class="spinner" style="margin:30px auto"></div></div>
   </div>
 </div>
 
 <!-- AUTH MODAL -->
 <div class="modal-bg" id="auth-modal">
   <div class="modal">
+    <div class="modal-handle"></div>
     <button class="modal-close" id="close-auth-btn">×</button>
     <h2>Вхід / Реєстрація</h2>
     <div class="modal-tabs">
@@ -342,13 +431,13 @@
     <div id="login-form">
       <div class="field-group"><div class="field-label">Email</div><input type="email" id="login-email" placeholder="you@example.com"></div>
       <div class="field-group"><div class="field-label">Пароль</div><input type="password" id="login-pass" placeholder="••••••••"></div>
-      <button class="btn btn-primary" style="width:100%;margin-top:8px" id="do-login-btn">Увійти</button>
+      <button class="btn btn-primary btn-full" style="margin-top:8px" id="do-login-btn">Увійти</button>
     </div>
     <div id="register-form" style="display:none">
       <div class="field-group"><div class="field-label">Ім'я</div><input type="text" id="reg-name" placeholder="Ваше ім'я"></div>
       <div class="field-group"><div class="field-label">Email</div><input type="email" id="reg-email" placeholder="you@example.com"></div>
       <div class="field-group"><div class="field-label">Пароль</div><input type="password" id="reg-pass" placeholder="Мінімум 6 символів"></div>
-      <button class="btn btn-primary" style="width:100%;margin-top:8px" id="do-register-btn">Зареєструватись</button>
+      <button class="btn btn-primary btn-full" style="margin-top:8px" id="do-register-btn">Зареєструватись</button>
     </div>
   </div>
 </div>
@@ -356,6 +445,7 @@
 <!-- CONFIRM MODAL -->
 <div class="modal-bg" id="confirm-modal">
   <div class="confirm-modal">
+    <div class="modal-handle"></div>
     <h3 id="confirm-title">Підтвердження</h3>
     <p id="confirm-text">Ви впевнені?</p>
     <div class="confirm-actions">
@@ -368,25 +458,47 @@
 <!-- REVIEW MODAL -->
 <div class="modal-bg" id="review-modal">
   <div class="review-modal">
+    <div class="modal-handle"></div>
     <h3>Залишити відгук</h3>
     <div class="field-label" style="margin-bottom:8px">Оцінка</div>
     <div class="rating-stars" id="review-stars">
-      <span class="star" data-val="1">★</span>
-      <span class="star" data-val="2">★</span>
-      <span class="star" data-val="3">★</span>
-      <span class="star" data-val="4">★</span>
+      <span class="star" data-val="1">★</span><span class="star" data-val="2">★</span>
+      <span class="star" data-val="3">★</span><span class="star" data-val="4">★</span>
       <span class="star" data-val="5">★</span>
     </div>
-    <div class="field-group">
-      <div class="field-label">Коментар (необов.)</div>
-      <textarea id="review-comment" placeholder="Розкажіть про угоду..." style="min-height:80px"></textarea>
-    </div>
+    <div class="field-group"><div class="field-label">Коментар</div><textarea id="review-comment" placeholder="Розкажіть про угоду..."></textarea></div>
     <input type="hidden" id="review-seller-id">
     <input type="hidden" id="review-request-id">
     <div style="display:flex;gap:10px;margin-top:4px">
-      <button class="btn btn-primary" id="submit-review-btn">Надіслати відгук</button>
+      <button class="btn btn-primary" id="submit-review-btn">Надіслати</button>
       <button class="btn" id="cancel-review-btn">Скасувати</button>
     </div>
+  </div>
+</div>
+
+<!-- NEW REQUEST MODAL (FAB) -->
+<div class="modal-bg" id="new-req-modal">
+  <div class="new-req-modal">
+    <div class="modal-handle"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <h3 style="margin:0">Новий запит</h3>
+      <button class="modal-close" id="close-new-req-btn">×</button>
+    </div>
+    <div class="field-group"><div class="field-label">Що шукаєте?</div><input type="text" id="fab-title" placeholder="iPhone 13 Pro 256GB"></div>
+    <div class="field-group"><div class="field-label">Деталі</div><textarea id="fab-desc" placeholder="Стан, комплектація, побажання..."></textarea></div>
+    <div class="field-group"><div class="field-label">Категорія</div>
+      <select id="fab-cat"><option>Електроніка</option><option>Авто</option><option>Одяг</option><option>Меблі</option><option>Спорт</option><option>Інше</option></select>
+    </div>
+    <div class="field-group"><div class="field-label">Бюджет</div><input type="number" id="fab-budget" placeholder="50000"></div>
+    <div class="field-group">
+      <div class="field-label">Фото (до 3)</div>
+      <div class="photo-upload-area" style="position:relative">
+        <input type="file" accept="image/*" multiple id="fab-photo-input" style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;border:none;">
+        <div class="photo-upload-label" id="fab-upload-label">📷 Додати фото</div>
+      </div>
+      <div class="photo-previews" id="fab-previews" style="margin-top:8px"></div>
+    </div>
+    <button class="btn btn-primary btn-full" id="fab-submit-btn">Опублікувати запит</button>
   </div>
 </div>
 
@@ -396,68 +508,57 @@
   <img id="lightbox-img" src="" alt="">
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="nav-item active" id="nav-home">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <span>Головна</span>
+  </button>
+  <button class="nav-item" id="nav-chats">
+    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <span>Чати</span>
+  </button>
+  <button class="nav-item" id="nav-my-requests">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    <span>Мої запити</span>
+  </button>
+  <button class="nav-item" id="nav-saved">
+    <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    <span>Збережені</span>
+  </button>
+</nav>
 
 <!-- FAB -->
-<button class="fab" id="fab-btn" title="Новий запит">＋</button>
+<button class="fab" id="fab-btn">＋</button>
 
-<!-- NEW REQUEST MODAL -->
-<div class="modal-bg" id="new-req-modal">
-  <div class="new-req-modal">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-      <h3 style="margin:0">Новий запит</h3>
-      <button class="modal-close" id="close-new-req-btn" style="float:none;margin:0">×</button>
-    </div>
-    <div class="field-group"><div class="field-label">Що шукаєте?</div><input type="text" id="fab-title" placeholder="Наприклад: iPhone 13 Pro 256GB"></div>
-    <div class="field-group"><div class="field-label">Деталі (необов.)</div><textarea id="fab-desc" placeholder="Стан, комплектація, побажання..." style="min-height:80px"></textarea></div>
-    <div class="field-group"><div class="field-label">Категорія</div>
-      <select id="fab-cat">
-        <option>Електроніка</option><option>Авто</option><option>Одяг</option>
-        <option>Меблі</option><option>Спорт</option><option>Інше</option>
-      </select>
-    </div>
-    <div class="field-group"><div class="field-label">Бюджет (необов.)</div><input type="number" id="fab-budget" placeholder="50000"></div>
-    <div class="field-group">
-      <div class="field-label">Фото (необов., до 3 шт.)</div>
-      <div class="photo-upload-area" style="position:relative">
-        <input type="file" accept="image/*" multiple id="fab-photo-input" style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer">
-        <div class="photo-upload-label" id="fab-upload-label">📷 Додати фото</div>
-      </div>
-      <div class="photo-previews" id="fab-previews" style="margin-top:8px"></div>
-    </div>
-    <button class="btn btn-primary" style="width:100%" id="fab-submit-btn">Опублікувати запит</button>
-  </div>
-</div>
+<div class="toast" id="toast"></div>
 
 <script>
 // =============================================
-//  ЗАМІНИ ЦІ ДВА РЯДКИ НА СВОЇ ДАНІ!
+// ЗАМІНИ ЦІ ДВА РЯДКИ НА СВОЇ ДАНІ!
 // =============================================
 const SUPABASE_URL = 'https://dvjmqgzpxpfwuxpjrsdx.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_h6yGHLcCUJNZRRp6gxjhoQ_UW_G8zod';
 // =============================================
-
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-let currentUser   = null;
-let currentCat    = '';
-let confirmCb     = null;
-let searchQuery   = '';
-let searchTimeout = null;
+let currentUser = null, currentCat = '', confirmCb = null;
+let searchQuery = '', searchTimeout = null;
+let savedIds = JSON.parse(localStorage.getItem('savedIds') || '[]');
 const photoState = {};
 
 // ---- PAGES ----
 function showPage(page) {
-  document.getElementById('main-page').style.display        = page === 'main'      ? '' : 'none';
-  document.getElementById('profile-page').style.display     = page === 'profile'   ? '' : 'none';
-  document.getElementById('chat-list-page').style.display   = page === 'chat-list' ? '' : 'none';
-  document.getElementById('chat-window-page').style.display = page === 'chat-win'  ? '' : 'none';
-}
-function openRequestModal() { document.getElementById('request-modal').classList.add('open'); }
-function closeRequestModal() {
-  document.getElementById('request-modal').classList.remove('open');
-  history.pushState({}, '', window.location.pathname);
+  ['main-page','profile-page','chat-list-page','chat-window-page'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+  var target = document.getElementById(page + '-page') || document.getElementById(page);
+  if (target) target.style.display = '';
+  // Show/hide desktop sidebar
+  var sidebar = document.getElementById('desktop-sidebar');
+  if (sidebar) sidebar.style.display = (page === 'main' && window.innerWidth > 700) ? '' : 'none';
 }
 
 // ---- TOAST ----
@@ -469,72 +570,41 @@ function toast(msg, isError) {
 }
 
 // ---- LIGHTBOX ----
-function openLightbox(url) {
-  document.getElementById('lightbox-img').src = url;
-  document.getElementById('lightbox').classList.add('open');
-}
-document.getElementById('lightbox-close-btn').addEventListener('click', function() {
-  document.getElementById('lightbox').classList.remove('open');
-});
-document.getElementById('lightbox').addEventListener('click', function(e) {
-  if (e.target === this) this.classList.remove('open');
-});
+function openLightbox(url) { document.getElementById('lightbox-img').src = url; document.getElementById('lightbox').classList.add('open'); }
+document.getElementById('lightbox-close-btn').addEventListener('click', function() { document.getElementById('lightbox').classList.remove('open'); });
+document.getElementById('lightbox').addEventListener('click', function(e) { if (e.target === this) this.classList.remove('open'); });
 
 // ---- CONFIRM ----
 function showConfirm(title, text, cb) {
   document.getElementById('confirm-title').textContent = title;
-  document.getElementById('confirm-text').textContent  = text;
+  document.getElementById('confirm-text').textContent = text;
   confirmCb = cb;
   document.getElementById('confirm-modal').classList.add('open');
 }
-document.getElementById('confirm-cancel-btn').addEventListener('click', function() {
-  document.getElementById('confirm-modal').classList.remove('open');
-  confirmCb = null;
-});
-document.getElementById('confirm-ok-btn').addEventListener('click', function() {
-  document.getElementById('confirm-modal').classList.remove('open');
-  if (confirmCb) confirmCb();
-  confirmCb = null;
-});
+document.getElementById('confirm-cancel-btn').addEventListener('click', function() { document.getElementById('confirm-modal').classList.remove('open'); confirmCb = null; });
+document.getElementById('confirm-ok-btn').addEventListener('click', function() { document.getElementById('confirm-modal').classList.remove('open'); if (confirmCb) confirmCb(); confirmCb = null; });
 
 // ---- AUTH ----
-function openAuth()  { document.getElementById('auth-modal').classList.add('open'); }
+function openAuth() { document.getElementById('auth-modal').classList.add('open'); }
 function closeAuth() { document.getElementById('auth-modal').classList.remove('open'); }
-
 document.getElementById('auth-btn').addEventListener('click', openAuth);
-document.getElementById('logout-btn').addEventListener('click', function() {
-  db.auth.signOut(); setUserUI(null); toast('До побачення!');
-});
+document.getElementById('logout-btn').addEventListener('click', function() { db.auth.signOut(); setUserUI(null); toast('До побачення!'); });
 document.getElementById('close-auth-btn').addEventListener('click', closeAuth);
-document.getElementById('logo-btn').addEventListener('click', function() { showPage('main'); loadRequests();
-checkUrlRequest(); });
-document.getElementById('back-btn').addEventListener('click', function() { showPage('main'); });
-
-document.getElementById('tab-login').addEventListener('click', function() {
-  document.getElementById('login-form').style.display = '';
-  document.getElementById('register-form').style.display = 'none';
-  document.getElementById('tab-login').classList.add('active');
-  document.getElementById('tab-register').classList.remove('active');
-});
-document.getElementById('tab-register').addEventListener('click', function() {
-  document.getElementById('login-form').style.display = 'none';
-  document.getElementById('register-form').style.display = '';
-  document.getElementById('tab-login').classList.remove('active');
-  document.getElementById('tab-register').classList.add('active');
-});
+document.getElementById('logo-btn').addEventListener('click', function() { showPage('main'); loadRequests(); });
+document.getElementById('tab-login').addEventListener('click', function() { document.getElementById('login-form').style.display=''; document.getElementById('register-form').style.display='none'; document.getElementById('tab-login').classList.add('active'); document.getElementById('tab-register').classList.remove('active'); });
+document.getElementById('tab-register').addEventListener('click', function() { document.getElementById('login-form').style.display='none'; document.getElementById('register-form').style.display=''; document.getElementById('tab-login').classList.remove('active'); document.getElementById('tab-register').classList.add('active'); });
 
 document.getElementById('do-login-btn').addEventListener('click', async function() {
   var email = document.getElementById('login-email').value.trim();
-  var pass  = document.getElementById('login-pass').value;
-  var res   = await db.auth.signInWithPassword({ email: email, password: pass });
+  var pass = document.getElementById('login-pass').value;
+  var res = await db.auth.signInWithPassword({ email: email, password: pass });
   if (res.error) { toast(res.error.message, true); return; }
   closeAuth(); toast('Вітаємо!');
 });
-
 document.getElementById('do-register-btn').addEventListener('click', async function() {
-  var name  = document.getElementById('reg-name').value.trim();
+  var name = document.getElementById('reg-name').value.trim();
   var email = document.getElementById('reg-email').value.trim();
-  var pass  = document.getElementById('reg-pass').value;
+  var pass = document.getElementById('reg-pass').value;
   if (!name) { toast("Введіть ім'я", true); return; }
   var res = await db.auth.signUp({ email: email, password: pass, options: { data: { name: name } } });
   if (res.error) { toast(res.error.message, true); return; }
@@ -542,133 +612,53 @@ document.getElementById('do-register-btn').addEventListener('click', async funct
   closeAuth(); toast('Акаунт створено!');
 });
 
-function setUserUI(user) {
-  currentUser = user;
-  var pill    = document.getElementById('user-pill');
-  var authBtn = document.getElementById('auth-btn');
-  var outBtn  = document.getElementById('logout-btn');
+function updateGreeting(user) {
   if (user) {
     var name = user.user_metadata && user.user_metadata.name ? user.user_metadata.name : user.email.split('@')[0];
-    pill.textContent   = name;
-    pill.style.display = '';
-    authBtn.style.display = 'none';
-    outBtn.style.display  = '';
-    document.getElementById('chats-btn').style.display = '';
+    document.getElementById('greeting-name').textContent = name;
+    document.getElementById('mobile-avatar-letter').textContent = name.charAt(0).toUpperCase();
   } else {
-    pill.style.display    = 'none';
-    authBtn.style.display = '';
-    outBtn.style.display  = 'none';
-    document.getElementById('chats-btn').style.display = 'none';
+    document.getElementById('greeting-name').textContent = 'ХочуКупити';
+    document.getElementById('mobile-avatar-letter').textContent = '?';
   }
 }
 
-// ---- USER PILL → PROFILE ----
-document.getElementById('user-pill').addEventListener('click', function() {
-  if (currentUser) openProfile(currentUser.id);
-});
-
-// ---- PROFILE ----
-async function openProfile(userId) {
-  showPage('profile');
-  document.getElementById('profile-requests').innerHTML = '<div class="spinner"></div>';
-
-  var res = await db.from('profiles').select('*').eq('id', userId).single();
-  var profile = res.data || {};
-
-  var name = profile.name || 'Без імені';
-  var initials = name.charAt(0).toUpperCase();
-
-  var avatarEl = document.getElementById('profile-avatar');
-  if (profile.avatar_url) {
-    avatarEl.innerHTML = '<img src="' + profile.avatar_url + '" alt="">';
-  } else {
-    avatarEl.textContent = initials;
-  }
-
-  document.getElementById('profile-name').textContent = name;
-  document.getElementById('profile-city-show').textContent  = profile.city ? '📍 ' + profile.city : '';
-  document.getElementById('profile-bio-show').textContent   = profile.bio  || '';
-  document.getElementById('profile-joined').textContent     = profile.created_at ? '📅 З ' + new Date(profile.created_at).toLocaleDateString('uk') : '';
-
-  // Stats
-  var reqRes = await db.from('requests').select('id, closed_at').eq('user_id', userId);
-  var offRes = await db.from('offers').select('id').eq('user_id', userId);
-  var requests = reqRes.data || [];
-  var closed   = requests.filter(function(r) { return r.closed_at; }).length;
-  document.getElementById('stat-requests').textContent = requests.length;
-  document.getElementById('stat-offers').textContent   = (offRes.data || []).length;
-  document.getElementById('stat-closed').textContent   = closed;
-
-  // Edit button (only own profile)
-  var editWrap = document.getElementById('edit-profile-wrap');
-  if (currentUser && currentUser.id === userId) {
-    editWrap.innerHTML = '<button class="btn btn-sm" id="edit-profile-btn" style="margin-top:4px">Редагувати профіль</button>';
-    document.getElementById('edit-profile-btn').addEventListener('click', function() {
-      document.getElementById('edit-name').value = profile.name  || '';
-      document.getElementById('edit-city').value = profile.city  || '';
-      document.getElementById('edit-bio').value  = profile.bio   || '';
-      document.getElementById('profile-edit-form').classList.add('open');
-    });
-  } else {
-    editWrap.innerHTML = '';
-  }
-
-  // Update rating stat card
-  var ratingRes = await db.from('reviews').select('rating').eq('seller_id', userId);
-  var ratingData = ratingRes.data || [];
-  if (ratingData.length) {
-    var avgRating = (ratingData.reduce(function(s,r){return s+r.rating;},0) / ratingData.length).toFixed(1);
-    document.getElementById('stat-requests').parentElement.parentElement.innerHTML =
-      '<div class="stat-card"><div class="stat-num">' + requests.length + '</div><div class="stat-label">Запитів</div></div>' +
-      '<div class="stat-card"><div class="stat-num">' + (offRes.data||[]).length + '</div><div class="stat-label">Пропозицій</div></div>' +
-      '<div class="stat-card"><div class="stat-num" id="stat-rating">' + avgRating + '</div><div class="stat-label">⭐ Рейтинг</div></div>';
-  }
-
-  loadReviews(userId);
-
-  // Profile requests
-  var rRes = await db.from('requests')
-    .select('*, offers(id)')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false });
-  renderProfileRequests(rRes.data || []);
-}
-
-function renderProfileRequests(requests) {
-  var c = document.getElementById('profile-requests');
-  if (!requests.length) {
-    c.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><p>Запитів ще немає</p></div>';
-    return;
-  }
-  var html = '';
-  for (var i = 0; i < requests.length; i++) {
-    var r = requests[i];
-    var isClosed = !!r.closed_at;
-    html += '<div class="req-card' + (isClosed ? ' closed' : '') + '"><div class="req-card-header"><div class="req-title">' + esc(r.title) + '</div><div style="display:flex;gap:6px">' + (isClosed ? '<span class="closed-badge">✓ Знайдено</span>' : '<span class="offers-badge">' + (r.offers ? r.offers.length : 0) + ' пропозицій</span>') + '<span class="cat-badge">' + esc(r.category || 'Інше') + '</span></div></div><div class="req-meta"><span>🕐 ' + timeAgo(r.created_at) + '</span>' + (r.budget ? '<span>💰 до ' + Number(r.budget).toLocaleString('uk') + ' ₴</span>' : '') + '</div>' + (r.description ? '<div class="req-desc">' + esc(r.description) + '</div>' : '') + '</div>';
-  }
-  c.innerHTML = html;
-}
-
-// ---- SAVE PROFILE ----
-document.getElementById('save-profile-btn').addEventListener('click', async function() {
-  if (!currentUser) return;
-  var name = document.getElementById('edit-name').value.trim();
-  var city = document.getElementById('edit-city').value.trim();
-  var bio  = document.getElementById('edit-bio').value.trim();
-  if (!name) { toast("Введіть ім'я", true); return; }
-  var res = await db.from('profiles').update({ name: name, city: city || null, bio: bio || null }).eq('id', currentUser.id);
-  if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
-  toast('Профіль збережено!');
-  document.getElementById('profile-edit-form').classList.remove('open');
-  // update pill name
+function setUserUI(user) {
+  currentUser = user;
   var pill = document.getElementById('user-pill');
-  pill.textContent = name;
-  openProfile(currentUser.id);
-});
+  var authBtn = document.getElementById('auth-btn');
+  var outBtn = document.getElementById('logout-btn');
+  if (user) {
+    var name = user.user_metadata && user.user_metadata.name ? user.user_metadata.name : user.email.split('@')[0];
+    pill.textContent = name; pill.style.display = '';
+    authBtn.style.display = 'none'; outBtn.style.display = '';
+    document.getElementById('chats-btn').style.display = '';
+    updateGreeting(user);
+  } else {
+    pill.style.display = 'none';
+    authBtn.style.display = ''; outBtn.style.display = 'none';
+    document.getElementById('chats-btn').style.display = 'none';
+    updateGreeting(null);
+  }
+}
 
-document.getElementById('cancel-edit-btn').addEventListener('click', function() {
-  document.getElementById('profile-edit-form').classList.remove('open');
+document.getElementById('mobile-avatar-btn').addEventListener('click', function() {
+  if (currentUser) { openProfile(currentUser.id); setActiveNav('nav-my-requests'); }
+  else openAuth();
 });
+document.getElementById('chats-btn').addEventListener('click', function() { openChatList(); setActiveNav('nav-chats'); });
+document.getElementById('filter-btn').addEventListener('click', function() { toast('Фільтр — скоро! 🔧'); });
+
+// ---- NAV ----
+function setActiveNav(id) {
+  document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+  var el = document.getElementById(id);
+  if (el) el.classList.add('active');
+}
+document.getElementById('nav-home').addEventListener('click', function() { showPage('main'); setActiveNav('nav-home'); loadRequests(); });
+document.getElementById('nav-chats').addEventListener('click', function() { if (!currentUser) { openAuth(); return; } openChatList(); setActiveNav('nav-chats'); });
+document.getElementById('nav-my-requests').addEventListener('click', function() { if (!currentUser) { openAuth(); return; } openProfile(currentUser.id); setActiveNav('nav-my-requests'); });
+document.getElementById('nav-saved').addEventListener('click', function() { showSaved(); setActiveNav('nav-saved'); });
 
 // ---- SEARCH ----
 document.getElementById('search-input').addEventListener('input', function() {
@@ -677,7 +667,6 @@ document.getElementById('search-input').addEventListener('input', function() {
   clearTimeout(searchTimeout);
   searchTimeout = setTimeout(function() { loadRequests(); }, 300);
 });
-
 document.getElementById('search-clear').addEventListener('click', function() {
   document.getElementById('search-input').value = '';
   searchQuery = '';
@@ -685,11 +674,11 @@ document.getElementById('search-clear').addEventListener('click', function() {
   loadRequests();
 });
 
-// ---- FILTER CHIPS ----
+// ---- FILTER ----
 document.getElementById('filter-row').addEventListener('click', function(e) {
-  var chip = e.target.closest('.filter-chip');
+  var chip = e.target.closest('[data-cat]');
   if (!chip) return;
-  document.querySelectorAll('.filter-chip').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelectorAll('[data-cat]').forEach(function(b) { b.classList.remove('active'); });
   chip.classList.add('active');
   currentCat = chip.dataset.cat;
   loadRequests();
@@ -708,7 +697,7 @@ async function ensureProfile(user) {
 function initPhotoUpload(formId) { if (!photoState[formId]) photoState[formId] = []; }
 function handlePhotoSelect(formId, input) {
   initPhotoUpload(formId);
-  var files     = Array.from(input.files);
+  var files = Array.from(input.files);
   var remaining = 3 - photoState[formId].length;
   if (remaining <= 0) { toast('Максимум 3 фото', true); return; }
   files.slice(0, remaining).forEach(function(file) {
@@ -732,23 +721,27 @@ function renderPhotoPreviews(formId) {
     html += '<div class="photo-preview-wrap"><img class="photo-preview" src="' + photos[i].previewUrl + '" alt=""><button class="photo-remove" data-action="remove-photo" data-formid="' + formId + '" data-idx="' + i + '">×</button></div>';
   }
   container.innerHTML = html;
-  var label = document.getElementById('upload-label-' + formId);
-  if (label) label.textContent = photos.length >= 3 ? 'Максимум 3 фото додано' : '📷 Додати фото (до 3 шт.)';
+  var label = document.getElementById(formId + '-upload-label') || document.getElementById('upload-label-' + formId);
+  if (label) label.textContent = photos.length >= 3 ? 'Максимум 3 фото' : '📷 Додати фото (до 3 шт.)';
 }
 async function uploadPhotos(formId) {
   var photos = photoState[formId] || [];
-  var urls   = [];
+  var urls = [];
   for (var i = 0; i < photos.length; i++) {
-    var p    = photos[i];
-    var ext  = p.file.name.split('.').pop();
+    var p = photos[i];
+    var ext = p.file.name.split('.').pop();
     var path = currentUser.id + '/' + Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + ext;
-    var up   = await db.storage.from('offers-photos').upload(path, p.file, { contentType: p.file.type });
+    var up = await db.storage.from('offers-photos').upload(path, p.file, { contentType: p.file.type });
     if (up.error) { toast('Помилка фото: ' + up.error.message, true); continue; }
-    var pub  = db.storage.from('offers-photos').getPublicUrl(path);
+    var pub = db.storage.from('offers-photos').getPublicUrl(path);
     urls.push(pub.data.publicUrl);
   }
   return urls;
 }
+
+// Bind sidebar photo input
+document.getElementById('sidebar-photo-input').addEventListener('change', function() { handlePhotoSelect('sidebar', this); });
+document.getElementById('fab-photo-input').addEventListener('change', function() { handlePhotoSelect('fab', this); });
 
 // ---- LOAD REQUESTS ----
 async function loadRequests() {
@@ -757,48 +750,52 @@ async function loadRequests() {
     .select('*, profiles(name), photos, offers(id, user_id, description, price, photos, profiles(name))')
     .order('closed_at', { ascending: true, nullsFirst: true })
     .order('created_at', { ascending: false });
-  if (currentCat)  query = query.eq('category', currentCat);
+  if (currentCat) query = query.eq('category', currentCat);
   if (searchQuery) query = query.or('title.ilike.%' + searchQuery + '%,description.ilike.%' + searchQuery + '%');
   var res = await query;
   if (res.error) { toast('Помилка завантаження', true); return; }
   renderRequests(res.data || []);
 }
 
+// ---- RENDER REQUESTS ----
+var catIcons = {'Авто':'🚗','Електроніка':'📱','Одяг':'👕','Меблі':'🛋️','Спорт':'⚽','Інше':'📦'};
 function renderRequests(requests) {
   var c = document.getElementById('requests-container');
   if (!requests.length) {
     c.innerHTML = '<div class="empty"><div class="empty-icon">🔍</div><p>Запитів ще немає.<br>Будьте першим!</p></div>';
     return;
   }
-  var html = '';
+  var html = '<div class="cards-grid">';
   for (var i = 0; i < requests.length; i++) {
-    var r        = requests[i];
+    var r = requests[i];
     var isClosed = !!r.closed_at;
-    var isOwner  = currentUser && currentUser.id === r.user_id;
-    var offers   = r.offers || [];
-    var offersHtml = ''; // offers shown in modal only
-    var actionsHtml = '';
-    if (isOwner) {
-      actionsHtml = '<div class="req-actions">';
-      if (!isClosed) actionsHtml += '<button class="btn btn-sm btn-primary" data-action="close-req" data-id="' + r.id + '">✓ Знайдено</button>';
-      if (isClosed && offers.length) {
-        for (var oi = 0; oi < offers.length; oi++) {
-          if (offers[oi].profiles) {
-            actionsHtml += '<button class="btn btn-sm" data-action="leave-review" data-seller="' + offers[oi].user_id + '" data-reqid="' + r.id + '">⭐ Відгук для ' + esc(offers[oi].profiles.name) + '</button>';
-          }
-        }
-      }
-      actionsHtml += '<button class="btn btn-sm btn-danger" data-action="delete-req" data-id="' + r.id + '">Видалити</button></div>';
-    }
-    var offerFormHtml = '';
-    if (!isClosed && !isOwner) {
-      offerFormHtml = '<button class="add-offer-toggle" data-action="open-request" data-id="' + r.id + '" style="margin-top:8px">＋ Зробити пропозицію</button>';
-    }
-    var firstPhoto = r.photos && r.photos.length ? '<img src="' + r.photos[0] + '" alt="" style="width:100%;height:160px;object-fit:cover;border-radius:var(--radius-sm);margin-bottom:10px;cursor:pointer" data-action="open-request" data-id="' + r.id + '">' : '';
-    html += '<div class="req-card' + (isClosed ? ' closed' : '') + '" id="rcard-' + r.id + '">' + firstPhoto + '<div class="req-card-header"><div class="req-title" style="cursor:pointer" data-action="open-request" data-id="' + r.id + '">' + esc(r.title) + '</div><div style="display:flex;gap:6px;flex-wrap:wrap"><span class="cat-badge">' + esc(r.category || 'Інше') + '</span>' + (isClosed ? '<span class="closed-badge">✓ Знайдено</span>' : '<span class="offers-badge">' + offers.length + ' пропозицій</span>') + '</div></div><div class="req-meta"><span>👤 ' + esc(r.profiles ? r.profiles.name : 'Анонім') + '</span><span>🕐 ' + timeAgo(r.created_at) + '</span>' + (r.budget ? '<span>💰 до ' + Number(r.budget).toLocaleString('uk') + ' ₴</span>' : '') + '</div>' + (r.description ? '<div class="req-desc">' + esc(r.description) + '</div>' : '') + offerFormHtml + actionsHtml + '</div>';
+    var offers = r.offers || [];
+    var isSaved = savedIds.indexOf(r.id) !== -1;
+    var catIcon = catIcons[r.category] || '📦';
+    var imgHtml = r.photos && r.photos.length
+      ? '<img src="' + r.photos[0] + '" alt="" loading="lazy">'
+      : '<div class="card-img-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>';
+    var offersTag = offers.length
+      ? '<span class="card-offers-tag">' + offers.length + ' пропозицій</span>'
+      : '<span class="card-offers-tag empty">Пропозицій ще немає</span>';
+    var budgetHtml = r.budget
+      ? '<div class="card-budget">До ' + Number(r.budget).toLocaleString('uk') + ' ₴<div class="card-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>'
+      : '<div class="card-budget">Вільний бюджет<div class="card-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>';
+
+    html += '<div class="req-card-new' + (isClosed ? ' closed' : '') + '" id="rcard-' + r.id + '">';
+    html += '<div class="card-img-wrap">' + imgHtml;
+    html += '<span class="card-time">' + timeAgo(r.created_at) + '</span>';
+    html += '<button class="card-save-btn' + (isSaved ? ' saved' : '') + '" data-action="toggle-save" data-id="' + r.id + '"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>';
+    if (isClosed) html += '<span class="card-found-badge">✓ Знайдено</span>';
+    html += '</div>';
+    html += '<div class="card-body" data-action="open-request" data-id="' + r.id + '">';
+    html += '<div class="card-title">' + esc(r.title) + '</div>';
+    html += '<div style="margin-bottom:5px"><span class="card-cat-tag"><span>' + catIcon + '</span>' + esc(r.category || 'Інше') + '</span></div>';
+    html += offersTag + budgetHtml;
+    html += '</div></div>';
   }
+  html += '</div>';
   c.innerHTML = html;
-  // offer form moved to modal
 }
 
 // ---- EVENT DELEGATION ----
@@ -806,205 +803,133 @@ document.addEventListener('click', function(e) {
   var btn = e.target.closest('[data-action]');
   if (!btn) return;
   var action = btn.dataset.action;
-  var id     = btn.dataset.id;
-  if (action === 'close-req')    { closeRequest(id); }
-  if (action === 'delete-req')   { deleteRequest(id); }
-  if (action === 'offer-toggle') { toggleOfferForm(id); }
-  if (action === 'offer-submit') { submitOffer(id); }
-  if (action === 'remove-photo') { removePhoto(btn.dataset.formid, Number(btn.dataset.idx)); }
-  if (action === 'lightbox')     { openLightbox(btn.dataset.url); }
-  if (action === 'leave-review') { openReviewModal(btn.dataset.seller, btn.dataset.reqid); }
-  if (action === 'open-chat')    { openOrCreateChat(btn.dataset.seller, btn.dataset.reqid, btn.dataset.selname, btn.dataset.reqtitle); }
-  if (action === 'open-chat-id') { openChatWindow(btn.dataset.chatid, btn.dataset.partner, btn.dataset.title); }
-  if (action === 'open-request') { openRequestPage(btn.dataset.id); }
+  var id = btn.dataset.id;
+  if (action === 'open-request')  { openRequestPage(id); }
+  if (action === 'toggle-save')   { e.stopPropagation(); toggleSave(id, btn); }
+  if (action === 'close-req')     { closeRequest(id); }
+  if (action === 'delete-req')    { deleteRequest(id); }
+  if (action === 'leave-review')  { openReviewModal(btn.dataset.seller, btn.dataset.reqid); }
+  if (action === 'open-chat')     { openOrCreateChat(btn.dataset.seller, btn.dataset.reqid, btn.dataset.selname, btn.dataset.reqtitle); }
+  if (action === 'open-chat-id')  { openChatWindow(btn.dataset.chatid, btn.dataset.partner, btn.dataset.title); }
+  if (action === 'remove-photo')  { removePhoto(btn.dataset.formid, Number(btn.dataset.idx)); }
+  if (action === 'lightbox')      { openLightbox(btn.dataset.url); }
 });
 
-// ---- SUBMIT REQUEST ----
+// ---- TOGGLE SAVE ----
+function toggleSave(id, btn) {
+  var idx = savedIds.indexOf(id);
+  if (idx === -1) { savedIds.push(id); btn.classList.add('saved'); toast('Збережено ❤️'); }
+  else { savedIds.splice(idx, 1); btn.classList.remove('saved'); toast('Видалено зі збережених'); }
+  localStorage.setItem('savedIds', JSON.stringify(savedIds));
+}
+
+// ---- SAVED PAGE ----
+async function showSaved() {
+  showPage('main');
+  setActiveNav('nav-saved');
+  document.getElementById('requests-container').innerHTML = '<div class="spinner"></div>';
+  if (!savedIds.length) {
+    document.getElementById('requests-container').innerHTML = '<div class="empty"><div class="empty-icon">❤️</div><p>Збережених запитів немає</p></div>';
+    return;
+  }
+  var res = await db.from('requests')
+    .select('*, profiles(name), photos, offers(id, user_id, description, price, photos, profiles(name))')
+    .in('id', savedIds).order('created_at', { ascending: false });
+  if (res.error) { toast('Помилка', true); return; }
+  renderRequests(res.data || []);
+}
+
+// ---- SUBMIT REQUEST (desktop sidebar) ----
 document.getElementById('submit-request-btn').addEventListener('click', async function() {
   if (!currentUser) { openAuth(); return; }
-  var title  = document.getElementById('new-title').value.trim();
-  var desc   = document.getElementById('new-desc').value.trim();
-  var cat    = document.getElementById('new-cat').value;
+  var title = document.getElementById('new-title').value.trim();
+  var desc = document.getElementById('new-desc').value.trim();
+  var cat = document.getElementById('new-cat').value;
   var budget = document.getElementById('new-budget').value;
   if (!title) { toast('Вкажіть що шукаєте', true); return; }
   await ensureProfile(currentUser);
-  var sidebarPhotoUrls = await uploadPhotos('sidebar');
-  var res = await db.from('requests').insert({ user_id: currentUser.id, title: title, description: desc || null, category: cat, budget: budget ? Number(budget) : null, photos: sidebarPhotoUrls.length ? sidebarPhotoUrls : null });
+  var photoUrls = await uploadPhotos('sidebar');
+  var res = await db.from('requests').insert({ user_id: currentUser.id, title: title, description: desc || null, category: cat, budget: budget ? Number(budget) : null, photos: photoUrls.length ? photoUrls : null });
   if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
   toast('Запит опубліковано!');
-  document.getElementById('new-title').value  = '';
-  document.getElementById('new-desc').value   = '';
+  document.getElementById('new-title').value = '';
+  document.getElementById('new-desc').value = '';
   document.getElementById('new-budget').value = '';
   photoState['sidebar'] = [];
   renderPhotoPreviews('sidebar');
   loadRequests();
 });
 
-// ---- TOGGLE OFFER FORM ----
-function toggleOfferForm(id) {
-  var f = document.getElementById('oform-' + id);
-  if (!f) return;
-  f.classList.toggle('open');
-  if (f.classList.contains('open')) initPhotoUpload(id);
+// Desktop sidebar toggle
+var sidebarToggle = document.getElementById('sidebar-toggle');
+var sidebarBody = document.getElementById('sidebar-body');
+if (sidebarToggle && sidebarBody) {
+  sidebarToggle.addEventListener('click', function() {
+    var hidden = sidebarBody.style.display === 'none';
+    sidebarBody.style.display = hidden ? '' : 'none';
+    document.getElementById('sidebar-arrow').textContent = hidden ? '▾' : '▸';
+  });
 }
 
-// ---- SUBMIT OFFER ----
-async function submitOffer(requestId) {
+// Show sidebar on desktop
+if (window.innerWidth > 700) {
+  var ds = document.getElementById('desktop-sidebar');
+  if (ds) ds.style.display = '';
+}
+
+// ---- FAB ----
+document.getElementById('fab-btn').addEventListener('click', function() {
   if (!currentUser) { openAuth(); return; }
-  var desc  = document.getElementById('odesc-'  + requestId).value.trim();
-  var price = document.getElementById('oprice-' + requestId).value;
-  if (!desc || !price) { toast('Заповніть опис та ціну', true); return; }
+  document.getElementById('fab-title').value = '';
+  document.getElementById('fab-desc').value = '';
+  document.getElementById('fab-budget').value = '';
+  photoState['fab'] = [];
+  renderPhotoPreviews('fab');
+  document.getElementById('new-req-modal').classList.add('open');
+  setTimeout(function() { document.getElementById('fab-title').focus(); }, 100);
+});
+document.getElementById('close-new-req-btn').addEventListener('click', function() { document.getElementById('new-req-modal').classList.remove('open'); });
+document.getElementById('new-req-modal').addEventListener('click', function(e) { if (e.target === this) this.classList.remove('open'); });
+document.getElementById('fab-submit-btn').addEventListener('click', async function() {
+  if (!currentUser) { openAuth(); return; }
+  var title = document.getElementById('fab-title').value.trim();
+  var desc = document.getElementById('fab-desc').value.trim();
+  var cat = document.getElementById('fab-cat').value;
+  var budget = document.getElementById('fab-budget').value;
+  if (!title) { toast('Вкажіть що шукаєте', true); return; }
   await ensureProfile(currentUser);
-  var btn = document.querySelector('[data-action="offer-submit"][data-id="' + requestId + '"]');
-  if (btn) { btn.textContent = 'Завантаження...'; btn.disabled = true; }
-  var photoUrls = await uploadPhotos(requestId);
-  var res = await db.from('offers').insert({ request_id: requestId, user_id: currentUser.id, description: desc, price: Number(price), photos: photoUrls.length ? photoUrls : null });
-  if (btn) { btn.textContent = 'Запропонувати'; btn.disabled = false; }
+  var btn = document.getElementById('fab-submit-btn');
+  btn.textContent = 'Публікуємо...'; btn.disabled = true;
+  var photoUrls = await uploadPhotos('fab');
+  var res = await db.from('requests').insert({ user_id: currentUser.id, title: title, description: desc || null, category: cat, budget: budget ? Number(budget) : null, photos: photoUrls.length ? photoUrls : null });
+  btn.textContent = 'Опублікувати запит'; btn.disabled = false;
   if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
-  toast('Пропозицію надіслано!');
-  document.getElementById('odesc-'  + requestId).value = '';
-  document.getElementById('oprice-' + requestId).value = '';
-  photoState[requestId] = [];
-  var f = document.getElementById('oform-' + requestId);
-  if (f) f.classList.remove('open');
+  photoState['fab'] = [];
+  document.getElementById('new-req-modal').classList.remove('open');
+  toast('Запит опубліковано! 🎉');
+  showPage('main'); setActiveNav('nav-home');
   loadRequests();
-}
-
-// ---- CLOSE REQUEST ----
-async function closeRequest(requestId) {
-  showConfirm('Закрити запит?', 'Позначити як "Знайдено"? Нові пропозиції більше не надходитимуть.', async function() {
-    var res = await db.from('requests').update({ closed_at: new Date().toISOString(), is_active: false }).eq('id', requestId);
-    if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
-    toast('Запит закрито! 🎉'); loadRequests();
-  });
-}
-
-// ---- DELETE REQUEST ----
-async function deleteRequest(requestId) {
-  showConfirm('Видалити запит?', 'Цю дію не можна скасувати. Всі пропозиції також будуть видалені.', async function() {
-    var res = await db.from('requests').delete().eq('id', requestId);
-    if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
-    toast('Запит видалено'); loadRequests();
-  });
-}
-
-// ---- HELPERS ----
-function esc(str) {
-  if (!str) return '';
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function timeAgo(dateStr) {
-  var diff = Math.floor((Date.now() - new Date(dateStr)) / 1000);
-  if (diff < 60)    return 'щойно';
-  if (diff < 3600)  return Math.floor(diff/60) + ' хв тому';
-  if (diff < 86400) return Math.floor(diff/3600) + ' год тому';
-  return Math.floor(diff/86400) + ' дн тому';
-}
-
-// ---- REVIEWS ----
-var selectedRating = 0;
-
-function initStars() {
-  var stars = document.querySelectorAll('#review-stars .star');
-  stars.forEach(function(star) {
-    star.addEventListener('mouseover', function() {
-      var val = Number(this.dataset.val);
-      stars.forEach(function(s) {
-        s.classList.toggle('hover', Number(s.dataset.val) <= val);
-      });
-    });
-    star.addEventListener('mouseout', function() {
-      stars.forEach(function(s) { s.classList.remove('hover'); });
-    });
-    star.addEventListener('click', function() {
-      selectedRating = Number(this.dataset.val);
-      stars.forEach(function(s) {
-        s.classList.toggle('active', Number(s.dataset.val) <= selectedRating);
-      });
-    });
-  });
-}
-initStars();
-
-function openReviewModal(sellerId, requestId) {
-  if (!currentUser) { openAuth(); return; }
-  selectedRating = 0;
-  document.querySelectorAll('#review-stars .star').forEach(function(s) { s.classList.remove('active','hover'); });
-  document.getElementById('review-comment').value = '';
-  document.getElementById('review-seller-id').value  = sellerId;
-  document.getElementById('review-request-id').value = requestId;
-  document.getElementById('review-modal').classList.add('open');
-}
-
-document.getElementById('cancel-review-btn').addEventListener('click', function() {
-  document.getElementById('review-modal').classList.remove('open');
 });
-
-document.getElementById('submit-review-btn').addEventListener('click', async function() {
-  if (!selectedRating) { toast('Оберіть оцінку', true); return; }
-  var sellerId   = document.getElementById('review-seller-id').value;
-  var requestId  = document.getElementById('review-request-id').value;
-  var comment    = document.getElementById('review-comment').value.trim();
-  var res = await db.from('reviews').insert({
-    reviewer_id: currentUser.id,
-    seller_id:   sellerId,
-    request_id:  requestId,
-    rating:      selectedRating,
-    comment:     comment || null
-  });
-  if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
-  toast('Відгук надіслано! ⭐');
-  document.getElementById('review-modal').classList.remove('open');
-  openProfile(sellerId);
-});
-
-async function loadReviews(userId) {
-  var res = await db.from('reviews')
-    .select('*, reviewer:reviewer_id(name)')
-    .eq('seller_id', userId)
-    .order('created_at', { ascending: false });
-  var reviews = res.data || [];
-  var container = document.getElementById('profile-reviews');
-
-  if (!reviews.length) {
-    container.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:12px 0">Відгуків ще немає</div>';
-    return;
-  }
-
-  var total = reviews.reduce(function(sum, r) { return sum + r.rating; }, 0);
-  var avg   = (total / reviews.length).toFixed(1);
-  var stars = '';
-  for (var i = 1; i <= 5; i++) stars += i <= Math.round(avg) ? '★' : '☆';
-
-  var html = '<div class="rating-summary"><div><div class="rating-avg">' + avg + '</div><div class="rating-avg-stars">' + stars + '</div><div class="rating-count">' + reviews.length + ' відгуків</div></div></div>';
-
-  for (var j = 0; j < reviews.length; j++) {
-    var r   = reviews[j];
-    var rStars = '';
-    for (var k = 1; k <= 5; k++) rStars += k <= r.rating ? '★' : '☆';
-    html += '<div class="review-card"><div class="review-header"><div><div class="review-author">' + esc(r.reviewer ? r.reviewer.name : 'Анонім') + '</div><div class="review-stars">' + rStars + '</div></div><div class="review-date">' + timeAgo(r.created_at) + '</div></div>' + (r.comment ? '<div class="review-text">' + esc(r.comment) + '</div>' : '') + '</div>';
-  }
-  container.innerHTML = html;
-
-  // update stat
-  document.getElementById('stat-rating') && (document.getElementById('stat-rating').textContent = avg);
-}
 
 // ---- REQUEST MODAL ----
-document.getElementById('close-request-modal-btn').addEventListener('click', closeRequestModal);
-document.getElementById('request-modal').addEventListener('click', function(e) {
-  if (e.target === this) closeRequestModal();
-});
+document.getElementById('close-request-modal-btn').addEventListener('click', function() { closeRequestModal(); });
+document.getElementById('request-modal').addEventListener('click', function(e) { if (e.target === this) closeRequestModal(); });
 document.getElementById('share-btn').addEventListener('click', function() {
   var url = window.location.origin + window.location.pathname + '?request=' + (window._currentRequestId || '');
   navigator.clipboard.writeText(url).then(function() { toast('Посилання скопійовано!'); });
 });
 
+function openRequestModal() { document.getElementById('request-modal').classList.add('open'); }
+function closeRequestModal() {
+  document.getElementById('request-modal').classList.remove('open');
+  history.pushState({}, '', window.location.pathname);
+}
+
 async function openRequestPage(requestId) {
   window._currentRequestId = requestId;
   history.pushState({}, '', '?request=' + requestId);
   openRequestModal();
-  document.getElementById('request-modal-content').innerHTML = '<div class="spinner"></div>';
+  document.getElementById('request-modal-content').innerHTML = '<div class="spinner" style="margin:30px auto"></div>';
 
   if (!currentUser) {
     var sess = await db.auth.getSession();
@@ -1012,107 +937,114 @@ async function openRequestPage(requestId) {
   }
 
   var res = await db.from('requests')
-    .select('*, profiles(id, name), offers(id, user_id, description, price, photos, profiles(name))')
-    .eq('id', requestId)
-    .single();
+    .select('*, profiles(id, name), photos, offers(id, user_id, description, price, photos, profiles(name))')
+    .eq('id', requestId).single();
 
   if (res.error || !res.data) {
     document.getElementById('request-modal-content').innerHTML = '<div class="empty"><div class="empty-icon">😕</div><p>Запит не знайдено</p></div>';
     return;
   }
 
-  var r        = res.data;
+  var r = res.data;
   var isClosed = !!r.closed_at;
-  var isOwner  = currentUser && currentUser.id === r.user_id;
-  var offers   = r.offers || [];
+  var isOwner = currentUser && currentUser.id === r.user_id;
+  var offers = r.offers || [];
 
-  var offersHtml = '';
-  for (var j = 0; j < offers.length; j++) {
-    var o = offers[j];
-    var photosHtml = '';
-    if (o.photos && o.photos.length) {
-      photosHtml = '<div class="offer-photos" style="margin-top:10px">';
-      for (var k = 0; k < o.photos.length; k++) {
-        photosHtml += '<img class="offer-photo" src="' + o.photos[k] + '" alt="" data-action="lightbox" data-url="' + o.photos[k] + '">';
-      }
-      photosHtml += '</div>';
-    }
-    var writeBtn = '';
-    if (isOwner && o.user_id && o.user_id !== currentUser.id) {
-      writeBtn = '<button class="btn btn-sm" style="margin-top:8px" data-action="open-chat" data-seller="' + o.user_id + '" data-reqid="' + r.id + '" data-selname="' + esc(o.profiles ? o.profiles.name : 'Продавець') + '" data-reqtitle="' + esc(r.title) + '">💬 Написати</button>';
-    }
-    offersHtml += '<div class="offer-row" style="margin-bottom:10px"><div class="offer-row-top"><div><div class="offer-seller">' + esc(o.profiles ? o.profiles.name : 'Анонім') + '</div><div class="offer-desc">' + esc(o.description) + '</div></div><div class="offer-price">' + Number(o.price).toLocaleString('uk') + ' ₴</div></div>' + photosHtml + writeBtn + '</div>';
-  }
+  var html = '';
 
-  var actionsHtml = '';
-  if (isOwner) {
-    actionsHtml = '<div class="req-actions">';
-    if (!isClosed) actionsHtml += '<button class="btn btn-sm btn-primary" data-action="close-req" data-id="' + r.id + '">✓ Знайдено</button>';
-    if (isClosed && offers.length) {
-      for (var oi = 0; oi < offers.length; oi++) {
-        if (offers[oi].profiles) {
-          actionsHtml += '<button class="btn btn-sm" data-action="leave-review" data-seller="' + offers[oi].user_id + '" data-reqid="' + r.id + '">⭐ Відгук для ' + esc(offers[oi].profiles.name) + '</button>';
-        }
-      }
-    }
-    actionsHtml += '<button class="btn btn-sm btn-danger" data-action="delete-req" data-id="' + r.id + '">Видалити</button></div>';
-  }
-
-  var html = '<div style="margin-bottom:16px"><div style="font-family:Unbounded,sans-serif;font-size:18px;font-weight:600;margin-bottom:10px">' + esc(r.title) + '</div>';
-  html += '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px"><span class="cat-badge">' + esc(r.category || 'Інше') + '</span>' + (isClosed ? '<span class="closed-badge">✓ Знайдено</span>' : '<span class="offers-badge">' + offers.length + ' пропозицій</span>') + '</div>';
-  html += '<div class="req-meta"><span>👤 ' + esc(r.profiles ? r.profiles.name : 'Анонім') + '</span><span>🕐 ' + timeAgo(r.created_at) + '</span>' + (r.budget ? '<span>💰 до ' + Number(r.budget).toLocaleString('uk') + ' ₴</span>' : '') + '</div>';
-  html += r.description ? '<div class="req-desc" style="margin-top:10px">' + esc(r.description) + '</div>' : '';
+  // Hero image
   if (r.photos && r.photos.length) {
-    html += '<div class="offer-photos" style="margin-top:12px">';
-    for (var pi = 0; pi < r.photos.length; pi++) {
-      html += '<img class="offer-photo" src="' + r.photos[pi] + '" alt="фото запиту" data-action="lightbox" data-url="' + r.photos[pi] + '">';
+    html += '<img class="req-modal-img" src="' + r.photos[0] + '" alt="">';
+  } else {
+    html += '<div class="req-modal-img-placeholder"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>';
+  }
+
+  html += '<div class="req-modal-body">';
+  html += '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px"><span class="card-cat-tag"><span>' + (catIcons[r.category]||'📦') + '</span>' + esc(r.category||'Інше') + '</span>' + (isClosed ? '<span class="card-found-badge" style="position:relative;top:auto;left:auto">✓ Знайдено</span>' : '<span class="card-offers-tag">' + offers.length + ' пропозицій</span>') + '</div>';
+  html += '<div class="req-modal-title">' + esc(r.title) + '</div>';
+  html += '<div class="req-modal-meta"><span>👤 ' + esc(r.profiles ? r.profiles.name : 'Анонім') + '</span><span>🕐 ' + timeAgo(r.created_at) + '</span></div>';
+  if (r.description) html += '<div class="req-modal-desc">' + esc(r.description) + '</div>';
+  if (r.budget) html += '<div class="req-modal-budget">До ' + Number(r.budget).toLocaleString('uk') + ' ₴</div>';
+
+  // More photos
+  if (r.photos && r.photos.length > 1) {
+    html += '<div class="offer-photos" style="margin-bottom:16px">';
+    for (var pi = 1; pi < r.photos.length; pi++) {
+      html += '<img class="offer-photo" src="' + r.photos[pi] + '" alt="" data-action="lightbox" data-url="' + r.photos[pi] + '">';
     }
     html += '</div>';
   }
-  html += actionsHtml + '</div>';
 
+  // Owner actions
+  if (isOwner) {
+    html += '<div class="req-actions">';
+    if (!isClosed) html += '<button class="btn btn-sm btn-primary" data-action="close-req" data-id="' + r.id + '">✓ Знайдено</button>';
+    if (isClosed && offers.length) {
+      for (var oi = 0; oi < offers.length; oi++) {
+        if (offers[oi].profiles) html += '<button class="btn btn-sm" data-action="leave-review" data-seller="' + offers[oi].user_id + '" data-reqid="' + r.id + '">⭐ Відгук для ' + esc(offers[oi].profiles.name) + '</button>';
+      }
+    }
+    html += '<button class="btn btn-sm btn-danger" data-action="delete-req" data-id="' + r.id + '">Видалити</button></div>';
+  }
+
+  html += '<div class="section-divider"></div>';
+
+  // Offers list
   if (offers.length) {
-    html += '<div style="font-size:14px;font-weight:600;margin-bottom:10px">Пропозиції (' + offers.length + ')</div>';
-    html += offersHtml;
+    html += '<div class="section-label">Пропозиції (' + offers.length + ')</div>';
+    for (var j = 0; j < offers.length; j++) {
+      var o = offers[j];
+      var photosHtml = '';
+      if (o.photos && o.photos.length) {
+        photosHtml = '<div class="offer-photos">';
+        for (var k = 0; k < o.photos.length; k++) {
+          photosHtml += '<img class="offer-photo" src="' + o.photos[k] + '" alt="" data-action="lightbox" data-url="' + o.photos[k] + '">';
+        }
+        photosHtml += '</div>';
+      }
+      var writeBtn = '';
+      if (isOwner && o.user_id && o.user_id !== currentUser.id) {
+        writeBtn = '<button class="btn btn-sm" style="margin-top:8px" data-action="open-chat" data-seller="' + o.user_id + '" data-reqid="' + r.id + '" data-selname="' + esc(o.profiles ? o.profiles.name : 'Продавець') + '" data-reqtitle="' + esc(r.title) + '">💬 Написати</button>';
+      }
+      html += '<div class="offer-item"><div class="offer-item-top"><div class="offer-item-seller">' + esc(o.profiles ? o.profiles.name : 'Анонім') + '</div><div class="offer-item-price">' + Number(o.price).toLocaleString('uk') + ' ₴</div></div><div class="offer-item-desc">' + esc(o.description) + '</div>' + photosHtml + writeBtn + '</div>';
+    }
+    html += '<div class="section-divider"></div>';
   }
 
+  // Offer form
   if (!isClosed && !isOwner) {
-    html += '<div style="margin-top:16px;border-top:1px solid var(--border);padding-top:16px">';
-    html += '<div style="font-size:13px;font-weight:600;margin-bottom:10px">Зробити пропозицію</div>';
-    html += '<div style="display:flex;flex-direction:column;gap:10px">';
-    html += '<input type="text" id="modal-odesc" placeholder="Опис: модель, стан, комплектація...">';
-    html += '<div class="form-row"><input type="number" id="modal-oprice" placeholder="Ціна, ₴" style="max-width:160px"><button class="btn btn-primary btn-sm" id="modal-submit-btn">Запропонувати</button></div>';
-    html += '<div class="photo-upload-area" style="position:relative"><input type="file" accept="image/*" multiple id="modal-photo-input" style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer"><div class="photo-upload-label">📷 Додати фото (до 3 шт.)</div></div>';
-    html += '<div class="photo-previews" id="modal-previews"></div>';
-    html += '</div></div>';
+    html += '<div class="section-label">Зробити пропозицію</div>';
+    html += '<div class="field-group"><input type="text" id="modal-odesc" placeholder="Опис: модель, стан..."></div>';
+    html += '<div class="form-row" style="margin-bottom:12px"><input type="number" id="modal-oprice" placeholder="Ціна, ₴" style="max-width:160px"><button class="btn btn-primary btn-sm" id="modal-submit-btn">Запропонувати</button></div>';
+    html += '<div class="photo-upload-area" style="position:relative"><input type="file" accept="image/*" multiple id="modal-photo-input" style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;border:none"><div class="photo-upload-label">📷 Фото (до 3 шт.)</div></div>';
+    html += '<div class="photo-previews" id="modal-previews" style="margin-top:8px"></div>';
   }
 
+  html += '</div>';
   document.getElementById('request-modal-content').innerHTML = html;
 
-  // bind photo input
+  // Bind photo input
   var photoInput = document.getElementById('modal-photo-input');
   if (photoInput) {
-    photoInput.addEventListener('change', function() { handlePhotoSelect('modal-' + r.id, this); });
+    photoInput.addEventListener('change', function() { handlePhotoSelect('modal', this); });
   }
 
-  // bind submit
+  // Bind submit
   var submitBtn = document.getElementById('modal-submit-btn');
   if (submitBtn) {
     submitBtn.addEventListener('click', async function() {
       if (!currentUser) { closeRequestModal(); openAuth(); return; }
-      var desc  = document.getElementById('modal-odesc').value.trim();
+      var desc = document.getElementById('modal-odesc').value.trim();
       var price = document.getElementById('modal-oprice').value;
       if (!desc || !price) { toast('Заповніть опис та ціну', true); return; }
       await ensureProfile(currentUser);
       submitBtn.textContent = 'Завантаження...'; submitBtn.disabled = true;
-      var photoUrls = await uploadPhotos('modal-' + r.id);
+      var photoUrls = await uploadPhotos('modal');
       var res2 = await db.from('offers').insert({ request_id: r.id, user_id: currentUser.id, description: desc, price: Number(price), photos: photoUrls.length ? photoUrls : null });
       submitBtn.textContent = 'Запропонувати'; submitBtn.disabled = false;
       if (res2.error) { toast('Помилка: ' + res2.error.message, true); return; }
       toast('Пропозицію надіслано!');
-      photoState['modal-' + r.id] = [];
-      document.getElementById('modal-odesc').value = '';
-      document.getElementById('modal-oprice').value = '';
+      photoState['modal'] = [];
       openRequestPage(r.id);
       loadRequests();
     });
@@ -1121,87 +1053,224 @@ async function openRequestPage(requestId) {
 
 function checkUrlRequest() {
   var params = new URLSearchParams(window.location.search);
-  var reqId  = params.get('request');
+  var reqId = params.get('request');
   if (reqId) openRequestPage(reqId);
 }
 
-// ---- CHAT ----
-var currentChatId    = null;
-var chatRealtimeSub  = null;
+// ---- CLOSE / DELETE REQUEST ----
+async function closeRequest(requestId) {
+  showConfirm('Закрити запит?', 'Позначити як "Знайдено"?', async function() {
+    var res = await db.from('requests').update({ closed_at: new Date().toISOString(), is_active: false }).eq('id', requestId);
+    if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
+    toast('Запит закрито! 🎉');
+    closeRequestModal(); loadRequests();
+  });
+}
+async function deleteRequest(requestId) {
+  showConfirm('Видалити запит?', 'Цю дію не можна скасувати.', async function() {
+    var res = await db.from('requests').delete().eq('id', requestId);
+    if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
+    toast('Запит видалено'); closeRequestModal(); loadRequests();
+  });
+}
 
-document.getElementById('chats-btn').addEventListener('click', function() { openChatList(); });
-document.getElementById('back-from-chats-btn').addEventListener('click', function() { showPage('main'); loadRequests(); });
+// ---- PROFILE ----
+document.getElementById('back-from-profile-btn').addEventListener('click', function() { showPage('main'); setActiveNav('nav-home'); });
+
+async function openProfile(userId) {
+  showPage('profile');
+  document.getElementById('profile-requests').innerHTML = '<div class="spinner"></div>';
+  var res = await db.from('profiles').select('*').eq('id', userId).single();
+  var profile = res.data || {};
+  var name = profile.name || 'Без імені';
+  var avatarEl = document.getElementById('profile-avatar');
+  if (profile.avatar_url) { avatarEl.innerHTML = '<img src="' + profile.avatar_url + '" alt="">'; }
+  else { avatarEl.textContent = name.charAt(0).toUpperCase(); }
+  document.getElementById('profile-name').textContent = name;
+  document.getElementById('profile-city-show').textContent = profile.city ? '📍 ' + profile.city : '';
+  document.getElementById('profile-bio-show').textContent = profile.bio || '';
+  document.getElementById('profile-joined').textContent = profile.created_at ? '📅 З ' + new Date(profile.created_at).toLocaleDateString('uk') : '';
+  var reqRes = await db.from('requests').select('id, closed_at').eq('user_id', userId);
+  var offRes = await db.from('offers').select('id').eq('user_id', userId);
+  var requests = reqRes.data || [];
+  var closed = requests.filter(function(r) { return r.closed_at; }).length;
+  document.getElementById('stat-requests').textContent = requests.length;
+  document.getElementById('stat-offers').textContent = (offRes.data || []).length;
+  document.getElementById('stat-closed').textContent = closed;
+  var editWrap = document.getElementById('edit-profile-wrap');
+  if (currentUser && currentUser.id === userId) {
+    editWrap.innerHTML = '<button class="btn btn-sm" id="edit-profile-btn" style="margin-top:4px">Редагувати профіль</button>';
+    document.getElementById('edit-profile-btn').addEventListener('click', function() {
+      document.getElementById('edit-name').value = profile.name || '';
+      document.getElementById('edit-city').value = profile.city || '';
+      document.getElementById('edit-bio').value = profile.bio || '';
+      document.getElementById('profile-edit-form').classList.add('open');
+    });
+  } else { editWrap.innerHTML = ''; }
+  var rRes = await db.from('requests').select('*, offers(id)').eq('user_id', userId).order('created_at', { ascending: false });
+  renderProfileRequests(rRes.data || []);
+
+  var ratingRes = await db.from('reviews').select('rating').eq('seller_id', userId);
+  var ratingData = ratingRes.data || [];
+  if (ratingData.length) {
+    var avgRating = (ratingData.reduce(function(s,r){return s+r.rating;},0)/ratingData.length).toFixed(1);
+    document.getElementById('stat-closed').parentElement.parentElement.innerHTML =
+      '<div class="stat-card"><div class="stat-num">' + requests.length + '</div><div class="stat-label">Запитів</div></div>' +
+      '<div class="stat-card"><div class="stat-num">' + (offRes.data||[]).length + '</div><div class="stat-label">Пропозицій</div></div>' +
+      '<div class="stat-card"><div class="stat-num" id="stat-rating">' + avgRating + '</div><div class="stat-label">⭐ Рейтинг</div></div>';
+  }
+  loadReviews(userId);
+}
+
+function renderProfileRequests(requests) {
+  var c = document.getElementById('profile-requests');
+  if (!requests.length) { c.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><p>Запитів ще немає</p></div>'; return; }
+  var html = '';
+  for (var i = 0; i < requests.length; i++) {
+    var r = requests[i];
+    var isClosed = !!r.closed_at;
+    html += '<div style="background:var(--surface);border-radius:var(--radius);padding:14px;margin-bottom:10px;cursor:pointer" data-action="open-request" data-id="' + r.id + '">';
+    html += '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px"><div style="font-size:14px;font-weight:700">' + esc(r.title) + '</div>';
+    html += (isClosed ? '<span class="card-found-badge" style="position:relative;top:auto;left:auto;white-space:nowrap">✓ Знайдено</span>' : '<span class="card-offers-tag">' + (r.offers?r.offers.length:0) + ' пропозицій</span>') + '</div>';
+    html += '<div style="font-size:12px;color:var(--text3);margin-top:4px">🕐 ' + timeAgo(r.created_at) + (r.budget ? ' · до ' + Number(r.budget).toLocaleString('uk') + ' ₴' : '') + '</div>';
+    html += '</div>';
+  }
+  c.innerHTML = html;
+}
+
+document.getElementById('save-profile-btn').addEventListener('click', async function() {
+  if (!currentUser) return;
+  var name = document.getElementById('edit-name').value.trim();
+  var city = document.getElementById('edit-city').value.trim();
+  var bio = document.getElementById('edit-bio').value.trim();
+  if (!name) { toast("Введіть ім'я", true); return; }
+  var res = await db.from('profiles').update({ name: name, city: city || null, bio: bio || null }).eq('id', currentUser.id);
+  if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
+  toast('Профіль збережено!');
+  document.getElementById('profile-edit-form').classList.remove('open');
+  document.getElementById('user-pill').textContent = name;
+  updateGreeting(currentUser);
+  openProfile(currentUser.id);
+});
+document.getElementById('cancel-edit-btn').addEventListener('click', function() { document.getElementById('profile-edit-form').classList.remove('open'); });
+
+// ---- REVIEWS ----
+var selectedRating = 0;
+function initStars() {
+  var stars = document.querySelectorAll('#review-stars .star');
+  stars.forEach(function(star) {
+    star.addEventListener('mouseover', function() {
+      var val = Number(this.dataset.val);
+      stars.forEach(function(s) { s.classList.toggle('hover', Number(s.dataset.val) <= val); });
+    });
+    star.addEventListener('mouseout', function() { stars.forEach(function(s) { s.classList.remove('hover'); }); });
+    star.addEventListener('click', function() {
+      selectedRating = Number(this.dataset.val);
+      stars.forEach(function(s) { s.classList.toggle('active', Number(s.dataset.val) <= selectedRating); });
+    });
+  });
+}
+initStars();
+function openReviewModal(sellerId, requestId) {
+  if (!currentUser) { openAuth(); return; }
+  selectedRating = 0;
+  document.querySelectorAll('#review-stars .star').forEach(function(s) { s.classList.remove('active','hover'); });
+  document.getElementById('review-comment').value = '';
+  document.getElementById('review-seller-id').value = sellerId;
+  document.getElementById('review-request-id').value = requestId;
+  document.getElementById('review-modal').classList.add('open');
+}
+document.getElementById('cancel-review-btn').addEventListener('click', function() { document.getElementById('review-modal').classList.remove('open'); });
+document.getElementById('submit-review-btn').addEventListener('click', async function() {
+  if (!selectedRating) { toast('Оберіть оцінку', true); return; }
+  var sellerId = document.getElementById('review-seller-id').value;
+  var requestId = document.getElementById('review-request-id').value;
+  var comment = document.getElementById('review-comment').value.trim();
+  var res = await db.from('reviews').insert({ reviewer_id: currentUser.id, seller_id: sellerId, request_id: requestId, rating: selectedRating, comment: comment || null });
+  if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
+  toast('Відгук надіслано! ⭐');
+  document.getElementById('review-modal').classList.remove('open');
+  openProfile(sellerId);
+});
+async function loadReviews(userId) {
+  var res = await db.from('reviews').select('*, reviewer:reviewer_id(name)').eq('seller_id', userId).order('created_at', { ascending: false });
+  var reviews = res.data || [];
+  var container = document.getElementById('profile-reviews');
+  if (!reviews.length) { container.innerHTML = '<div style="font-size:13px;color:var(--text3);padding:8px 0">Відгуків ще немає</div>'; return; }
+  var total = reviews.reduce(function(sum,r){return sum+r.rating;},0);
+  var avg = (total/reviews.length).toFixed(1);
+  var stars = '';
+  for (var i=1;i<=5;i++) stars += i<=Math.round(avg)?'★':'☆';
+  var html = '<div class="rating-summary"><div><div class="rating-avg">' + avg + '</div><div class="rating-avg-stars">' + stars + '</div><div class="rating-count">' + reviews.length + ' відгуків</div></div></div>';
+  for (var j=0;j<reviews.length;j++) {
+    var r=reviews[j];
+    var rs='';for(var k=1;k<=5;k++)rs+=k<=r.rating?'★':'☆';
+    html+='<div class="review-card"><div class="review-header"><div><div class="review-author">'+esc(r.reviewer?r.reviewer.name:'Анонім')+'</div><div class="review-stars">'+rs+'</div></div><div class="review-date">'+timeAgo(r.created_at)+'</div></div>'+(r.comment?'<div class="review-text">'+esc(r.comment)+'</div>':'')+'</div>';
+  }
+  container.innerHTML = html;
+}
+
+// ---- CHAT ----
+var currentChatId = null, chatRealtimeSub = null;
+document.getElementById('back-from-chats-btn').addEventListener('click', function() { showPage('main'); setActiveNav('nav-home'); loadRequests(); });
 document.getElementById('back-from-chat-btn').addEventListener('click', function() { openChatList(); if (chatRealtimeSub) { chatRealtimeSub.unsubscribe(); chatRealtimeSub = null; } });
 
 async function openChatList() {
   showPage('chat-list');
   if (!currentUser) return;
   document.getElementById('chat-list-container').innerHTML = '<div class="spinner"></div>';
-  var res = await db.from('chats')
-    .select('*, buyer:buyer_id(name), seller:seller_id(name), request:request_id(title), messages(text, created_at, sender_id)')
-    .or('buyer_id.eq.' + currentUser.id + ',seller_id.eq.' + currentUser.id)
-    .order('created_at', { ascending: false });
+  var res = await db.from('chats').select('*, buyer:buyer_id(name), seller:seller_id(name), request:request_id(title), messages(text, created_at, sender_id)').or('buyer_id.eq.' + currentUser.id + ',seller_id.eq.' + currentUser.id).order('created_at', { ascending: false });
   var chats = res.data || [];
-  if (!chats.length) {
-    document.getElementById('chat-list-container').innerHTML = '<div class="empty"><div class="empty-icon">💬</div><p>Чатів ще немає.<br>Напишіть продавцю!</p></div>';
-    return;
-  }
+  if (!chats.length) { document.getElementById('chat-list-container').innerHTML = '<div class="empty"><div class="empty-icon">💬</div><p>Чатів ще немає</p></div>'; return; }
   var html = '';
-  for (var i = 0; i < chats.length; i++) {
-    var c       = chats[i];
-    var isbuyer = currentUser.id === c.buyer_id;
-    var partner = isbuyer ? (c.seller ? c.seller.name : 'Продавець') : (c.buyer ? c.buyer.name : 'Покупець');
-    var msgs    = c.messages || [];
-    var last    = msgs.length ? msgs[msgs.length-1].text : 'Немає повідомлень';
-    var lastTime= msgs.length ? timeAgo(msgs[msgs.length-1].created_at) : '';
-    html += '<div class="chat-list-item" data-action="open-chat-id" data-chatid="' + c.id + '" data-partner="' + esc(partner) + '" data-title="' + esc(c.request ? c.request.title : '') + '"><div><div class="chat-list-name">' + esc(partner) + '</div><div class="chat-list-preview">' + esc(last.substring(0,40)) + '</div></div><div class="chat-list-time">' + lastTime + '</div></div>';
+  for (var i=0;i<chats.length;i++) {
+    var c=chats[i];
+    var isbuyer=currentUser.id===c.buyer_id;
+    var partner=isbuyer?(c.seller?c.seller.name:'Продавець'):(c.buyer?c.buyer.name:'Покупець');
+    var msgs=c.messages||[];
+    var last=msgs.length?msgs[msgs.length-1].text:'Немає повідомлень';
+    var lastTime=msgs.length?timeAgo(msgs[msgs.length-1].created_at):'';
+    html+='<div class="chat-list-item" data-action="open-chat-id" data-chatid="'+c.id+'" data-partner="'+esc(partner)+'" data-title="'+esc(c.request?c.request.title:'')+'"><div><div class="chat-list-name">'+esc(partner)+'</div><div class="chat-list-preview">'+esc(last.substring(0,40))+'</div></div><div class="chat-list-time">'+lastTime+'</div></div>';
   }
   document.getElementById('chat-list-container').innerHTML = html;
 }
 
 async function openOrCreateChat(sellerId, requestId, sellerName, reqTitle) {
   if (!currentUser) { openAuth(); return; }
-  // Check if chat exists
-  var res = await db.from('chats').select('id')
-    .eq('request_id', requestId)
-    .eq('buyer_id', currentUser.id)
-    .eq('seller_id', sellerId)
-    .maybeSingle();
+  var res = await db.from('chats').select('id').eq('request_id', requestId).eq('buyer_id', currentUser.id).eq('seller_id', sellerId).maybeSingle();
   var chatId = res.data ? res.data.id : null;
   if (!chatId) {
     var ins = await db.from('chats').insert({ request_id: requestId, buyer_id: currentUser.id, seller_id: sellerId }).select('id').single();
     if (ins.error) { toast('Помилка: ' + ins.error.message, true); return; }
     chatId = ins.data.id;
   }
+  closeRequestModal();
   openChatWindow(chatId, sellerName, reqTitle);
 }
 
 function openChatWindow(chatId, partnerName, reqTitle) {
   currentChatId = chatId;
-  showPage('chat-win');
+  showPage('chat-window');
   document.getElementById('chat-header-name').textContent = partnerName || 'Чат';
-  document.getElementById('chat-header-sub').textContent  = reqTitle   || '';
+  document.getElementById('chat-header-sub').textContent = reqTitle || '';
   document.getElementById('chat-messages').innerHTML = '<div class="spinner"></div>';
   loadMessages(chatId);
-
   if (chatRealtimeSub) chatRealtimeSub.unsubscribe();
   chatRealtimeSub = db.channel('chat-' + chatId)
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: 'chat_id=eq.' + chatId }, function() {
-      loadMessages(chatId);
-    })
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: 'chat_id=eq.' + chatId }, function() { loadMessages(chatId); })
     .subscribe();
 }
 
 async function loadMessages(chatId) {
   var res = await db.from('messages').select('*, sender:sender_id(name)').eq('chat_id', chatId).order('created_at', { ascending: true });
   var msgs = res.data || [];
-  var c    = document.getElementById('chat-messages');
-  if (!msgs.length) { c.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:13px;padding:20px">Напишіть перше повідомлення!</div>'; return; }
+  var c = document.getElementById('chat-messages');
+  if (!msgs.length) { c.innerHTML = '<div style="text-align:center;color:var(--text3);font-size:13px;padding:20px">Напишіть перше повідомлення!</div>'; return; }
   var html = '';
-  for (var i = 0; i < msgs.length; i++) {
-    var m    = msgs[i];
-    var mine = currentUser && m.sender_id === currentUser.id;
-    html += '<div class="msg ' + (mine ? 'msg-mine' : 'msg-other') + '">' + esc(m.text) + '<div class="msg-time">' + timeAgo(m.created_at) + '</div></div>';
+  for (var i=0;i<msgs.length;i++) {
+    var m=msgs[i];
+    var mine=currentUser&&m.sender_id===currentUser.id;
+    html+='<div class="msg '+(mine?'msg-mine':'msg-other')+'">'+esc(m.text)+'<div class="msg-time">'+timeAgo(m.created_at)+'</div></div>';
   }
   c.innerHTML = html;
   c.scrollTop = c.scrollHeight;
@@ -1210,73 +1279,33 @@ async function loadMessages(chatId) {
 async function sendMessage() {
   if (!currentUser || !currentChatId) return;
   var input = document.getElementById('chat-input');
-  var text  = input.value.trim();
+  var text = input.value.trim();
   if (!text) return;
   input.value = '';
   var res = await db.from('messages').insert({ chat_id: currentChatId, sender_id: currentUser.id, text: text });
   if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
   loadMessages(currentChatId);
 }
-
 document.getElementById('chat-send-btn').addEventListener('click', sendMessage);
-document.getElementById('chat-input').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-});
+document.getElementById('chat-input').addEventListener('keydown', function(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
 
-// ---- FAB ----
-document.getElementById('fab-btn').addEventListener('click', function() {
-  if (!currentUser) { openAuth(); return; }
-  document.getElementById('fab-title').value  = '';
-  document.getElementById('fab-desc').value   = '';
-  document.getElementById('fab-budget').value = '';
-  document.getElementById('new-req-modal').classList.add('open');
-  photoState['fab'] = [];
-  renderPhotoPreviews('fab');
-  setTimeout(function() { document.getElementById('fab-title').focus(); }, 100);
-});
-
-document.getElementById('close-new-req-btn').addEventListener('click', function() {
-  document.getElementById('new-req-modal').classList.remove('open');
-});
-
-document.getElementById('new-req-modal').addEventListener('click', function(e) {
-  if (e.target === this) this.classList.remove('open');
-});
-
-document.getElementById('fab-photo-input').addEventListener('change', function() {
-  handlePhotoSelect('fab', this);
-});
-
-document.getElementById('fab-submit-btn').addEventListener('click', async function() {
-  if (!currentUser) { openAuth(); return; }
-  var title  = document.getElementById('fab-title').value.trim();
-  var desc   = document.getElementById('fab-desc').value.trim();
-  var cat    = document.getElementById('fab-cat').value;
-  var budget = document.getElementById('fab-budget').value;
-  if (!title) { toast('Вкажіть що шукаєте', true); return; }
-  await ensureProfile(currentUser);
-  var btn = document.getElementById('fab-submit-btn');
-  btn.textContent = 'Публікуємо...'; btn.disabled = true;
-  var reqPhotoUrls = await uploadPhotos('fab');
-  var res = await db.from('requests').insert({
-    user_id: currentUser.id, title: title,
-    description: desc || null, category: cat,
-    budget: budget ? Number(budget) : null,
-    photos: reqPhotoUrls.length ? reqPhotoUrls : null
-  });
-  btn.textContent = 'Опублікувати запит'; btn.disabled = false;
-  if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
-  photoState['fab'] = [];
-  document.getElementById('new-req-modal').classList.remove('open');
-  toast('Запит опубліковано! 🎉');
-  showPage('main');
-  loadRequests();
-});
+// ---- HELPERS ----
+function esc(str) {
+  if (!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function timeAgo(dateStr) {
+  var diff = Math.floor((Date.now() - new Date(dateStr)) / 1000);
+  if (diff < 60) return 'щойно';
+  if (diff < 3600) return Math.floor(diff/60) + ' хв тому';
+  if (diff < 86400) return Math.floor(diff/3600) + ' год тому';
+  return Math.floor(diff/86400) + ' дн тому';
+}
 
 // ---- REALTIME ----
 db.channel('public-changes')
   .on('postgres_changes', { event: '*', schema: 'public', table: 'requests' }, loadRequests)
-  .on('postgres_changes', { event: '*', schema: 'public', table: 'offers'   }, function() {
+  .on('postgres_changes', { event: '*', schema: 'public', table: 'offers' }, function() {
     loadRequests();
     if (window._currentRequestId && document.getElementById('request-modal').classList.contains('open')) {
       openRequestPage(window._currentRequestId);
@@ -1285,34 +1314,10 @@ db.channel('public-changes')
   .subscribe();
 
 // ---- INIT ----
-// Sidebar photo input
-var sidebarPhotoInput = document.getElementById('sidebar-photo-input');
-if (sidebarPhotoInput) {
-  sidebarPhotoInput.addEventListener('change', function() {
-    handlePhotoSelect('sidebar', this);
-  });
-}
-
-// Mobile sidebar toggle
-var sidebarToggle = document.getElementById('sidebar-toggle');
-var sidebarBody   = document.getElementById('sidebar-body');
-var sidebarArrow  = document.getElementById('sidebar-arrow');
-var isMobile = window.innerWidth <= 700;
-if (isMobile && sidebarBody) {
-  sidebarBody.style.display = 'none';
-  sidebarArrow.style.transform = 'rotate(-90deg)';
-}
-if (sidebarToggle) {
-  sidebarToggle.addEventListener('click', function() {
-    var isHidden = sidebarBody.style.display === 'none';
-    sidebarBody.style.display = isHidden ? '' : 'none';
-    sidebarArrow.style.transform = isHidden ? '' : 'rotate(-90deg)';
-  });
-}
-
 db.auth.getSession().then(function(res) { if (res.data.session && res.data.session.user) setUserUI(res.data.session.user); });
 db.auth.onAuthStateChange(function(_e, session) { setUserUI(session ? session.user : null); loadRequests(); });
 loadRequests();
+checkUrlRequest();
 </script>
 </body>
 </html>
