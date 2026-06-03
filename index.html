@@ -76,7 +76,7 @@ body{font-family:'Manrope',sans-serif;background:#fff;color:var(--text);min-heig
 .card-save-btn svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2;}
 .card-save-btn.saved svg{fill:#fff;}
 .card-found-badge{position:absolute;top:8px;left:8px;background:var(--green);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;}
-.card-body{padding:8px 0 0;display:flex;flex-direction:column;gap:0;}
+.card-body{padding:8px 0 0;}
 .card-divider{height:1px;background:#DFDEDE;margin:8px 0;}
 .card-title{font-family:'Encode Sans',sans-serif;font-size:14px;font-weight:600;color:#121111;line-height:1.5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0 0 4px 0;}
 .card-cat-tag{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:500;color:#292526;padding:4px 12px;border-radius:8px;border:1px solid #DFDEDE;font-family:'Manrope',sans-serif;white-space:nowrap;line-height:1.5;}
@@ -812,10 +812,10 @@ function renderRequests(requests) {
     if (isClosed) html += '<span class="card-found-badge">✓ Знайдено</span>';
     html += '</div>';
     html += '<div class="card-body" data-action="open-request" data-id="' + r.id + '">';
-    html += '<div style="display:flex;flex-direction:column;gap:4px;margin-bottom:4px"><p class="card-title">' + esc(r.title) + '</p>';
-    html += '<div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start;width:100%">';
-    html += '<span class="card-cat-tag" style="align-self:flex-start"><span style="font-size:14px;display:inline-block;vertical-align:middle;margin-right:2px">' + catIcon + '</span>' + esc(r.category || 'Інше') + '</span>';
-    html += '<span style="display:inline-flex;align-self:flex-start">' + offersTag + '</span></div></div>' + budgetHtml;
+      html += '<p class="card-title">' + esc(r.title) + '</p>';
+    html += '<span class="card-cat-tag"><span style="font-size:14px;vertical-align:middle">' + catIcon + '</span> ' + esc(r.category || 'Інше') + '</span>';
+    html += offersTag;
+    html += budgetHtml;
     html += '</div></div>';
   }
   html += '</div>';
