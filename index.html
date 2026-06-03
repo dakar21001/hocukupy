@@ -80,7 +80,7 @@ body{font-family:'Manrope',sans-serif;background:#fff;color:var(--text);min-heig
 .card-divider{height:1px;background:#DFDEDE;margin:8px 0;}
 .card-title{font-family:'Encode Sans',sans-serif;font-size:14px;font-weight:600;color:#121111;line-height:1.5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0 0 4px 0;}
 .card-cat-tag{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:500;color:#292526;padding:4px 12px;border-radius:8px;border:1px solid #DFDEDE;font-family:'Manrope',sans-serif;white-space:nowrap;line-height:1.5;}
-.card-offers-tag{display:inline-block;font-size:12px;font-weight:500;color:#292526;padding:4px 12px;border-radius:8px;border:1px solid rgba(0,128,0,0.2);font-family:'Manrope',sans-serif;white-space:nowrap;}
+.card-offers-tag{display:inline-block;font-size:12px;font-weight:500;color:#292526;padding:4px 12px;border-radius:8px;border:1px solid rgba(0,128,0,0.2);font-family:'Manrope',sans-serif;white-space:nowrap;max-width:100%;}
 .card-offers-tag.empty{color:#292526;opacity:0.4;display:inline-block;}
 .card-budget{font-family:'Manrope',sans-serif;font-size:14px;font-weight:700;color:var(--text2);margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:4px;}
 .card-budget-do{font-size:14px;font-weight:700;color:var(--text3);}
@@ -813,7 +813,7 @@ function renderRequests(requests) {
     html += '</div>';
     html += '<div class="card-body" data-action="open-request" data-id="' + r.id + '">';
     html += '<div style="display:flex;flex-direction:column;gap:4px;margin-bottom:4px"><p class="card-title">' + esc(r.title) + '</p>';
-    html += '<div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start">';
+    html += '<div style="display:flex;flex-direction:column;gap:8px;align-items:start;width:fit-content">';
     html += '<span class="card-cat-tag"><span style="font-size:14px;display:inline-block;vertical-align:middle;margin-right:2px">' + catIcon + '</span>' + esc(r.category || 'Інше') + '</span>';
     html += offersTag + '</div></div>' + budgetHtml;
     html += '</div></div>';
