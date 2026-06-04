@@ -275,6 +275,24 @@ textarea{resize:vertical;min-height:80px;}
 .confirm-modal p{font-size:14px;color:var(--text2);margin-bottom:20px;line-height:1.5;}
 .confirm-actions{display:flex;gap:10px;}
 .confirm-actions .btn{flex:1;text-align:center;}
+
+/* CATEGORIES PAGE */
+.cats-page{background:#fff;min-height:100vh;padding-bottom:calc(var(--nav-h)+16px);}
+.cats-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 20px;}
+.cats-back-btn{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--border);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cats-back-btn svg{width:20px;height:20px;stroke:var(--text);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.cats-title{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:18px;font-weight:700;color:var(--text);letter-spacing:-0.2px;}
+.cats-avatar{width:44px;height:44px;border-radius:100px;background:var(--green-light);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:16px;font-weight:700;color:var(--green-dark);overflow:hidden;flex-shrink:0;}
+.cats-avatar img{width:100%;height:100%;object-fit:cover;}
+.cats-list{padding:0 16px;display:flex;flex-direction:column;gap:10px;}
+.cat-row{display:flex;align-items:center;gap:14px;padding:18px 16px;border:1.5px solid var(--border);border-radius:16px;background:#fff;cursor:pointer;transition:all 0.15s;width:100%;}
+.cat-row:active{background:var(--green-light);border-color:var(--green);}
+.cat-row-icon{width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cat-row-icon svg{width:24px;height:24px;stroke:var(--text);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
+.cat-row-label{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:16px;font-weight:600;color:var(--text);line-height:1;}
+.cat-row.active-cat{background:var(--green-light);border-color:var(--green);}
+.cat-row.active-cat .cat-row-label{color:var(--green-dark);}
+.cat-row.active-cat .cat-row-icon svg{stroke:var(--green-dark);}
 </style>
 </head>
 <body>
@@ -322,6 +340,10 @@ textarea{resize:vertical;min-height:80px;}
     <button class="cat-chip" data-cat="Одяг"><svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg> Одяг</button>
     <button class="cat-chip" data-cat="Меблі"><svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"/><path d="M3 16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z"/><path d="M5 18v2"/><path d="M19 18v2"/></svg> Меблі</button>
     <button class="cat-chip" data-cat="Спорт"><svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 7a16 16 20 0 1 10.98 4.362"/><path d="M12 12a13 13 0 0 1-8.66 5"/><path d="M16.83 13.634a16 16 0 0 1-9.267 7.328"/><path d="M20.66 17A13 13 0 0 0 12 12a13 13 0 0 1 0-10"/><path d="M8.17 15.366a16 16 0 0 1-1.713-11.69"/><circle cx="12" cy="12" r="10"/></svg> Спорт</button>
+    <button class="cat-chip" data-cat="Книги"><svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Книги</button>
+    <button class="cat-chip" data-cat="Іграшки"><svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M12 12h.01"/><path d="M7 12h.01"/><path d="M17 12h.01"/><path d="M7 8v8"/></svg> Іграшки</button>
+    <button class="cat-chip" data-cat="Косметика"><svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3"/><path d="M12 19v3"/><path d="m4.22 4.22 2.12 2.12"/><path d="m17.66 17.66 2.12 2.12"/><path d="M2 12h3"/><path d="M19 12h3"/><path d="m4.22 19.78 2.12-2.12"/><path d="m17.66 6.34 2.12-2.12"/></svg> Косметика</button>
+    <button class="cat-chip" data-cat="Запчастини до авто"><svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4"/><path d="M12 19v4"/><path d="M4.22 4.22l2.83 2.83"/><path d="M16.95 16.95l2.83 2.83"/><path d="M1 12h4"/><path d="M19 12h4"/><path d="M4.22 19.78l2.83-2.83"/><path d="M16.95 7.05l2.83-2.83"/></svg> Запчастини до авто</button>
     <button class="cat-chip" data-cat="Інше"><svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M17 12h.01"/><path d="M12 12h.01"/><path d="M7 12h.01"/></svg> Інше</button>
   </div>
   <div class="main-content">
@@ -337,7 +359,7 @@ textarea{resize:vertical;min-height:80px;}
           <div class="field-group"><div class="field-label">Що шукаєте?</div><input type="text" id="new-title" placeholder="iPhone 13 Pro 256GB"></div>
           <div class="field-group"><div class="field-label">Деталі</div><textarea id="new-desc" placeholder="Стан, комплектація..."></textarea></div>
           <div class="field-group"><div class="field-label">Категорія</div>
-            <select id="new-cat"><option>Електроніка</option><option>Авто</option><option>Одяг</option><option>Меблі</option><option>Спорт</option><option>Інше</option></select>
+            <select id="new-cat"><option>Електроніка</option><option>Авто</option><option>Одяг</option><option>Меблі</option><option>Спорт</option><option>Книги</option><option>Іграшки</option><option>Косметика</option><option>Запчастини до авто</option><option>Інше</option></select>
           </div>
           <div class="field-group"><div class="field-label">Бюджет</div><input type="number" id="new-budget" placeholder="50000"></div>
           <div class="field-group">
@@ -505,7 +527,7 @@ textarea{resize:vertical;min-height:80px;}
     <div class="field-group"><div class="field-label">Що шукаєте?</div><input type="text" id="fab-title" placeholder="iPhone 13 Pro 256GB"></div>
     <div class="field-group"><div class="field-label">Деталі</div><textarea id="fab-desc" placeholder="Стан, комплектація, побажання..."></textarea></div>
     <div class="field-group"><div class="field-label">Категорія</div>
-      <select id="fab-cat"><option>Електроніка</option><option>Авто</option><option>Одяг</option><option>Меблі</option><option>Спорт</option><option>Інше</option></select>
+      <select id="fab-cat"><option>Електроніка</option><option>Авто</option><option>Одяг</option><option>Меблі</option><option>Спорт</option><option>Книги</option><option>Іграшки</option><option>Косметика</option><option>Запчастини до авто</option><option>Інше</option></select>
     </div>
     <div class="field-group"><div class="field-label">Бюджет</div><input type="number" id="fab-budget" placeholder="50000"></div>
     <div class="field-group">
@@ -517,6 +539,98 @@ textarea{resize:vertical;min-height:80px;}
       <div class="photo-previews" id="fab-previews" style="margin-top:8px"></div>
     </div>
     <button class="btn btn-primary btn-full" id="fab-submit-btn">Опублікувати запит</button>
+  </div>
+</div>
+
+<!-- CATEGORIES PAGE -->
+<div id="cats-page" style="display:none">
+  <div class="cats-page">
+    <div class="cats-header">
+      <button class="cats-back-btn" id="cats-back-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <span class="cats-title">Категорії</span>
+      <button class="cats-avatar" id="cats-avatar-icon" onclick="if(window.currentUser){openProfile(window.currentUser.id);}else{openAuth();}">?</button>
+    </div>
+    <div class="cats-list">
+      <!-- Всі категорії -->
+      <button class="cat-row active-cat" data-cat="">
+        <span class="cat-row-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+        </span>
+        <span class="cat-row-label">Всі категорії</span>
+      </button>
+      <!-- Авто -->
+      <button class="cat-row" data-cat="Авто">
+        <span class="cat-row-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
+        </span>
+        <span class="cat-row-label">Авто</span>
+      </button>
+      <!-- Електроніка -->
+      <button class="cat-row" data-cat="Електроніка">
+        <span class="cat-row-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 19a1 1 0 0 1-1-1v-2a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2a1 1 0 0 1-1 1z"/><path d="M17 21v-2"/><path d="M19 14V6.5a1 1 0 0 0-7 0v11a1 1 0 0 1-7 0V10"/><path d="M21 21v-2"/><path d="M3 5V3"/><path d="M4 10a2 2 0 0 1-2-2V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2a2 2 0 0 1-2 2z"/><path d="M7 5V3"/></svg>
+        </span>
+        <span class="cat-row-label">Електроніка</span>
+      </button>
+      <!-- Одяг -->
+      <button class="cat-row" data-cat="Одяг">
+        <span class="cat-row-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>
+        </span>
+        <span class="cat-row-label">Одяг</span>
+      </button>
+      <!-- Спорт -->
+      <button class="cat-row" data-cat="Спорт">
+        <span class="cat-row-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7a16 16 20 0 1 10.98 4.362"/><path d="M12 12a13 13 0 0 1-8.66 5"/><path d="M16.83 13.634a16 16 0 0 1-9.267 7.328"/><path d="M20.66 17A13 13 0 0 0 12 12a13 13 0 0 1 0-10"/><path d="M8.17 15.366a16 16 0 0 1-1.713-11.69"/><circle cx="12" cy="12" r="10"/></svg>
+        </span>
+        <span class="cat-row-label">Спорт</span>
+      </button>
+      <!-- Книги -->
+      <button class="cat-row" data-cat="Книги">
+        <span class="cat-row-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        </span>
+        <span class="cat-row-label">Книги</span>
+      </button>
+      <!-- Іграшки -->
+      <button class="cat-row" data-cat="Іграшки">
+        <span class="cat-row-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M12 12h.01"/><path d="M7 12h.01"/><path d="M17 12h.01"/><path d="M7 8v8"/></svg>
+        </span>
+        <span class="cat-row-label">Іграшки</span>
+      </button>
+      <!-- Косметика -->
+      <button class="cat-row" data-cat="Косметика">
+        <span class="cat-row-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3"/><path d="M12 19v3"/><path d="m4.22 4.22 2.12 2.12"/><path d="m17.66 17.66 2.12 2.12"/><path d="M2 12h3"/><path d="M19 12h3"/><path d="m4.22 19.78 2.12-2.12"/><path d="m17.66 6.34 2.12-2.12"/></svg>
+        </span>
+        <span class="cat-row-label">Косметика</span>
+      </button>
+      <!-- Меблі -->
+      <button class="cat-row" data-cat="Меблі">
+        <span class="cat-row-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"/><path d="M3 16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z"/><path d="M5 18v2"/><path d="M19 18v2"/></svg>
+        </span>
+        <span class="cat-row-label">Меблі</span>
+      </button>
+      <!-- Запчастини до авто -->
+      <button class="cat-row" data-cat="Запчастини до авто">
+        <span class="cat-row-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4"/><path d="M12 19v4"/><path d="M4.22 4.22l2.83 2.83"/><path d="M16.95 16.95l2.83 2.83"/><path d="M1 12h4"/><path d="M19 12h4"/><path d="M4.22 19.78l2.83-2.83"/><path d="M16.95 7.05l2.83-2.83"/></svg>
+        </span>
+        <span class="cat-row-label">Запчастини до авто</span>
+      </button>
+      <!-- Інше -->
+      <button class="cat-row" data-cat="Інше">
+        <span class="cat-row-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M17 12h.01"/><path d="M12 12h.01"/><path d="M7 12h.01"/></svg>
+        </span>
+        <span class="cat-row-label">Інше</span>
+      </button>
+    </div>
   </div>
 </div>
 
@@ -671,6 +785,11 @@ window.addEventListener('DOMContentLoaded', function() {
     if (letter && catsAvatar) catsAvatar.textContent = letter.textContent;
     var img = document.querySelector('#mobile-avatar-btn img');
     if (img && catsAvatar) { catsAvatar.innerHTML = ''; var i = img.cloneNode(); i.style.cssText='width:100%;height:100%;object-fit:cover;border-radius:100px;'; catsAvatar.appendChild(i); }
+    // highlight currently active cat
+    document.querySelectorAll('.cat-row').forEach(function(r) {
+      var cat = r.getAttribute('data-cat');
+      r.classList.toggle('active-cat', cat === currentCat);
+    });
     showPage('cats');
   });
   document.getElementById('cats-back-btn').addEventListener('click', function() {
