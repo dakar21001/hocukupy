@@ -814,7 +814,7 @@ function renderRequests(requests) {
     html += '<div class="card-body" data-action="open-request" data-id="' + r.id + '">';
     html += '<p class="card-title">' + esc(r.title) + '</p>';
     html += '<span class="card-cat-tag"><span style="font-size:14px;vertical-align:middle">' + catIcon + '</span> ' + esc(r.category || 'Інше') + '</span>';
-    html += offersTag;
+    html += '<div style="display:inline-block">' + offersTag + '</div>';
     html += budgetHtml;
     html += '</div></div>';
   }
