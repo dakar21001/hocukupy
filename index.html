@@ -799,8 +799,8 @@ function renderRequests(requests) {
       ? '<img src="' + r.photos[0] + '" alt="" loading="lazy">'
       : '<div class="card-img-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>';
     var offersTag = offers.length
-      ? '<span class="card-offers-tag">' + offers.length + ' пропозицій</span>'
-      : '<span class="card-offers-tag empty" style="width:fit-content">Пропозицій ще немає</span>';
+    ? '<span class="card-offers-tag" style="align-self:flex-start">' + offers.length + ' пропозицій</span>'
+    : '<span class="card-offers-tag empty" style="align-self:flex-start">Пропозицій ще немає</span>';
     var budgetHtml = r.budget
       ? '<div class="card-divider"></div><div class="card-budget"><span style="font-size:0"><span style="font-size:14px;font-weight:700;color:#949293;font-family:Manrope,sans-serif">До </span><span style="font-size:18px;font-weight:700;color:#292526;font-family:Manrope,sans-serif">' + Number(r.budget).toLocaleString('uk') + ' ₴</span></span><div class="card-arrow"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m9 18 6-6-6-6\"/></svg></div></div>'
       : '<div class="card-divider"></div><div class="card-budget"><span style="font-size:14px;font-weight:700;color:#292526;font-family:Manrope,sans-serif">Вільний бюджет</span><div class="card-arrow"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m9 18 6-6-6-6\"/></svg></div></div>';
@@ -813,7 +813,7 @@ function renderRequests(requests) {
     html += '</div>';
     html += '<div class="card-body" style="display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:8px 0 0" data-action="open-request" data-id="' + r.id + '">';
     html += '<p class="card-title">' + esc(r.title) + '</p>';
-    html += '<span class="card-cat-tag"><span style="font-size:14px;vertical-align:middle">' + catIcon + '</span> ' + esc(r.category || 'Інше') + '</span>';
+    html += '<span class="card-cat-tag" style="align-self:flex-start"><span style="font-size:14px;vertical-align:middle">' + catIcon + '</span> ' + esc(r.category || 'Інше') + '</span>';
     html += '<div style="display:inline-block">' + offersTag + '</div>';
     html += budgetHtml;
     html += '</div></div>';
