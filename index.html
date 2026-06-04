@@ -811,7 +811,7 @@ function renderRequests(requests) {
     html += '<button class="card-save-btn' + (isSaved ? ' saved' : '') + '" data-action="toggle-save" data-id="' + r.id + '"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></button>';
     if (isClosed) html += '<span class="card-found-badge">✓ Знайдено</span>';
     html += '</div>';
-    html += '<div class="card-body" data-action="open-request" data-id="' + r.id + '">';
+    html += '<div class="card-body" style="display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:8px 0 0" data-action="open-request" data-id="' + r.id + '">';
     html += '<p class="card-title">' + esc(r.title) + '</p>';
     html += '<span class="card-cat-tag"><span style="font-size:14px;vertical-align:middle">' + catIcon + '</span> ' + esc(r.category || 'Інше') + '</span>';
     html += '<div style="display:inline-block">' + offersTag + '</div>';
