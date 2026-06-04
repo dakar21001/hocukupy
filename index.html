@@ -1022,8 +1022,8 @@ document.addEventListener('click', function(e) {
   if (action === 'close-req')     { closeRequest(id); }
   if (action === 'delete-req')    { deleteRequest(id); }
   if (action === 'leave-review')  { openReviewModal(btn.dataset.seller, btn.dataset.reqid); }
-  if (action === 'open-chat')     { openOrCreateChat(btn.dataset.seller, btn.dataset.reqid, btn.dataset.selname, btn.dataset.reqtitle); }
-  if (action === 'open-chat-id')  { openChatWindow(btn.dataset.chatid, btn.dataset.partner, btn.dataset.title); }
+  if (action === 'open-chat')     { openOrCreateChat(btn.dataset.seller, btn.dataset.reqid, btn.dataset.selname, btn.dataset.reqtitle, btn.dataset.seller); }
+  if (action === 'open-chat-id')  { openChatWindow(btn.dataset.chatid, btn.dataset.partner, btn.dataset.title, btn.dataset.partnerid); }
   if (action === 'remove-photo')  { removePhoto(btn.dataset.formid, Number(btn.dataset.idx)); }
   if (action === 'lightbox')      { openLightbox(btn.dataset.url); }
 });
@@ -1447,7 +1447,8 @@ async function openChatList() {
     var lastTime=msgs.length?formatChatTime(msgs[msgs.length-1].created_at):'';
     var initials=partner.charAt(0).toUpperCase();
     var isOnline = i < 2; // перші два — онлайн для демо (реальний онлайн потребує окремої таблиці)
-    html += '<div class="chat-list-item" data-action="open-chat-id" data-chatid="'+c.id+'" data-partner="'+esc(partner)+'" data-title="'+esc(c.request?c.request.title:'')+'">';
+    var partnerId=isbuyer?c.seller_id:c.buyer_id;
+    html += '<div class="chat-list-item" data-action="open-chat-id" data-chatid="'+c.id+'" data-partner="'+esc(partner)+'" data-partnerid="'+(partnerId||'')+'" data-title="'+esc(c.request?c.request.title:'')+'">';
     html += '<div class="chat-list-avatar">'+initials+'</div>';
     html += '<div class="chat-list-info">';
     html += '<div class="chat-list-row1"><span class="chat-list-name">'+esc(partner)+'</span><span class="chat-list-time">'+lastTime+'</span></div>';
@@ -1467,15 +1468,19 @@ async function openOrCreateChat(sellerId, requestId, sellerName, reqTitle) {
     chatId = ins.data.id;
   }
   closeRequestModal();
-  openChatWindow(chatId, sellerName, reqTitle);
+  openChatWindow(chatId, sellerName, reqTitle, sellerId);
 }
 
-function openChatWindow(chatId, partnerName, reqTitle) {
+function openChatWindow(chatId, partnerName, reqTitle, partnerId) {
   currentChatId = chatId;
   showPage('chat-window');
   document.getElementById('chat-header-name').textContent = partnerName || 'Чат';
   var av = document.getElementById('chat-win-avatar');
-  if (av) av.textContent = partnerName ? partnerName.charAt(0).toUpperCase() : '?';
+  if (av) {
+    av.textContent = partnerName ? partnerName.charAt(0).toUpperCase() : '?';
+    av.style.cursor = partnerId ? 'pointer' : 'default';
+    av.onclick = partnerId ? function() { openProfile(partnerId); } : null;
+  }
   document.getElementById('chat-messages').innerHTML = '<div class="spinner"></div>';
   loadMessages(chatId);
   if (chatRealtimeSub) chatRealtimeSub.unsubscribe();
