@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ХочуКупити</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@400;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&family=Unbounded:wght@700&display=swap" rel="stylesheet">
 <style>
 :root {
   --green:#008000;--green-dark:#006600;--green-light:#E8F8EE;
@@ -16,7 +16,7 @@
   --nav-h:48px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-body{font-family:'Manrope',sans-serif;background:#fff;color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;}
+body{font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', 'Poppins', sans-serif;background:#fff;color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;}
 
 /* TOPBAR (desktop) */
 .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:none;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
@@ -29,12 +29,12 @@ body{font-family:'Manrope',sans-serif;background:#fff;color:var(--text);min-heig
 .mobile-header{background:var(--surface);padding:16px 16px 16px;position:sticky;top:0;z-index:100;}
 .mobile-header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
 .greeting{font-size:14px;color:var(--text3);margin-bottom:2px;font-weight:400;}
-.greeting-name{font-family:'Manrope',sans-serif;font-size:18px;font-weight:700;color:var(--text);}
-.avatar-btn{width:46px;height:46px;border-radius:100px;background:var(--green-light);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Manrope',sans-serif;font-size:16px;font-weight:700;color:var(--green-dark);overflow:hidden;flex-shrink:0;}
+.greeting-name{font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', 'Poppins', sans-serif;font-size:18px;font-weight:700;color:var(--text);}
+.avatar-btn{width:46px;height:46px;border-radius:100px;background:var(--green-light);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', 'Poppins', sans-serif;font-size:16px;font-weight:700;color:var(--green-dark);overflow:hidden;flex-shrink:0;}
 .avatar-btn img{width:100%;height:100%;object-fit:cover;}
 .search-row{display:flex;gap:10px;align-items:center;}
 .search-wrap{flex:1;position:relative;}
-.search-wrap input{width:100%;padding:11px 12px 11px 36px;border:1px solid var(--border);border-radius:8px;font-family:'Manrope',sans-serif;font-size:14px;background:var(--surface);color:var(--text);outline:none;transition:border-color 0.15s;height:48px;}
+.search-wrap input{width:100%;padding:11px 12px 11px 36px;border:1px solid var(--border);border-radius:8px;font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', 'Poppins', sans-serif;font-size:14px;background:var(--surface);color:var(--text);outline:none;transition:border-color 0.15s;height:48px;}
 .search-wrap input:focus{border-color:var(--green);}
 .search-wrap input::placeholder{color:var(--text3);}
 .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;width:16px;height:16px;}
@@ -47,7 +47,7 @@ body{font-family:'Manrope',sans-serif;background:#fff;color:var(--text);min-heig
 /* CATEGORIES */
 .categories-scroll{display:flex;gap:12px;overflow-x:auto;padding:12px 16px;scrollbar-width:none;background:#fff;}
 .categories-scroll::-webkit-scrollbar{display:none;}
-.cat-chip{display:flex;align-items:center;gap:4px;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface);white-space:nowrap;font-family:'Manrope',sans-serif;font-size:14px;font-weight:500;color:var(--text2);cursor:pointer;transition:all 0.15s;flex-shrink:0;}
+.cat-chip{display:flex;align-items:center;gap:4px;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface);white-space:nowrap;font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', 'Poppins', sans-serif;font-size:14px;font-weight:500;color:var(--text2);cursor:pointer;transition:all 0.15s;flex-shrink:0;}
 .cat-chip.active{background:var(--green);border-color:var(--green);color:#fff;}
 .cat-icon-img{display:inline-block;vertical-align:middle;width:16px;height:16px;}
 .cat-chip.active .cat-icon-img{filter:brightness(10);}
@@ -69,7 +69,7 @@ body{font-family:'Manrope',sans-serif;background:#fff;color:var(--text);min-heig
 .card-img-wrap img{width:100%;height:100%;object-fit:cover;}
 .card-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F0F0F0,#E2E2E2);}
 .card-img-placeholder svg{width:38px;height:38px;}
-.card-time{position:absolute;bottom:8px;right:8px;background:rgba(255,255,255,0.19);color:#fff;font-size:12px;font-weight:400;padding:4px 12px;border-radius:8px;font-family:'Manrope',sans-serif;}
+.card-time{position:absolute;bottom:8px;right:8px;background:rgba(255,255,255,0.19);color:#fff;font-size:12px;font-weight:400;padding:4px 12px;border-radius:8px;font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', 'Poppins', sans-serif;}
 .card-save-btn{position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:32px;background:var(--green);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 0.15s;z-index:1;}
 .card-save-btn:active{transform:scale(0.88);}
 .card-save-btn.saved{background:#e74c3c;}
@@ -78,11 +78,11 @@ body{font-family:'Manrope',sans-serif;background:#fff;color:var(--text);min-heig
 .card-found-badge{position:absolute;top:8px;left:8px;background:var(--green);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;}
 .card-body{padding:8px 0 0;display:flex;flex-direction:column;align-items:flex-start;gap:6px;flex:1;}
 .card-divider{height:1px;background:#DFDEDE;margin:8px 0;}
-.card-title{font-family:'Encode Sans',sans-serif;font-size:14px;font-weight:600;color:#121111;line-height:1.5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0 0 4px 0;}
-.card-cat-tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;color:#292526;padding:3px 8px;border-radius:6px;border:1px solid #DFDEDE;font-family:'Manrope',sans-serif;white-space:nowrap;line-height:1.4;}
-.card-offers-tag{display:inline-block;font-size:11px;font-weight:500;color:#292526;padding:3px 8px;border-radius:6px;border:1px solid rgba(0,128,0,0.2);font-family:'Manrope',sans-serif;white-space:nowrap;}
+.card-title{font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', 'Poppins', sans-serif;font-size:14px;font-weight:600;color:#121111;line-height:1.5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0 0 4px 0;}
+.card-cat-tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;color:#292526;padding:3px 8px;border-radius:6px;border:1px solid #DFDEDE;font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', 'Poppins', sans-serif;white-space:nowrap;line-height:1.4;}
+.card-offers-tag{display:inline-block;font-size:11px;font-weight:500;color:#292526;padding:3px 8px;border-radius:6px;border:1px solid rgba(0,128,0,0.2);font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', 'Poppins', sans-serif;white-space:nowrap;}
 .card-offers-tag.no-offers{color:#787676;opacity:1;border:1px solid #DFDEDE;font-size:11px;}
-.card-budget{font-family:'Manrope',sans-serif;font-size:14px;font-weight:700;color:var(--text2);margin-top:auto;padding-top:8px;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;}
+.card-budget{font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', 'Poppins', sans-serif;font-size:14px;font-weight:700;color:var(--text2);margin-top:auto;padding-top:8px;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;}
 .card-budget-do{font-size:14px;font-weight:700;color:var(--text3);}
 .card-budget-amount{font-size:18px;font-weight:700;color:var(--text2);}
 .card-arrow{width:32px;height:32px;border-radius:9px;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 6px rgba(0,128,0,0.25);}
@@ -117,7 +117,7 @@ body{font-family:'Manrope',sans-serif;background:#fff;color:var(--text);min-heig
 @media(min-width:701px){.fab{bottom:24px;right:24px;}}
 
 /* BUTTONS */
-.btn{font-family:'Manrope',sans-serif;font-size:13px;font-weight:600;padding:10px 18px;border-radius:var(--radius-sm);border:1.5px solid var(--border2);background:transparent;color:var(--text);cursor:pointer;transition:all 0.15s;}
+.btn{font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', 'Poppins', sans-serif;font-size:13px;font-weight:600;padding:10px 18px;border-radius:var(--radius-sm);border:1.5px solid var(--border2);background:transparent;color:var(--text);cursor:pointer;transition:all 0.15s;}
 .btn:hover{background:var(--bg);}
 .btn-primary{background:var(--green);border-color:var(--green);color:#fff;}
 .btn-primary:hover{background:var(--green-dark);border-color:var(--green-dark);}
@@ -127,7 +127,7 @@ body{font-family:'Manrope',sans-serif;background:#fff;color:var(--text);min-heig
 .user-pill{font-size:12px;font-weight:600;padding:6px 14px;border-radius:99px;background:var(--green-light);color:var(--green-dark);cursor:pointer;}
 
 /* FORM */
-input,textarea,select{font-family:'Manrope',sans-serif;font-size:14px;padding:12px 14px;border:1.5px solid var(--border2);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);width:100%;transition:border-color 0.15s;outline:none;}
+input,textarea,select{font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', 'Poppins', sans-serif;font-size:14px;padding:12px 14px;border:1.5px solid var(--border2);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);width:100%;transition:border-color 0.15s;outline:none;}
 input:focus,textarea:focus,select:focus{border-color:var(--green);}
 textarea{resize:vertical;min-height:80px;}
 .field-group{margin-bottom:14px;}
@@ -142,7 +142,7 @@ textarea{resize:vertical;min-height:80px;}
 .modal-handle{width:36px;height:4px;background:var(--border2);border-radius:99px;margin:0 auto 20px;}
 .modal h2{font-family:'Unbounded',sans-serif;font-size:17px;font-weight:700;margin-bottom:20px;}
 .modal-tabs{display:flex;margin-bottom:20px;border:1.5px solid var(--border2);border-radius:10px;overflow:hidden;}
-.modal-tab{flex:1;padding:10px;font-size:13px;font-weight:600;background:transparent;border:none;cursor:pointer;color:var(--text2);font-family:'Manrope',sans-serif;}
+.modal-tab{flex:1;padding:10px;font-size:13px;font-weight:600;background:transparent;border:none;cursor:pointer;color:var(--text2);font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', 'Poppins', sans-serif;}
 .modal-tab.active{background:var(--green);color:#fff;}
 .modal-close{float:right;background:none;border:none;font-size:22px;cursor:pointer;color:var(--text3);line-height:1;margin-top:-4px;}
 
@@ -295,7 +295,7 @@ textarea{resize:vertical;min-height:80px;}
   <div class="mobile-header-top">
     <div>
       <div class="greeting">Привіт 👋</div>
-      <div class="greeting-name" id="greeting-name" style="font-size:18px;font-weight:700;font-family:'Manrope',sans-serif">ХочуКупити</div>
+      <div class="greeting-name" id="greeting-name" style="font-size:18px;font-weight:700;font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', 'Poppins', sans-serif">ХочуКупити</div>
     </div>
     <button class="avatar-btn" id="mobile-avatar-btn">
       <span id="mobile-avatar-letter">?</span>
@@ -316,13 +316,13 @@ textarea{resize:vertical;min-height:80px;}
 <!-- MAIN PAGE -->
 <div id="main-page" style="background:#fff;min-height:100vh">
   <div class="categories-scroll" id="filter-row">
-    <button class="cat-chip active" data-cat=""><svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg> Всі</button>
-    <button class="cat-chip" data-cat="Авто"><svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg> Авто</button>
-    <button class="cat-chip" data-cat="Електроніка"><svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 19a1 1 0 0 1-1-1v-2a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2a1 1 0 0 1-1 1z"/><path d="M17 21v-2"/><path d="M19 14V6.5a1 1 0 0 0-7 0v11a1 1 0 0 1-7 0V10"/><path d="M21 21v-2"/><path d="M3 5V3"/><path d="M4 10a2 2 0 0 1-2-2V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2a2 2 0 0 1-2 2z"/><path d="M7 5V3"/></svg> Електроніка</button>
-    <button class="cat-chip" data-cat="Одяг"><svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg> Одяг</button>
-    <button class="cat-chip" data-cat="Меблі"><svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"/><path d="M3 16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z"/><path d="M5 18v2"/><path d="M19 18v2"/></svg> Меблі</button>
-    <button class="cat-chip" data-cat="Спорт"><svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 7a16 16 20 0 1 10.98 4.362"/><path d="M12 12a13 13 0 0 1-8.66 5"/><path d="M16.83 13.634a16 16 0 0 1-9.267 7.328"/><path d="M20.66 17A13 13 0 0 0 12 12a13 13 0 0 1 0-10"/><path d="M8.17 15.366a16 16 0 0 1-1.713-11.69"/><circle cx="12" cy="12" r="10"/></svg> Спорт</button>
-    <button class="cat-chip" data-cat="Інше"><svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M17 12h.01"/><path d="M12 12h.01"/><path d="M7 12h.01"/></svg> Інше</button>
+    <button class="cat-chip active" data-cat=""><svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg> Всі</button>
+    <button class="cat-chip" data-cat="Авто"><svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2z"/><path d="M5 9l2-4h10l2 4"/><circle cx="7.5" cy="14.5" r="1.5"/><circle cx="16.5" cy="14.5" r="1.5"/></svg> Авто</button>
+    <button class="cat-chip" data-cat="Електроніка"><svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9a2 2 0 0 1-2-2V5h6v2a2 2 0 0 1-2 2Z"/><path d="M3 5V3"/><path d="M7 5V3"/><path d="M19 15a2 2 0 0 1 2 2v2h-6v-2a2 2 0 0 1 2-2Z"/><path d="M21 19v2"/><path d="M17 19v2"/><path d="M8 9h2a2 2 0 0 1 2 2v2a2 2 0 0 0 2 2h2"/></svg> Електроніка</button>
+    <button class="cat-chip" data-cat="Одяг"><svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z"/></svg> Одяг</button>
+    <button class="cat-chip" data-cat="Меблі"><svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"/><path d="M3 16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v2H7v-2a2 2 0 0 0-4 0Z"/><path d="M5 18v2"/><path d="M19 18v2"/></svg> Меблі</button>
+    <button class="cat-chip" data-cat="Спорт"><svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.1 7.1a16.55 16.55 0 0 1 10.9 4"/><path d="M12 12a12.6 12.6 0 0 1-8.7 5"/><path d="M10.1 19.9a16.55 16.55 0 0 0 4-10.8"/><path d="M13.9 4.1a16.55 16.55 0 0 0-4 10.8"/><path d="M12.9 16.9A12.6 12.6 0 0 1 3 12"/><path d="M2.9 4.1A16.55 16.55 0 0 1 13.8 8"/><circle cx="12" cy="12" r="10"/></svg> Спорт</button>
+    <button class="cat-chip" data-cat="Інше"><svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-4 0v2"/><path d="M8 7V5a2 2 0 0 0-4 0v2"/></svg> Інше</button>
   </div>
   <div class="main-content">
     <section id="main-section" style="width:100%">
@@ -775,12 +775,12 @@ async function loadRequests() {
 
 // ---- RENDER REQUESTS ----
 var catIcons = {
-  'Авто':'<svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>',
-  'Електроніка':'<svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 19a1 1 0 0 1-1-1v-2a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2a1 1 0 0 1-1 1z"/><path d="M17 21v-2"/><path d="M19 14V6.5a1 1 0 0 0-7 0v11a1 1 0 0 1-7 0V10"/><path d="M21 21v-2"/><path d="M3 5V3"/><path d="M4 10a2 2 0 0 1-2-2V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2a2 2 0 0 1-2 2z"/><path d="M7 5V3"/></svg>',
-  'Одяг':'<svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>',
-  'Меблі':'<svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"/><path d="M3 16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z"/><path d="M5 18v2"/><path d="M19 18v2"/></svg>',
-  'Спорт':'<svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 7a16 16 20 0 1 10.98 4.362"/><path d="M12 12a13 13 0 0 1-8.66 5"/><path d="M16.83 13.634a16 16 0 0 1-9.267 7.328"/><path d="M20.66 17A13 13 0 0 0 12 12a13 13 0 0 1 0-10"/><path d="M8.17 15.366a16 16 0 0 1-1.713-11.69"/><circle cx="12" cy="12" r="10"/></svg>',
-  'Інше':'<svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M17 12h.01"/><path d="M12 12h.01"/><path d="M7 12h.01"/></svg>'
+  'Авто':'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-car-icon lucide-car"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>',
+  'Електроніка':'<svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>',
+  'Одяг':'<svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z"/></svg>',
+  'Меблі':'<svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"/><path d="M3 16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v2H7v-2a2 2 0 0 0-4 0Z"/><path d="M5 18v2"/><path d="M19 18v2"/></svg>',
+  'Спорт':'<svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93l4.24 4.24"/><path d="M14.83 9.17l4.24-4.24"/><path d="M14.83 14.83l4.24 4.24"/><path d="M9.17 14.83l-4.24 4.24"/><circle cx="12" cy="12" r="4"/></svg>',
+  'Інше':'<svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-4 0v2"/><path d="M8 7V5a2 2 0 0 0-4 0v2"/></svg>'
 };
 function renderRequests(requests) {
   var c = document.getElementById('requests-container');
@@ -802,8 +802,8 @@ function renderRequests(requests) {
       ? '<span class="card-offers-tag">' + offers.length + ' пропозицій</span>'
       : '<span class="card-offers-tag no-offers">Пропозицій ще немає</span>';
     var budgetHtml = r.budget
-      ? '<div class="card-budget"><div><span style="font-size:11px;font-weight:500;color:#949293;font-family:Manrope,sans-serif;display:block;line-height:1.3">Бюджет до</span><span style="font-size:18px;font-weight:700;color:#292526;font-family:Manrope,sans-serif">' + Number(r.budget).toLocaleString('uk') + ' ₴</span></div><div class="card-arrow"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div></div>'
-      : '<div class="card-budget"><span style="font-size:14px;font-weight:600;color:#292526;font-family:Manrope,sans-serif">Вільний бюджет</span><div class="card-arrow"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div></div>';
+      ? '<div class="card-budget"><div><span style="font-size:11px;font-weight:500;color:#949293;font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', 'Poppins', sans-serif;display:block;line-height:1.3">Бюджет до</span><span style="font-size:18px;font-weight:700;color:#292526;font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', 'Poppins', sans-serif">' + Number(r.budget).toLocaleString('uk') + ' ₴</span></div><div class="card-arrow"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div></div>'
+      : '<div class="card-budget"><span style="font-size:14px;font-weight:600;color:#292526;font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', 'Poppins', sans-serif">Вільний бюджет</span><div class="card-arrow"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div></div>';
 
     html += '<div class="req-card-new' + (isClosed ? ' closed' : '') + '" id="rcard-' + r.id + '">';
     html += '<div class="card-img-wrap">' + imgHtml;
