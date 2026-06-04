@@ -76,12 +76,12 @@ body{font-family:'Manrope',sans-serif;background:#fff;color:var(--text);min-heig
 .card-save-btn svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2;}
 .card-save-btn.saved svg{fill:#fff;}
 .card-found-badge{position:absolute;top:8px;left:8px;background:var(--green);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;}
-.card-body{padding:8px 0 0;}
+.card-body{padding:8px 0 0;display:flex;flex-direction:column;align-items:flex-start;gap:6px;}
 .card-divider{height:1px;background:#DFDEDE;margin:8px 0;}
 .card-title{font-family:'Encode Sans',sans-serif;font-size:14px;font-weight:600;color:#121111;line-height:1.5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0 0 4px 0;}
 .card-cat-tag{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:500;color:#292526;padding:4px 12px;border-radius:8px;border:1px solid #DFDEDE;font-family:'Manrope',sans-serif;white-space:nowrap;line-height:1.5;}
-.card-offers-tag{display:inline-block;font-size:12px;font-weight:500;color:#292526;padding:4px 12px;border-radius:8px;border:1px solid rgba(0,128,0,0.2);font-family:'Manrope',sans-serif;white-space:nowrap;width:auto;}
-.card-offers-tag.empty{color:#292526;opacity:0.4;width:auto;}
+.card-offers-tag{display:inline-block;font-size:12px;font-weight:500;color:#292526;padding:4px 12px;border-radius:8px;border:1px solid rgba(0,128,0,0.2);font-family:'Manrope',sans-serif;white-space:nowrap;}
+.card-offers-tag.empty{color:#292526;opacity:0.4;border:1px solid #DFDEDE;}
 .card-budget{font-family:'Manrope',sans-serif;font-size:14px;font-weight:700;color:var(--text2);margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:4px;}
 .card-budget-do{font-size:14px;font-weight:700;color:var(--text3);}
 .card-budget-amount{font-size:18px;font-weight:700;color:var(--text2);}
@@ -325,7 +325,7 @@ textarea{resize:vertical;min-height:80px;}
     <button class="cat-chip" data-cat="Інше"><span style="font-size:14px">📦</span> Інше</button>
   </div>
   <div class="main-content">
-    <section id="main-section">
+    <section id="main-section" style="width:100%">
       <div id="requests-container"><div class="spinner"></div></div>
     </section>
     <aside class="sidebar" style="display:none" id="desktop-sidebar">
@@ -812,7 +812,7 @@ function renderRequests(requests) {
     if (isClosed) html += '<span class="card-found-badge">✓ Знайдено</span>';
     html += '</div>';
     html += '<div class="card-body" data-action="open-request" data-id="' + r.id + '">';
-      html += '<p class="card-title">' + esc(r.title) + '</p>';
+    html += '<p class="card-title">' + esc(r.title) + '</p>';
     html += '<span class="card-cat-tag"><span style="font-size:14px;vertical-align:middle">' + catIcon + '</span> ' + esc(r.category || 'Інше') + '</span>';
     html += offersTag;
     html += budgetHtml;
