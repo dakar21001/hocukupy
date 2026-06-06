@@ -1036,7 +1036,7 @@ document.addEventListener('click', function(e) {
   if (action === 'close-req')     { closeRequest(id); }
   if (action === 'delete-req')    { deleteRequest(id); }
   if (action === 'leave-review')  { openReviewModal(btn.dataset.seller, btn.dataset.reqid); }
-  if (action === 'open-chat')     { openOrCreateChat(btn.dataset.seller, btn.dataset.reqid, btn.dataset.selname, btn.dataset.reqtitle, btn.dataset.seller); }
+  if (action === 'open-chat')     { openOrCreateChat(btn.dataset.seller, btn.dataset.reqid, btn.dataset.selname, btn.dataset.reqtitle, btn.dataset.offerid); }
   if (action === 'open-chat-id')  { openChatWindow(btn.dataset.chatid, btn.dataset.partner, btn.dataset.title, btn.dataset.partnerid, btn.dataset.reqid, btn.dataset.budget, btn.dataset.photo); }
   if (action === 'open-req-from-chat') { if (btn.dataset.reqid) openRequestPage(btn.dataset.reqid); }
   if (action === 'remove-photo')  { removePhoto(btn.dataset.formid, Number(btn.dataset.idx)); }
@@ -1232,7 +1232,7 @@ async function openRequestPage(requestId) {
       }
       var writeBtn = '';
       if (isOwner && o.user_id && o.user_id !== currentUser.id) {
-        writeBtn = '<button class="btn btn-sm" style="margin-top:8px" data-action="open-chat" data-seller="' + o.user_id + '" data-reqid="' + r.id + '" data-selname="' + esc(o.profiles ? o.profiles.name : 'Продавець') + '" data-reqtitle="' + esc(r.title) + '">💬 Написати</button>';
+        writeBtn = '<button class="btn btn-sm" style="margin-top:8px" data-action="open-chat" data-seller="' + o.user_id + '" data-reqid="' + r.id + '" data-offerid="' + o.id + '" data-selname="' + esc(o.profiles ? o.profiles.name : 'Продавець') + '" data-reqtitle="' + esc(r.title) + '">💬 Написати</button>';
       }
       html += '<div class="offer-item"><div class="offer-item-top"><div class="offer-item-seller">' + esc(o.profiles ? o.profiles.name : 'Анонім') + '</div><div class="offer-item-price">' + Number(o.price).toLocaleString('uk') + ' ₴</div></div><div class="offer-item-desc">' + esc(o.description) + '</div>' + photosHtml + writeBtn + '</div>';
     }
@@ -1476,12 +1476,13 @@ async function openChatList() {
   document.getElementById('chat-list-container').innerHTML = html;
 }
 
-async function openOrCreateChat(sellerId, requestId, sellerName, reqTitle, partnerId) {
+async function openOrCreateChat(sellerId, requestId, sellerName, reqTitle, offerId) {
   if (!currentUser) { openAuth(); return; }
-  var res = await db.from('chats').select('id').eq('request_id', requestId).eq('buyer_id', currentUser.id).eq('seller_id', sellerId).maybeSingle();
+  // Шукаємо чат саме по offer_id — один чат на пропозицію
+  var res = await db.from('chats').select('id').eq('offer_id', offerId).maybeSingle();
   var chatId = res.data ? res.data.id : null;
   if (!chatId) {
-    var ins = await db.from('chats').insert({ request_id: requestId, buyer_id: currentUser.id, seller_id: sellerId }).select('id').single();
+    var ins = await db.from('chats').insert({ request_id: requestId, offer_id: offerId, buyer_id: currentUser.id, seller_id: sellerId }).select('id').single();
     if (ins.error) { toast('Помилка: ' + ins.error.message, true); return; }
     chatId = ins.data.id;
   }
