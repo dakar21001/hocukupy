@@ -1038,6 +1038,7 @@ document.addEventListener('click', function(e) {
   if (action === 'leave-review')  { openReviewModal(btn.dataset.seller, btn.dataset.reqid); }
   if (action === 'open-chat')     { openOrCreateChat(btn.dataset.seller, btn.dataset.reqid, btn.dataset.selname, btn.dataset.reqtitle, btn.dataset.seller); }
   if (action === 'open-chat-id')  { openChatWindow(btn.dataset.chatid, btn.dataset.partner, btn.dataset.title, btn.dataset.partnerid, btn.dataset.reqid, btn.dataset.budget, btn.dataset.photo); }
+  if (action === 'open-req-from-chat') { if (btn.dataset.reqid) openRequestPage(btn.dataset.reqid); }
   if (action === 'remove-photo')  { removePhoto(btn.dataset.formid, Number(btn.dataset.idx)); }
   if (action === 'lightbox')      { openLightbox(btn.dataset.url); }
 });
