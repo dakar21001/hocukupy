@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>ХочуКупити</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&family=Unbounded:wght@700&display=swap" rel="stylesheet">
@@ -13,7 +13,7 @@
   --border:#DFDEDE;--border2:#DFDEDE;
   --text:#121111;--text2:#292526;--text3:#787676;
   --radius:16px;--radius-sm:8px;--radius-xs:6px;
-  --nav-h:48px;
+  --nav-h:calc(48px + env(safe-area-inset-bottom));
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 body{font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', sans-serif;background:#fff;color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;}
@@ -91,12 +91,15 @@ body{font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', sans-serif;background:#
 /* BOTTOM NAV */
 .bottom-nav{
   position:fixed;bottom:0;left:0;right:0;
-  height:48px;
-  background:rgba(245,245,245,0.9);
-  backdrop-filter:blur(14px);
-  -webkit-backdrop-filter:blur(14px);
-  display:flex;align-items:center;
-  z-index:100;
+  height:calc(48px + env(safe-area-inset-bottom));
+  padding-bottom:env(safe-area-inset-bottom);
+  background:rgba(245,245,245,0.92);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  display:flex;align-items:flex-start;
+  z-index:999;
+  transform:translateZ(0);
+  -webkit-transform:translateZ(0);
 }
 .bottom-nav::before{
   content:'';position:absolute;top:-32px;left:0;right:0;height:32px;
