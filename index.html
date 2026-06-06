@@ -1037,7 +1037,7 @@ document.addEventListener('click', function(e) {
   if (action === 'delete-req')    { deleteRequest(id); }
   if (action === 'leave-review')  { openReviewModal(btn.dataset.seller, btn.dataset.reqid); }
   if (action === 'open-chat')     { openOrCreateChat(btn.dataset.seller, btn.dataset.reqid, btn.dataset.selname, btn.dataset.reqtitle, btn.dataset.offerid); }
-  if (action === 'open-chat-id')  { openChatWindow(btn.dataset.chatid, btn.dataset.partner, btn.dataset.title, btn.dataset.partnerid, btn.dataset.reqid, btn.dataset.budget, btn.dataset.photo); }
+  if (action === 'open-chat-id')  { openChatWindow(btn.dataset.chatid, btn.dataset.partner, btn.dataset.title, btn.dataset.partnerid, btn.dataset.reqid, btn.dataset.budget, btn.dataset.photo, btn.dataset.offerdesc, btn.dataset.offerprice, btn.dataset.offerphoto); }
   if (action === 'open-req-from-chat') { if (btn.dataset.reqid) openRequestPage(btn.dataset.reqid); }
   if (action === 'remove-photo')  { removePhoto(btn.dataset.formid, Number(btn.dataset.idx)); }
   if (action === 'lightbox')      { openLightbox(btn.dataset.url); }
@@ -1446,7 +1446,7 @@ async function openChatList() {
   showPage('chat-list');
   if (!currentUser) return;
   document.getElementById('chat-list-container').innerHTML = '<div class="spinner"></div>';
-  var res = await db.from('chats').select('*, buyer:buyer_id(name), seller:seller_id(name), request:request_id(id,title,budget,photos), messages(text, created_at, sender_id)').or('buyer_id.eq.' + currentUser.id + ',seller_id.eq.' + currentUser.id).order('created_at', { ascending: false });
+  var res = await db.from('chats').select('*, buyer:buyer_id(name), seller:seller_id(name), request:request_id(id,title,budget,photos), offer:offer_id(description,price,photos), messages(text, created_at, sender_id)').or('buyer_id.eq.' + currentUser.id + ',seller_id.eq.' + currentUser.id).order('created_at', { ascending: false });
   var chats = res.data || [];
   if (!chats.length) {
     document.getElementById('chat-list-container').innerHTML = '<div class="chat-list-empty">Більше чатів немає</div>';
@@ -1465,8 +1465,10 @@ async function openChatList() {
     var lastMsg = msgs.length ? msgs[msgs.length-1] : null;
     var isUnread = lastMsg && isChatUnread(c.id, lastMsg);
     var req = c.request || {};
+    var offer = c.offer || {};
     var reqPhoto = (req.photos && req.photos.length) ? req.photos[0] : '';
-    html += '<div class="chat-list-item" data-action="open-chat-id" data-chatid="'+c.id+'" data-partner="'+esc(partner)+'" data-partnerid="'+(partnerId||'')+'" data-title="'+esc(req.title||'')+'" data-reqid="'+(req.id||'')+'" data-budget="'+esc(String(req.budget||''))+'" data-photo="'+esc(reqPhoto)+'">';
+    var offerPhoto = (offer.photos && offer.photos.length) ? offer.photos[0] : '';
+    html += '<div class="chat-list-item" data-action="open-chat-id" data-chatid="'+c.id+'" data-partner="'+esc(partner)+'" data-partnerid="'+(partnerId||'')+'" data-title="'+esc(req.title||'')+'" data-reqid="'+(req.id||'')+'" data-budget="'+esc(String(req.budget||''))+'" data-photo="'+esc(reqPhoto)+'" data-offerdesc="'+esc(offer.description||'')+'" data-offerprice="'+esc(String(offer.price||''))+'" data-offerphoto="'+esc(offerPhoto)+'">';
     html += '<div class="chat-list-avatar">'+initials+'</div>';
     html += '<div class="chat-list-info">';
     html += '<div class="chat-list-row1"><span class="chat-list-name">'+esc(partner)+'</span><span class="chat-list-time">'+lastTime+'</span></div>';
@@ -1478,7 +1480,6 @@ async function openChatList() {
 
 async function openOrCreateChat(sellerId, requestId, sellerName, reqTitle, offerId) {
   if (!currentUser) { openAuth(); return; }
-  // Шукаємо чат саме по offer_id — один чат на пропозицію
   var res = await db.from('chats').select('id').eq('offer_id', offerId).maybeSingle();
   var chatId = res.data ? res.data.id : null;
   if (!chatId) {
@@ -1486,15 +1487,22 @@ async function openOrCreateChat(sellerId, requestId, sellerName, reqTitle, offer
     if (ins.error) { toast('Помилка: ' + ins.error.message, true); return; }
     chatId = ins.data.id;
   }
-  // Fetch request details for card
+  // Fetch offer details for card
+  var offerDesc = '', offerPrice = '', offerPhoto = '';
   var reqBudget = '', reqPhoto = '';
+  var oq = await db.from('offers').select('description,price,photos').eq('id', offerId).maybeSingle();
+  if (oq.data) {
+    offerDesc = oq.data.description || '';
+    offerPrice = oq.data.price || '';
+    offerPhoto = (oq.data.photos && oq.data.photos.length) ? oq.data.photos[0] : '';
+  }
   var rq = await db.from('requests').select('budget,photos').eq('id', requestId).maybeSingle();
   if (rq.data) { reqBudget = rq.data.budget || ''; reqPhoto = (rq.data.photos && rq.data.photos.length) ? rq.data.photos[0] : ''; }
   closeRequestModal();
-  openChatWindow(chatId, sellerName, reqTitle, sellerId, requestId, reqBudget, reqPhoto);
+  openChatWindow(chatId, sellerName, reqTitle, sellerId, requestId, reqBudget, reqPhoto, offerDesc, offerPrice, offerPhoto);
 }
 
-function openChatWindow(chatId, partnerName, reqTitle, partnerId, reqId, reqBudget, reqPhoto) {
+function openChatWindow(chatId, partnerName, reqTitle, partnerId, reqId, reqBudget, reqPhoto, offerDesc, offerPrice, offerPhoto) {
   currentChatId = chatId;
   showPage('chat-window');
   document.getElementById('chat-header-name').textContent = partnerName || 'Чат';
@@ -1504,15 +1512,18 @@ function openChatWindow(chatId, partnerName, reqTitle, partnerId, reqId, reqBudg
     av.style.cursor = partnerId ? 'pointer' : 'default';
     av.onclick = partnerId ? function() { openProfile(partnerId); } : null;
   }
-  // Request card
+  // Offer card (клік → відкриває запит)
   var cardWrap = document.getElementById('chat-req-card-wrap');
   if (cardWrap) {
-    if (reqTitle) {
-      var imgHtml = reqPhoto
-        ? '<img class="chat-req-img" src="'+esc(reqPhoto)+'" alt="">'
+    var cardTitle = offerDesc || reqTitle;
+    var cardPrice = offerPrice ? Number(offerPrice).toLocaleString('uk') + ' ₴' : (reqBudget ? 'до ' + Number(reqBudget).toLocaleString('uk') + ' ₴' : '');
+    var cardPhoto = offerPhoto || reqPhoto;
+    if (cardTitle) {
+      var imgHtml = cardPhoto
+        ? '<img class="chat-req-img" src="'+esc(cardPhoto)+'" alt="">'
         : '<div class="chat-req-img-placeholder"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m3 9 4-4 4 4 4-4 4 4"/><circle cx="8.5" cy="14.5" r="1.5"/></svg></div>';
-      var budgetHtml = reqBudget ? '<div class="chat-req-budget">до <b>'+esc(reqBudget)+' ₴</b></div>' : '';
-      cardWrap.innerHTML = '<div class="chat-req-card" data-action="open-req-from-chat" data-reqid="'+(reqId||'')+'">'+imgHtml+'<div class="chat-req-info"><div class="chat-req-title">'+esc(reqTitle)+'</div>'+budgetHtml+'</div></div>';
+      var priceHtml = cardPrice ? '<div class="chat-req-budget"><b>'+esc(cardPrice)+'</b></div>' : '';
+      cardWrap.innerHTML = '<div class="chat-req-card" data-action="open-req-from-chat" data-reqid="'+(reqId||'')+'">'+imgHtml+'<div class="chat-req-info"><div class="chat-req-title">'+esc(cardTitle)+'</div>'+priceHtml+'</div></div>';
     } else {
       cardWrap.innerHTML = '';
     }
