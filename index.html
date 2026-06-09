@@ -1637,7 +1637,7 @@ db.channel('public-changes')
   .on('postgres_changes', { event: '*', schema: 'public', table: 'requests' }, loadRequests)
   .on('postgres_changes', { event: '*', schema: 'public', table: 'offers' }, function() {
     loadRequests();
-    if (window._currentRequestId && document.getElementById('request-modal').classList.contains('open')) {
+    if (window._currentRequestId && document.getElementById('request-page').style.display !== 'none') {
       openRequestPage(window._currentRequestId);
     }
   })
