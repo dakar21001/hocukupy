@@ -1389,6 +1389,8 @@ async function declineOffer(offerId, reqId) {
     openRequestPage(reqId);
   });
 }
+
+function checkUrlRequest() {
   var params = new URLSearchParams(window.location.search);
   var reqId = params.get('request');
   if (reqId) openRequestPage(reqId);
