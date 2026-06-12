@@ -150,31 +150,68 @@ textarea{resize:vertical;min-height:80px;}
 .modal-close{float:right;background:none;border:none;font-size:22px;cursor:pointer;color:var(--text3);line-height:1;margin-top:-4px;}
 
 /* REQUEST PAGE */
-.req-page-wrap{background:#fff;min-height:100vh;padding-bottom:calc(var(--nav-h)+16px);}
-.req-page-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);}
+.req-page-wrap{background:#fff;min-height:100vh;padding-bottom:calc(var(--nav-h)+80px);}
+.req-page-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:#fff;}
 .req-page-share-btn{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--border);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .req-page-share-btn svg{width:20px;height:20px;stroke:var(--text2);}
-.req-modal-img{width:100%;height:240px;object-fit:cover;}
-.req-modal-img-placeholder{width:100%;height:160px;background:linear-gradient(135deg,#F0F0F0,#E2E2E2);display:flex;align-items:center;justify-content:center;}
-.req-modal-body{padding:20px 20px 28px;}
-.req-modal-title{font-family:'Unbounded',sans-serif;font-size:18px;font-weight:700;margin-bottom:8px;line-height:1.3;}
-.req-modal-meta{font-size:12px;color:var(--text3);display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
-.req-modal-desc{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:16px;}
-.req-modal-budget{font-family:'Unbounded',sans-serif;font-size:22px;font-weight:700;color:var(--text);margin-bottom:16px;}
 
-/* OFFERS */
-.offer-item{background:var(--surface2);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px;}
-.offer-item-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
-.offer-item-seller{font-size:13px;font-weight:700;}
-.offer-item-price{font-family:'Unbounded',sans-serif;font-size:14px;font-weight:700;color:var(--green-dark);}
-.offer-item-desc{font-size:12px;color:var(--text2);}
-.offer-form-section{border-top:1px solid var(--border);padding-top:16px;margin-top:4px;}
-.form-row{display:flex;gap:8px;}
-.form-row input{flex:1;}
-.section-divider{height:1px;background:var(--border);margin:16px 0;}
-.section-label{font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px;}
+/* Photo strip */
+.req-photos-strip{display:flex;gap:8px;overflow-x:auto;padding:0 20px 16px;scrollbar-width:none;}
+.req-photos-strip::-webkit-scrollbar{display:none;}
+.req-photo-item{flex-shrink:0;width:calc(50vw - 24px);max-width:200px;aspect-ratio:1;border-radius:16px;object-fit:cover;cursor:pointer;}
+.req-photo-placeholder{flex-shrink:0;width:100%;aspect-ratio:1.6;border-radius:16px;background:#F2F2F2;display:flex;align-items:center;justify-content:center;margin:0 20px 16px;}
+.req-photo-placeholder svg{stroke:#ccc;}
 
-/* PHOTOS */
+/* Body */
+.req-body{padding:0 20px;}
+.req-title{font-family:'Unbounded',sans-serif;font-size:20px;font-weight:700;line-height:1.3;margin-bottom:8px;color:var(--text);}
+.req-budget{font-family:'Unbounded',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:14px;}
+.req-desc{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:16px;white-space:pre-line;}
+.req-owner-actions{display:flex;gap:10px;margin-bottom:16px;}
+.req-owner-actions .btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;height:44px;border-radius:12px;font-size:14px;font-weight:600;}
+
+/* Tags row */
+.req-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.req-tag{display:flex;align-items:center;gap:5px;padding:6px 12px;border:1.5px solid var(--border);border-radius:99px;font-size:12px;color:var(--text2);font-weight:500;}
+.req-tag svg{width:14px;height:14px;stroke:var(--text3);fill:none;stroke-width:1.5;}
+
+/* Author block */
+.req-author{display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:20px;cursor:pointer;}
+.req-author-avatar{width:44px;height:44px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-family:'Unbounded',sans-serif;font-size:16px;font-weight:700;color:var(--green-dark);flex-shrink:0;overflow:hidden;}
+.req-author-avatar img{width:100%;height:100%;object-fit:cover;}
+.req-author-name{font-size:15px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.req-author-stars{display:flex;align-items:center;gap:4px;}
+.req-author-star{color:#F5A623;font-size:13px;}
+.req-author-rating{font-size:12px;color:var(--text3);}
+.req-author-since{font-size:12px;color:var(--text3);margin-left:auto;white-space:nowrap;}
+
+/* Offers section */
+.req-offers-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.req-offers-title{font-size:16px;font-weight:700;color:var(--text);}
+.req-offers-count{font-size:16px;font-weight:700;color:var(--text3);}
+
+/* Offer card */
+.offer-card{background:#fff;border:1.5px solid var(--border);border-radius:16px;padding:14px;margin-bottom:12px;}
+.offer-card-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.offer-card-avatar{width:36px;height:36px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--green-dark);flex-shrink:0;overflow:hidden;}
+.offer-card-avatar img{width:100%;height:100%;object-fit:cover;}
+.offer-card-name{font-size:14px;font-weight:700;color:var(--text);}
+.offer-card-stars{display:flex;align-items:center;gap:3px;margin-top:2px;}
+.offer-card-star{color:#F5A623;font-size:11px;}
+.offer-card-rating{font-size:11px;color:var(--text3);}
+.offer-card-since{font-size:11px;color:var(--text3);margin-left:auto;white-space:nowrap;}
+.offer-card-photos{display:flex;gap:8px;margin-bottom:10px;}
+.offer-card-photo{width:80px;height:80px;border-radius:10px;object-fit:cover;cursor:pointer;flex-shrink:0;}
+.offer-card-desc{font-size:14px;color:var(--text2);margin-bottom:8px;line-height:1.5;}
+.offer-card-price{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:700;color:var(--green-dark);margin-bottom:12px;}
+.offer-card-actions{display:flex;gap:8px;}
+.offer-card-actions .btn{flex:1;height:40px;border-radius:10px;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;}
+
+/* FAB offer button */
+.req-offer-fab{position:fixed;bottom:calc(var(--nav-h)+16px);left:50%;transform:translateX(-50%);background:var(--green);color:#fff;border:none;border-radius:99px;padding:0 32px;height:50px;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(0,128,0,0.35);white-space:nowrap;z-index:90;transition:background 0.15s;}
+.req-offer-fab:active{background:var(--green-dark);}
+
+/* PHOTOS upload */
 .photo-upload-area{border:2px dashed var(--border2);border-radius:var(--radius-sm);padding:14px;text-align:center;cursor:pointer;transition:border-color 0.15s;position:relative;}
 .photo-upload-area:hover{border-color:var(--green);}
 .photo-upload-area input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;padding:0;border:none;}
@@ -749,6 +786,8 @@ function showPage(page) {
   var hide = hiddenPages.indexOf(page) !== -1;
   if (mobileHeader) mobileHeader.style.display = hide ? 'none' : '';
   if (fab) fab.style.display = hide ? 'none' : '';
+  // Remove offer FAB when leaving request page
+  if (page !== 'request') { var ofab = document.getElementById('req-offer-fab'); if (ofab) ofab.remove(); }
 }
 
 // ---- TOAST ----
@@ -1038,6 +1077,8 @@ document.addEventListener('click', function(e) {
   var action = btn.dataset.action;
   var id = btn.dataset.id;
   if (action === 'open-request')  { openRequestPage(id); }
+  if (action === 'open-profile')  { openProfile(btn.dataset.id); }
+  if (action === 'decline-offer') { declineOffer(btn.dataset.offerid, btn.dataset.reqid); }
   if (action === 'toggle-save')   { e.stopPropagation(); toggleSave(id, btn); }
   if (action === 'close-req')     { closeRequest(id); }
   if (action === 'delete-req')    { deleteRequest(id); }
@@ -1175,7 +1216,7 @@ async function openRequestPage(requestId) {
   }
 
   var res = await db.from('requests')
-    .select('*, profiles(id, name), photos, offers(id, user_id, description, price, photos, profiles(name))')
+    .select('*, profiles(id, name, avatar_url, created_at), photos, offers(id, user_id, description, price, photos, profiles(id, name, avatar_url))')
     .eq('id', requestId).single();
 
   if (res.error || !res.data) {
@@ -1189,76 +1230,136 @@ async function openRequestPage(requestId) {
   var offers = r.offers || [];
   var html = '';
 
+  // --- PHOTO STRIP ---
   if (r.photos && r.photos.length) {
-    html += '<img class="req-modal-img" src="' + r.photos[0] + '" alt="">';
+    html += '<div class="req-photos-strip">';
+    for (var pi = 0; pi < r.photos.length; pi++) {
+      html += '<img class="req-photo-item" src="' + esc(r.photos[pi]) + '" alt="" data-action="lightbox" data-url="' + esc(r.photos[pi]) + '">';
+    }
+    html += '</div>';
   } else {
-    html += '<div class="req-modal-img-placeholder"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>';
+    html += '<div class="req-photo-placeholder"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>';
   }
 
-  html += '<div class="req-modal-body">';
-  html += '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px"><span class="card-cat-tag">' + (catIcons[r.category]||catIcons['Інше']) + ' ' + esc(r.category||'Інше') + '</span>' + (isClosed ? '<span class="card-found-badge" style="position:relative;top:auto;left:auto">✓ Знайдено</span>' : '<span class="card-offers-tag">' + offers.length + ' пропозицій</span>') + '</div>';
-  html += '<div class="req-modal-title">' + esc(r.title) + '</div>';
-  html += '<div class="req-modal-meta"><span>👤 ' + esc(r.profiles ? r.profiles.name : 'Анонім') + '</span><span>🕐 ' + timeAgo(r.created_at) + '</span></div>';
-  if (r.description) html += '<div class="req-modal-desc">' + esc(r.description) + '</div>';
-  if (r.budget) html += '<div class="req-modal-budget">До ' + Number(r.budget).toLocaleString('uk') + ' ₴</div>';
+  html += '<div class="req-body">';
 
-  if (r.photos && r.photos.length > 1) {
-    html += '<div class="offer-photos" style="margin-bottom:16px">';
-    for (var pi = 1; pi < r.photos.length; pi++) {
-      html += '<img class="offer-photo" src="' + r.photos[pi] + '" alt="" data-action="lightbox" data-url="' + r.photos[pi] + '">';
+  // --- TITLE & BUDGET ---
+  html += '<div class="req-title">' + esc(r.title) + '</div>';
+  if (r.budget) html += '<div class="req-budget">До ' + Number(r.budget).toLocaleString('uk') + ' ₴</div>';
+
+  // --- OWNER ACTIONS ---
+  if (isOwner) {
+    html += '<div class="req-owner-actions">';
+    if (!isClosed) {
+      html += '<button class="btn btn-primary" data-action="close-req" data-id="' + r.id + '">Знайдено ✓</button>';
+    } else {
+      html += '<span class="card-found-badge" style="position:relative;top:auto;left:auto;align-self:center">✓ Знайдено</span>';
     }
+    html += '<button class="btn" data-action="delete-req" data-id="' + r.id + '" style="border:1.5px solid var(--border)">Видалити 🗑</button>';
     html += '</div>';
   }
 
-  if (isOwner) {
-    html += '<div class="req-actions">';
-    if (!isClosed) html += '<button class="btn btn-sm btn-primary" data-action="close-req" data-id="' + r.id + '">✓ Знайдено</button>';
-    if (isClosed && offers.length) {
-      for (var oi = 0; oi < offers.length; oi++) {
-        if (offers[oi].profiles) html += '<button class="btn btn-sm" data-action="leave-review" data-seller="' + offers[oi].user_id + '" data-reqid="' + r.id + '">⭐ Відгук для ' + esc(offers[oi].profiles.name) + '</button>';
-      }
-    }
-    html += '<button class="btn btn-sm btn-danger" data-action="delete-req" data-id="' + r.id + '">Видалити</button></div>';
-  }
+  // --- DESC ---
+  if (r.description) html += '<div class="req-desc">' + esc(r.description) + '</div>';
 
-  html += '<div class="section-divider"></div>';
+  // --- TAGS ---
+  html += '<div class="req-tags">';
+  html += '<span class="req-tag"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>' + esc(r.category || 'Інше') + '</span>';
+  html += '<span class="req-tag"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' + timeAgo(r.created_at) + '</span>';
+  html += '</div>';
 
+  // --- AUTHOR ---
+  var authorInitial = r.profiles ? r.profiles.name.charAt(0).toUpperCase() : '?';
+  var authorAvatar = r.profiles && r.profiles.avatar_url
+    ? '<img src="' + esc(r.profiles.avatar_url) + '">'
+    : authorInitial;
+  var authorId = r.profiles ? r.profiles.id : '';
+  var yearsOnService = r.profiles && r.profiles.created_at
+    ? Math.max(1, Math.floor((Date.now() - new Date(r.profiles.created_at)) / (1000*60*60*24*365))) + ' р'
+    : '';
+  html += '<div class="req-author" data-action="open-profile" data-id="' + authorId + '">';
+  html += '<div class="req-author-avatar">' + authorAvatar + '</div>';
+  html += '<div><div class="req-author-name">' + esc(r.profiles ? r.profiles.name : 'Анонім') + '</div>';
+  html += '<div class="req-author-stars"><span class="req-author-star">★★★★☆</span><span class="req-author-rating"> 4.0/5</span></div></div>';
+  if (yearsOnService) html += '<div class="req-author-since">На сервісі: ' + yearsOnService + '</div>';
+  html += '</div>';
+
+  // --- OFFERS ---
   if (offers.length) {
-    html += '<div class="section-label">Пропозиції (' + offers.length + ')</div>';
+    html += '<div class="req-offers-header"><span class="req-offers-title">Пропозиції</span><span class="req-offers-count">' + offers.length + '</span></div>';
     for (var j = 0; j < offers.length; j++) {
       var o = offers[j];
-      var photosHtml = '';
+      var oName = o.profiles ? o.profiles.name : 'Анонім';
+      var oInitial = oName.charAt(0).toUpperCase();
+      var oAvatar = o.profiles && o.profiles.avatar_url
+        ? '<img src="' + esc(o.profiles.avatar_url) + '">'
+        : oInitial;
+
+      html += '<div class="offer-card" data-offerid="' + o.id + '">';
+      // top
+      html += '<div class="offer-card-top">';
+      html += '<div class="offer-card-avatar" style="cursor:pointer" data-action="open-profile" data-id="' + (o.profiles ? o.profiles.id : '') + '">' + oAvatar + '</div>';
+      html += '<div><div class="offer-card-name">' + esc(oName) + '</div>';
+      html += '<div class="offer-card-stars"><span class="offer-card-star">★★☆☆☆</span><span class="offer-card-rating"> 2.0/5</span></div></div>';
+      html += '<div class="offer-card-since">На сервісі: 2 міс</div>';
+      html += '</div>';
+      // photos
       if (o.photos && o.photos.length) {
-        photosHtml = '<div class="offer-photos">';
+        html += '<div class="offer-card-photos">';
         for (var k = 0; k < o.photos.length; k++) {
-          photosHtml += '<img class="offer-photo" src="' + o.photos[k] + '" alt="" data-action="lightbox" data-url="' + o.photos[k] + '">';
+          html += '<img class="offer-card-photo" src="' + esc(o.photos[k]) + '" alt="" data-action="lightbox" data-url="' + esc(o.photos[k]) + '">';
         }
-        photosHtml += '</div>';
+        html += '</div>';
       }
-      var writeBtn = '';
-      if (isOwner && o.user_id && o.user_id !== currentUser.id) {
-        writeBtn = '<button class="btn btn-sm" style="margin-top:8px" data-action="open-chat" data-seller="' + o.user_id + '" data-reqid="' + r.id + '" data-offerid="' + o.id + '" data-selname="' + esc(o.profiles ? o.profiles.name : 'Продавець') + '" data-reqtitle="' + esc(r.title) + '">💬 Написати</button>';
+      // desc & price
+      html += '<div class="offer-card-desc">' + esc(o.description) + '</div>';
+      html += '<div class="offer-card-price">' + Number(o.price).toLocaleString('uk') + ' ₴</div>';
+      // actions (owner only)
+      if (isOwner && o.user_id !== currentUser.id) {
+        html += '<div class="offer-card-actions">';
+        html += '<button class="btn btn-primary" data-action="open-chat" data-seller="' + o.user_id + '" data-reqid="' + r.id + '" data-offerid="' + o.id + '" data-selname="' + esc(oName) + '" data-reqtitle="' + esc(r.title) + '">Написати 💬</button>';
+        html += '<button class="btn" style="border:1.5px solid var(--border)" data-action="decline-offer" data-offerid="' + o.id + '" data-reqid="' + r.id + '">Відхилити ↩</button>';
+        html += '</div>';
       }
-      html += '<div class="offer-item"><div class="offer-item-top"><div class="offer-item-seller">' + esc(o.profiles ? o.profiles.name : 'Анонім') + '</div><div class="offer-item-price">' + Number(o.price).toLocaleString('uk') + ' ₴</div></div><div class="offer-item-desc">' + esc(o.description) + '</div>' + photosHtml + writeBtn + '</div>';
+      html += '</div>';
     }
-    html += '<div class="section-divider"></div>';
   }
 
+  // --- OFFER FORM (for non-owner, not closed) ---
   if (!isClosed && !isOwner) {
-    html += '<div class="section-label">Зробити пропозицію</div>';
+    html += '<div style="height:1px;background:var(--border);margin:20px 0"></div>';
+    html += '<div style="font-size:15px;font-weight:700;margin-bottom:14px">Зробити пропозицію</div>';
     html += '<div class="field-group"><input type="text" id="modal-odesc" placeholder="Опис: модель, стан..."></div>';
-    html += '<div class="form-row" style="margin-bottom:12px"><input type="number" id="modal-oprice" placeholder="Ціна, ₴" style="max-width:160px"><button class="btn btn-primary btn-sm" id="modal-submit-btn">Запропонувати</button></div>';
+    html += '<div style="display:flex;gap:8px;margin-bottom:12px"><input type="number" id="modal-oprice" placeholder="Ціна, ₴" style="max-width:160px"><button class="btn btn-primary btn-sm" id="modal-submit-btn">Запропонувати</button></div>';
     html += '<div class="photo-upload-area" style="position:relative"><input type="file" accept="image/*" multiple id="modal-photo-input" style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;border:none"><div class="photo-upload-label">📷 Фото (до 3 шт.)</div></div>';
     html += '<div class="photo-previews" id="modal-previews" style="margin-top:8px"></div>';
   }
 
-  html += '</div>';
+  html += '</div>'; // req-body
+
   document.getElementById('request-page-content').innerHTML = html;
   document.getElementById('request-page-content').scrollTop = 0;
 
+  // FAB "Зробити пропозицію" — для не-власників, не закритих
+  var existingFab = document.getElementById('req-offer-fab');
+  if (existingFab) existingFab.remove();
+  if (!isClosed && !isOwner && currentUser) {
+    var fab = document.createElement('button');
+    fab.id = 'req-offer-fab';
+    fab.className = 'req-offer-fab';
+    fab.textContent = 'Зробити пропозицію';
+    fab.addEventListener('click', function() {
+      var form = document.getElementById('modal-odesc');
+      if (form) { form.scrollIntoView({ behavior: 'smooth', block: 'center' }); form.focus(); }
+    });
+    document.body.appendChild(fab);
+  }
+
+  // Photo input
   var photoInput = document.getElementById('modal-photo-input');
   if (photoInput) photoInput.addEventListener('change', function() { handlePhotoSelect('modal', this); });
 
+  // Submit offer
   var submitBtn = document.getElementById('modal-submit-btn');
   if (submitBtn) {
     submitBtn.addEventListener('click', async function() {
@@ -1280,7 +1381,14 @@ async function openRequestPage(requestId) {
   }
 }
 
-function checkUrlRequest() {
+async function declineOffer(offerId, reqId) {
+  showConfirm('Відхилити пропозицію?', 'Пропозицію буде видалено.', async function() {
+    var res = await db.from('offers').delete().eq('id', offerId);
+    if (res.error) { toast('Помилка', true); return; }
+    toast('Пропозицію відхилено');
+    openRequestPage(reqId);
+  });
+}
   var params = new URLSearchParams(window.location.search);
   var reqId = params.get('request');
   if (reqId) openRequestPage(reqId);
