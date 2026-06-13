@@ -1325,32 +1325,22 @@ async function openRequestPage(requestId) {
     }
   }
 
-  // --- OFFER FORM (for non-owner, not closed) ---
-  if (!isClosed && !isOwner) {
-    html += '<div style="height:1px;background:var(--border);margin:20px 0"></div>';
-    html += '<div style="font-size:15px;font-weight:700;margin-bottom:14px">Зробити пропозицію</div>';
-    html += '<div class="field-group"><input type="text" id="modal-odesc" placeholder="Опис: модель, стан..."></div>';
-    html += '<div style="display:flex;gap:8px;margin-bottom:12px"><input type="number" id="modal-oprice" placeholder="Ціна, ₴" style="max-width:160px"><button class="btn btn-primary btn-sm" id="modal-submit-btn">Запропонувати</button></div>';
-    html += '<div class="photo-upload-area" style="position:relative"><input type="file" accept="image/*" multiple id="modal-photo-input" style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;border:none"><div class="photo-upload-label">📷 Фото (до 3 шт.)</div></div>';
-    html += '<div class="photo-previews" id="modal-previews" style="margin-top:8px"></div>';
-  }
-
   html += '</div>'; // req-body
 
   document.getElementById('request-page-content').innerHTML = html;
   document.getElementById('request-page-content').scrollTop = 0;
 
-  // FAB "Зробити пропозицію" — для не-власників, не закритих
+  // FAB "Зробити пропозицію"
   var existingFab = document.getElementById('req-offer-fab');
   if (existingFab) existingFab.remove();
-  if (!isClosed && !isOwner && currentUser) {
+  if (!isClosed && !isOwner) {
     var fab = document.createElement('button');
     fab.id = 'req-offer-fab';
     fab.className = 'req-offer-fab';
     fab.textContent = 'Зробити пропозицію';
     fab.addEventListener('click', function() {
-      var form = document.getElementById('modal-odesc');
-      if (form) { form.scrollIntoView({ behavior: 'smooth', block: 'center' }); form.focus(); }
+      if (!currentUser) { openAuth(); return; }
+      toast('Незабаром 🛠');
     });
     document.body.appendChild(fab);
   }
