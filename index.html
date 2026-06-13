@@ -156,33 +156,36 @@ textarea{resize:vertical;min-height:80px;}
 .req-page-share-btn svg{width:20px;height:20px;stroke:var(--text2);}
 
 /* Photo strip */
-.req-photos-strip{display:flex;gap:8px;overflow-x:auto;padding:0 20px 16px;scrollbar-width:none;}
+.req-photos-strip{display:flex;gap:8px;overflow-x:auto;padding:0 20px 20px;scrollbar-width:none;}
 .req-photos-strip::-webkit-scrollbar{display:none;}
-.req-photo-item{flex-shrink:0;width:calc(50vw - 24px);max-width:200px;aspect-ratio:1;border-radius:16px;object-fit:cover;cursor:pointer;}
-.req-photo-placeholder{flex-shrink:0;width:100%;aspect-ratio:1.6;border-radius:16px;background:#F2F2F2;display:flex;align-items:center;justify-content:center;margin:0 20px 16px;}
-.req-photo-placeholder svg{stroke:#ccc;}
+.req-photo-item{flex-shrink:0;width:calc(55vw - 20px);max-width:260px;aspect-ratio:3/4;border-radius:20px;object-fit:cover;cursor:pointer;}
+.req-photo-placeholder{width:calc(100% - 40px);margin:0 20px 20px;aspect-ratio:4/3;border-radius:20px;background:#F2F2F2;display:flex;align-items:center;justify-content:center;}
 
 /* Body */
 .req-body{padding:0 20px;}
-.req-title{font-family:'Unbounded',sans-serif;font-size:20px;font-weight:700;line-height:1.3;margin-bottom:8px;color:var(--text);}
-.req-budget{font-family:'Unbounded',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:14px;}
-.req-desc{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:16px;white-space:pre-line;}
-.req-owner-actions{display:flex;gap:10px;margin-bottom:16px;}
-.req-owner-actions .btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;height:44px;border-radius:12px;font-size:14px;font-weight:600;}
+.req-title{font-family:'Unbounded',sans-serif;font-size:22px;font-weight:700;line-height:1.3;margin-bottom:10px;color:var(--text);text-align:center;}
+.req-budget-wrap{text-align:center;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border);}
+.req-budget-label{font-size:14px;color:var(--text3);margin-bottom:2px;}
+.req-budget{font-family:'Unbounded',sans-serif;font-size:26px;font-weight:700;color:var(--text);}
+.req-desc{font-size:15px;color:var(--text2);line-height:1.7;margin-bottom:20px;white-space:pre-line;}
+.req-owner-actions{display:flex;gap:10px;margin-bottom:20px;}
+.req-owner-actions .btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;height:46px;border-radius:12px;font-size:14px;font-weight:600;}
 
 /* Tags row */
-.req-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
-.req-tag{display:flex;align-items:center;gap:5px;padding:6px 12px;border:1.5px solid var(--border);border-radius:99px;font-size:12px;color:var(--text2);font-weight:500;}
-.req-tag svg{width:14px;height:14px;stroke:var(--text3);fill:none;stroke-width:1.5;}
+.req-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;}
+.req-tag{display:flex;align-items:center;gap:5px;padding:7px 14px;border:1.5px solid var(--border);border-radius:99px;font-size:13px;color:var(--text2);font-weight:500;}
+.req-tag svg{flex-shrink:0;}
 
 /* Author block */
-.req-author{display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:20px;cursor:pointer;}
-.req-author-avatar{width:44px;height:44px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-family:'Unbounded',sans-serif;font-size:16px;font-weight:700;color:var(--green-dark);flex-shrink:0;overflow:hidden;}
+.req-author-label{font-size:13px;font-weight:600;color:var(--text3);margin-bottom:10px;}
+.req-author{display:flex;align-items:center;gap:12px;padding:14px;border:1.5px solid var(--border);border-radius:16px;margin-bottom:24px;cursor:pointer;transition:background 0.15s;}
+.req-author:active{background:var(--bg);}
+.req-author-avatar{width:44px;height:44px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--green-dark);flex-shrink:0;overflow:hidden;}
 .req-author-avatar img{width:100%;height:100%;object-fit:cover;}
 .req-author-name{font-size:15px;font-weight:700;color:var(--text);margin-bottom:3px;}
-.req-author-stars{display:flex;align-items:center;gap:4px;}
-.req-author-star{color:#F5A623;font-size:13px;}
-.req-author-rating{font-size:12px;color:var(--text3);}
+.req-author-stars{display:flex;align-items:center;gap:2px;}
+.req-author-star{color:#F5A623;font-size:14px;}
+.req-author-rating{font-size:12px;color:var(--text3);margin-left:2px;}
 .req-author-since{font-size:12px;color:var(--text3);margin-left:auto;white-space:nowrap;}
 
 /* Offers section */
@@ -192,23 +195,23 @@ textarea{resize:vertical;min-height:80px;}
 
 /* Offer card */
 .offer-card{background:#fff;border:1.5px solid var(--border);border-radius:16px;padding:14px;margin-bottom:12px;}
-.offer-card-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-.offer-card-avatar{width:36px;height:36px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--green-dark);flex-shrink:0;overflow:hidden;}
+.offer-card-top{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.offer-card-avatar{width:38px;height:38px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--green-dark);flex-shrink:0;overflow:hidden;cursor:pointer;}
 .offer-card-avatar img{width:100%;height:100%;object-fit:cover;}
 .offer-card-name{font-size:14px;font-weight:700;color:var(--text);}
-.offer-card-stars{display:flex;align-items:center;gap:3px;margin-top:2px;}
-.offer-card-star{color:#F5A623;font-size:11px;}
+.offer-card-stars{display:flex;align-items:center;gap:2px;margin-top:2px;}
+.offer-card-star{color:#F5A623;font-size:12px;}
 .offer-card-rating{font-size:11px;color:var(--text3);}
 .offer-card-since{font-size:11px;color:var(--text3);margin-left:auto;white-space:nowrap;}
-.offer-card-photos{display:flex;gap:8px;margin-bottom:10px;}
+.offer-card-photos{display:flex;gap:6px;margin-bottom:10px;}
 .offer-card-photo{width:80px;height:80px;border-radius:10px;object-fit:cover;cursor:pointer;flex-shrink:0;}
-.offer-card-desc{font-size:14px;color:var(--text2);margin-bottom:8px;line-height:1.5;}
+.offer-card-desc{font-size:14px;color:var(--text2);margin-bottom:6px;line-height:1.5;}
 .offer-card-price{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:700;color:var(--green-dark);margin-bottom:12px;}
 .offer-card-actions{display:flex;gap:8px;}
-.offer-card-actions .btn{flex:1;height:40px;border-radius:10px;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;}
+.offer-card-actions .btn{flex:1;height:42px;border-radius:10px;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;}
 
 /* FAB offer button */
-.req-offer-fab{position:fixed;bottom:calc(var(--nav-h)+16px);left:50%;transform:translateX(-50%);background:var(--green);color:#fff;border:none;border-radius:99px;padding:0 32px;height:50px;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(0,128,0,0.35);white-space:nowrap;z-index:110;transition:background 0.15s;}
+.req-offer-fab{position:fixed;bottom:calc(var(--nav-h)+16px);left:20px;right:20px;background:var(--green);color:#fff;border:none;border-radius:16px;height:54px;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 4px 24px rgba(0,128,0,0.35);z-index:110;transition:background 0.15s;}
 .req-offer-fab:active{background:var(--green-dark);}
 
 /* PHOTOS upload */
@@ -1245,7 +1248,7 @@ async function openRequestPage(requestId) {
 
   // --- TITLE & BUDGET ---
   html += '<div class="req-title">' + esc(r.title) + '</div>';
-  if (r.budget) html += '<div class="req-budget">До ' + Number(r.budget).toLocaleString('uk') + ' ₴</div>';
+  if (r.budget) html += '<div class="req-budget-wrap"><div class="req-budget-label">до</div><div class="req-budget">' + Number(r.budget).toLocaleString('uk') + ' ₴</div></div>';
 
   // --- OWNER ACTIONS ---
   if (isOwner) {
@@ -1277,6 +1280,7 @@ async function openRequestPage(requestId) {
   var yearsOnService = r.profiles && r.profiles.created_at
     ? Math.max(1, Math.floor((Date.now() - new Date(r.profiles.created_at)) / (1000*60*60*24*365))) + ' р'
     : '';
+  html += '<div class="req-author-label">Зробив запит</div>';
   html += '<div class="req-author" data-action="open-profile" data-id="' + authorId + '">';
   html += '<div class="req-author-avatar">' + authorAvatar + '</div>';
   html += '<div><div class="req-author-name">' + esc(r.profiles ? r.profiles.name : 'Анонім') + '</div>';
