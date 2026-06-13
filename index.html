@@ -1337,12 +1337,14 @@ async function openRequestPage(requestId) {
   // FAB "Зробити пропозицію"
   var existingFab = document.getElementById('req-offer-fab');
   if (existingFab) existingFab.remove();
-  if (!isClosed && !isOwner) {
+  if (!isClosed) {
     var fab = document.createElement('button');
     fab.id = 'req-offer-fab';
     fab.className = 'req-offer-fab';
-    fab.textContent = 'Зробити пропозицію';
+    fab.textContent = isOwner ? '[owner] Зробити пропозицію' : 'Зробити пропозицію';
+    fab.style.cssText = 'position:fixed;bottom:calc(var(--nav-h, 48px) + 16px);left:20px;right:20px;background:#008000;color:#fff;border:none;border-radius:16px;height:54px;font-size:16px;font-weight:700;cursor:pointer;z-index:110;';
     fab.addEventListener('click', function() {
+      if (isOwner) return;
       if (!currentUser) { openAuth(); return; }
       toast('Незабаром 🛠');
     });
