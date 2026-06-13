@@ -211,7 +211,7 @@ textarea{resize:vertical;min-height:80px;}
 .offer-card-actions .btn{flex:1;height:42px;border-radius:10px;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;}
 
 /* FAB offer button */
-.req-offer-fab{position:fixed;bottom:calc(var(--nav-h)+16px);left:20px;right:20px;background:var(--green);color:#fff;border:none;border-radius:16px;height:54px;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 4px 24px rgba(0,128,0,0.35);z-index:110;transition:background 0.15s;}
+.req-offer-fab{position:fixed;bottom:calc(var(--nav-h)+16px);left:50%;transform:translateX(-50%);width:214px;height:52px;background:var(--green);color:#fff;border:none;border-radius:16px;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 24px rgba(0,128,0,0.35);z-index:110;transition:background 0.15s;white-space:nowrap;}
 .req-offer-fab:active{background:var(--green-dark);}
 
 /* PHOTOS upload */
@@ -1337,14 +1337,12 @@ async function openRequestPage(requestId) {
   // FAB "Зробити пропозицію"
   var existingFab = document.getElementById('req-offer-fab');
   if (existingFab) existingFab.remove();
-  if (!isClosed) {
+  if (!isClosed && !isOwner) {
     var fab = document.createElement('button');
     fab.id = 'req-offer-fab';
     fab.className = 'req-offer-fab';
-    fab.textContent = isOwner ? '[owner] Зробити пропозицію' : 'Зробити пропозицію';
-    fab.style.cssText = 'position:fixed;bottom:calc(var(--nav-h, 48px) + 16px);left:20px;right:20px;background:#008000;color:#fff;border:none;border-radius:16px;height:54px;font-size:16px;font-weight:700;cursor:pointer;z-index:110;';
+    fab.textContent = 'Зробити пропозицію';
     fab.addEventListener('click', function() {
-      if (isOwner) return;
       if (!currentUser) { openAuth(); return; }
       toast('Незабаром 🛠');
     });
