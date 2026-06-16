@@ -1409,8 +1409,8 @@ document.getElementById('wizard-next-btn').addEventListener('click', async funct
   var photoUrls=[];
   for (var i=0;i<wizState.photoFiles.length;i++) {
     var f=wizState.photoFiles[i], ext=f.name.split('.').pop(), path=currentUser.id+'/'+Date.now()+'_'+i+'.'+ext;
-    var up=await db.storage.from('request-photos').upload(path,f,{upsert:true});
-    if (!up.error) { var pub=db.storage.from('request-photos').getPublicUrl(path); photoUrls.push(pub.data.publicUrl); }
+    var up=await db.storage.from('offers-photos').upload(path,f,{upsert:true});
+    if (!up.error) { var pub=db.storage.from('offers-photos').getPublicUrl(path); photoUrls.push(pub.data.publicUrl); }
   }
   var res=await db.from('requests').insert({user_id:currentUser.id,title:wizState.title,description:wizState.desc,category:wizState.category||'Інше',budget:wizState.budget?Number(wizState.budget):null,photos:photoUrls.length?photoUrls:null,is_active:true});
   if (res.error) { toast('Помилка: '+res.error.message,true); this.disabled=false; this.textContent='Опублікувати'; return; }
