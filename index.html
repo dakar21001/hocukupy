@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>ХочуКупити</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&family=Unbounded:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
   --green:#008000;--green-dark:#006600;--green-light:#E8F8EE;
@@ -20,7 +20,7 @@ body{font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', sans-serif;background:#
 
 /* TOPBAR (desktop) */
 .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:none;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-.logo{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:700;letter-spacing:-0.5px;cursor:pointer;}
+.logo{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:16px;font-weight:700;letter-spacing:-0.5px;cursor:pointer;}
 .logo span{color:var(--green);}
 .topbar-right{display:flex;gap:10px;align-items:center;}
 @media(min-width:701px){.topbar{display:flex;}}
@@ -143,7 +143,7 @@ textarea{resize:vertical;min-height:80px;}
 .modal{background:var(--surface);border-radius:24px 24px 0 0;padding:8px 20px 32px;width:100%;max-height:92vh;overflow-y:auto;}
 @media(min-width:701px){.modal{border-radius:20px;max-width:460px;margin:16px;padding:28px;}}
 .modal-handle{width:36px;height:4px;background:var(--border2);border-radius:99px;margin:0 auto 20px;}
-.modal h2{font-family:'Unbounded',sans-serif;font-size:17px;font-weight:700;margin-bottom:20px;}
+.modal h2{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:17px;font-weight:700;margin-bottom:20px;}
 .modal-tabs{display:flex;margin-bottom:20px;border:1.5px solid var(--border2);border-radius:10px;overflow:hidden;}
 .modal-tab{flex:1;padding:10px;font-size:13px;font-weight:600;background:transparent;border:none;cursor:pointer;color:var(--text2);font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', sans-serif;}
 .modal-tab.active{background:var(--green);color:#fff;}
@@ -163,10 +163,10 @@ textarea{resize:vertical;min-height:80px;}
 
 /* Body */
 .req-body{padding:0 20px;}
-.req-title{font-family:'Unbounded',sans-serif;font-size:22px;font-weight:700;line-height:1.3;margin-bottom:10px;color:var(--text);text-align:center;}
+.req-title{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:22px;font-weight:700;line-height:1.3;margin-bottom:10px;color:var(--text);text-align:center;}
 .req-budget-wrap{text-align:center;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border);}
 .req-budget-label{font-size:14px;color:var(--text3);margin-bottom:2px;}
-.req-budget{font-family:'Unbounded',sans-serif;font-size:26px;font-weight:700;color:var(--text);}
+.req-budget{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:26px;font-weight:700;color:var(--text);}
 .req-desc{font-size:15px;color:var(--text2);line-height:1.7;margin-bottom:20px;white-space:pre-line;}
 .req-owner-actions{display:flex;gap:10px;margin-bottom:20px;}
 .req-owner-actions .btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;height:46px;border-radius:12px;font-size:14px;font-weight:600;}
@@ -206,7 +206,7 @@ textarea{resize:vertical;min-height:80px;}
 .offer-card-photos{display:flex;gap:6px;margin-bottom:10px;}
 .offer-card-photo{width:80px;height:80px;border-radius:10px;object-fit:cover;cursor:pointer;flex-shrink:0;}
 .offer-card-desc{font-size:14px;color:var(--text2);margin-bottom:6px;line-height:1.5;}
-.offer-card-price{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:700;color:var(--green-dark);margin-bottom:12px;}
+.offer-card-price{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:16px;font-weight:700;color:var(--green-dark);margin-bottom:12px;}
 .offer-card-actions{display:flex;gap:8px;}
 .offer-card-actions .btn{flex:1;height:42px;border-radius:10px;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;}
 
@@ -217,7 +217,7 @@ textarea{resize:vertical;min-height:80px;}
 /* WIZARD */
 .wizard-wrap{background:#fff;height:100dvh;display:flex;flex-direction:column;overflow:hidden;}
 .wizard-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;flex-shrink:0;}
-.wizard-title{font-family:'Unbounded',sans-serif;font-size:17px;font-weight:700;color:var(--text);}
+.wizard-title{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:17px;font-weight:700;color:var(--text);}
 .wizard-progress{display:flex;gap:6px;padding:0 20px 20px;flex-shrink:0;}
 .wizard-progress-bar{flex:1;height:4px;border-radius:99px;background:var(--border);transition:background 0.3s;}
 .wizard-progress-bar.active{background:var(--green);}
@@ -256,7 +256,7 @@ textarea{resize:vertical;min-height:80px;}
 
 /* Step 3 — Budget */
 #wiz-step-3{height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px 20px calc(54px + var(--nav-h) + 40px);}
-.wiz-budget-display{font-family:'Unbounded',sans-serif;font-size:64px;font-weight:700;color:var(--text);cursor:pointer;text-align:center;margin-bottom:24px;}
+.wiz-budget-display{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:64px;font-weight:700;color:var(--text);cursor:pointer;text-align:center;margin-bottom:24px;}
 .wiz-budget-hint{font-size:14px;color:var(--text3);text-align:center;}
 
 /* Step 4 — Title */
@@ -265,7 +265,7 @@ textarea{resize:vertical;min-height:80px;}
 /* Step 5 — Desc */
 #wiz-step-5{height:100%;display:flex;flex-direction:column;justify-content:flex-start;padding:20px 20px calc(54px + var(--nav-h) + 40px);}
 
-.wiz-text-display{font-family:'Unbounded',sans-serif;font-size:22px;font-weight:700;color:var(--text);text-align:center;cursor:pointer;min-height:60px;width:100%;line-height:1.4;}
+.wiz-text-display{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:22px;font-weight:700;color:var(--text);text-align:center;cursor:pointer;min-height:60px;width:100%;line-height:1.4;}
 .wiz-text-display:empty::before{content:attr(data-placeholder);color:var(--border2);font-weight:400;}
 #wiz-step-5 .wiz-text-display{font-family:inherit;font-size:16px;font-weight:400;line-height:1.7;text-align:left;}
 
@@ -308,13 +308,13 @@ textarea{resize:vertical;min-height:80px;}
 .profile-page{max-width:700px;margin:0 auto;padding:16px 16px calc(var(--nav-h)+16px);}
 .profile-header{background:var(--surface);border-radius:var(--radius);padding:20px;margin-bottom:16px;}
 .profile-top{display:flex;align-items:center;gap:16px;margin-bottom:16px;}
-.avatar{width:64px;height:64px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-family:'Unbounded',sans-serif;font-size:22px;font-weight:700;color:var(--green-dark);flex-shrink:0;overflow:hidden;}
+.avatar{width:64px;height:64px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:22px;font-weight:700;color:var(--green-dark);flex-shrink:0;overflow:hidden;}
 .avatar img{width:100%;height:100%;object-fit:cover;}
-.profile-name{font-family:'Unbounded',sans-serif;font-size:18px;font-weight:700;margin-bottom:4px;}
+.profile-name{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:18px;font-weight:700;margin-bottom:4px;}
 .profile-meta{font-size:12px;color:var(--text3);display:flex;gap:10px;flex-wrap:wrap;}
 .profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
 .stat-card{background:var(--bg);border-radius:var(--radius-sm);padding:12px;text-align:center;}
-.stat-num{font-family:'Unbounded',sans-serif;font-size:20px;font-weight:700;color:var(--text);}
+.stat-num{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:20px;font-weight:700;color:var(--text);}
 .stat-label{font-size:11px;color:var(--text3);margin-top:2px;}
 .profile-edit-form{display:none;flex-direction:column;gap:12px;border-top:1px solid var(--border);padding-top:16px;margin-top:4px;}
 .profile-edit-form.open{display:flex;}
@@ -392,18 +392,18 @@ textarea{resize:vertical;min-height:80px;}
 .review-date{font-size:11px;color:var(--text3);}
 .review-text{font-size:13px;color:var(--text2);line-height:1.5;}
 .rating-summary{display:flex;align-items:center;gap:16px;padding:14px;background:var(--bg);border-radius:var(--radius-sm);margin-bottom:14px;}
-.rating-avg{font-family:'Unbounded',sans-serif;font-size:26px;font-weight:700;}
+.rating-avg{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:26px;font-weight:700;}
 .rating-avg-stars{color:#F5A623;font-size:15px;}
 .rating-count{font-size:12px;color:var(--text3);margin-top:2px;}
 
 /* SIDEBAR (desktop) */
 .sidebar-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;position:sticky;top:80px;}
-.sidebar-card h2{font-family:'Unbounded',sans-serif;font-size:14px;font-weight:600;margin-bottom:18px;color:var(--text);}
+.sidebar-card h2{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:14px;font-weight:600;margin-bottom:18px;color:var(--text);}
 
 /* NEW REQ / CONFIRM / REVIEW modals */
 .new-req-modal{background:var(--surface);border-radius:24px 24px 0 0;padding:8px 20px 32px;width:100%;max-height:92vh;overflow-y:auto;}
 @media(min-width:701px){.new-req-modal{border-radius:20px;max-width:460px;margin:16px;padding:28px;}}
-.new-req-modal h3{font-family:'Unbounded',sans-serif;font-size:17px;font-weight:700;margin-bottom:20px;}
+.new-req-modal h3{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:17px;font-weight:700;margin-bottom:20px;}
 .review-modal{background:var(--surface);border-radius:24px 24px 0 0;padding:8px 20px 32px;width:100%;max-height:92vh;overflow-y:auto;}
 @media(min-width:701px){.review-modal{border-radius:20px;max-width:420px;margin:16px;padding:28px;}}
 .review-modal h3{font-size:16px;font-weight:700;margin-bottom:16px;}
