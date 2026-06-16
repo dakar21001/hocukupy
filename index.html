@@ -1126,7 +1126,6 @@ function removePhoto(formId, idx) { photoState[formId].splice(idx, 1); renderPho
 function renderPhotoPreviews(formId) {
   var container = document.getElementById('previews-' + formId)
     || document.getElementById(formId + '-previews')
-    || (formId === 'fab' ? document.getElementById('fab-previews') : null)
     || (formId === 'modal' ? document.getElementById('modal-previews') : null)
     || (formId === 'sidebar' ? document.getElementById('previews-sidebar') : null);
   if (!container) return;
@@ -1156,7 +1155,6 @@ async function uploadPhotos(formId) {
 
 // Bind sidebar photo input
 document.getElementById('sidebar-photo-input').addEventListener('change', function() { handlePhotoSelect('sidebar', this); });
-document.getElementById('fab-photo-input').addEventListener('change', function() { handlePhotoSelect('fab', this); });
 
 // ---- LOAD REQUESTS ----
 async function loadRequests() {
