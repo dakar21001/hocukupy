@@ -221,20 +221,19 @@ textarea{resize:vertical;min-height:80px;}
 .wizard-progress{display:flex;gap:6px;padding:0 20px 20px;flex-shrink:0;}
 .wizard-progress-bar{flex:1;height:4px;border-radius:99px;background:var(--border);transition:background 0.3s;}
 .wizard-progress-bar.active{background:var(--green);}
-.wizard-body{flex:1;overflow-y:auto;padding:0 20px;}
-.wizard-footer{padding:12px 20px calc(var(--nav-h)+12px);flex-shrink:0;}
+.wizard-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.wizard-footer{position:fixed;bottom:0;left:0;right:0;padding:12px 20px calc(var(--nav-h) + 12px);background:#fff;z-index:110;flex-shrink:0;}
 .wizard-next-btn{width:100%;height:54px;background:var(--green);color:#fff;border:none;border-radius:16px;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:opacity 0.2s,background 0.15s;}
 .wizard-next-btn:disabled{background:#B8D9B8;cursor:not-allowed;}
-.wizard-next-btn.publish{background:var(--green);}
 
 /* Step 1 — Photos */
-.wiz-photo-area{padding:8px 0;}
+.wiz-photo-area{padding:20px 20px calc(54px + var(--nav-h) + 40px);}
 .wiz-photos-grid{display:flex;flex-direction:column;gap:10px;}
-.wiz-photo-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;width:100%;aspect-ratio:4/3;border-radius:20px;background:var(--green-light);cursor:pointer;border:none;}
-.wiz-photo-icon svg{stroke:var(--green);width:40px;height:40px;}
+.wiz-photo-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;aspect-ratio:4/3;border-radius:20px;background:var(--green-light);cursor:pointer;border:none;}
+.wiz-photo-icon svg{stroke:var(--green);}
 .wiz-photo-label-text{font-size:15px;font-weight:600;color:var(--green);}
 .wiz-photo-sub{font-size:13px;color:var(--text3);}
-.wiz-skip-hint{text-align:center;font-size:13px;color:var(--text3);padding:16px 0;}
+.wiz-skip-hint{text-align:center;font-size:13px;color:var(--text3);padding:12px 0;}
 .wiz-main-photo-wrap{position:relative;width:100%;}
 .wiz-main-photo{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:20px;display:block;}
 .wiz-main-badge{position:absolute;top:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.6);color:#fff;font-size:12px;font-weight:600;padding:5px 14px;border-radius:99px;white-space:nowrap;}
@@ -248,21 +247,33 @@ textarea{resize:vertical;min-height:80px;}
 .wiz-add-more small{font-size:11px;color:var(--text3);}
 
 /* Step 2 — Category */
-.wiz-cat-list{display:flex;flex-direction:column;gap:10px;padding:4px 0;}
-.wiz-cat-row{display:flex;align-items:center;gap:14px;padding:0 16px;height:54px;border:1.5px solid var(--border);border-radius:16px;background:#fff;cursor:pointer;transition:all 0.15s;width:100%;text-align:left;}
+#wiz-step-2{display:flex;flex-direction:column;}
+.wiz-cat-list{display:flex;flex-direction:column;gap:10px;padding:4px 20px calc(54px + var(--nav-h) + 40px);}
+.wiz-cat-row{display:flex;align-items:center;gap:14px;padding:0 16px;height:54px;border:1.5px solid var(--border);border-radius:16px;background:#fff;cursor:pointer;transition:all 0.15s;width:100%;text-align:left;box-sizing:border-box;}
 .wiz-cat-row.selected{background:var(--green);border-color:var(--green);}
 .wiz-cat-row.selected .cat-row-label{color:#fff;}
 .wiz-cat-row.selected .cat-row-icon svg{stroke:#fff;}
 
 /* Step 3 — Budget */
-.wizard-step{height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;}
+#wiz-step-3{height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px 20px calc(54px + var(--nav-h) + 40px);}
 .wiz-budget-display{font-family:'Unbounded',sans-serif;font-size:64px;font-weight:700;color:var(--text);cursor:pointer;text-align:center;margin-bottom:24px;}
-.wiz-budget-hint{font-size:14px;color:var(--text3);text-align:center;position:absolute;bottom:calc(var(--nav-h) + 80px);}
+.wiz-budget-hint{font-size:14px;color:var(--text3);text-align:center;}
 
-/* Step 4 & 5 — Title & Desc */
+/* Step 4 — Title */
+#wiz-step-4{height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px 20px calc(54px + var(--nav-h) + 40px);}
+
+/* Step 5 — Desc */
+#wiz-step-5{height:100%;display:flex;flex-direction:column;justify-content:flex-start;padding:20px 20px calc(54px + var(--nav-h) + 40px);}
+
 .wiz-text-display{font-family:'Unbounded',sans-serif;font-size:22px;font-weight:700;color:var(--text);text-align:center;cursor:pointer;min-height:60px;width:100%;line-height:1.4;}
 .wiz-text-display:empty::before{content:attr(data-placeholder);color:var(--border2);font-weight:400;}
 #wiz-step-5 .wiz-text-display{font-family:inherit;font-size:16px;font-weight:400;line-height:1.7;text-align:left;}
+
+/* Step 6 — Preview */
+#wiz-step-6{padding-bottom:calc(54px + var(--nav-h) + 40px);}
+.wiz-preview-photos-strip{display:flex;gap:8px;overflow-x:auto;padding:0 20px 16px;scrollbar-width:none;flex-shrink:0;}
+.wiz-preview-photos-strip::-webkit-scrollbar{display:none;}
+.wiz-preview-photo{flex-shrink:0;width:calc(55vw - 20px);max-width:260px;aspect-ratio:3/4;border-radius:20px;object-fit:cover;}
 .photo-upload-area{border:2px dashed var(--border2);border-radius:var(--radius-sm);padding:14px;text-align:center;cursor:pointer;transition:border-color 0.15s;position:relative;}
 .photo-upload-area:hover{border-color:var(--green);}
 .photo-upload-area input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;padding:0;border:none;}
@@ -677,21 +688,12 @@ textarea{resize:vertical;min-height:80px;}
       <div class="wizard-progress-bar" id="wiz-bar-5"></div>
     </div>
     <!-- Steps -->
-    <div class="wizard-body">
+    <div class="wizard-body" id="wizard-body">
 
       <!-- STEP 1: Фото -->
       <div class="wizard-step" id="wiz-step-1">
-        <div class="wiz-photo-area" id="wiz-photo-area">
-          <div class="wiz-photos-grid" id="wiz-photos-grid">
-            <label class="wiz-photo-empty" id="wiz-photo-trigger">
-              <input type="file" accept="image/*" multiple id="wiz-photo-input" style="display:none">
-              <div class="wiz-photo-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m3 9 4-4 4 4 4-4 4 4"/><circle cx="8.5" cy="14.5" r="1.5"/></svg>
-              </div>
-              <div class="wiz-photo-label-text">Додати фото</div>
-              <div class="wiz-photo-sub">Можна до 3 штук</div>
-            </label>
-          </div>
+        <div class="wiz-photo-area">
+          <div class="wiz-photos-grid" id="wiz-photos-grid"></div>
         </div>
         <div class="wiz-skip-hint">Можна продовжити без фото</div>
       </div>
@@ -763,7 +765,7 @@ textarea{resize:vertical;min-height:80px;}
 
       <!-- STEP 6: Публікація -->
       <div class="wizard-step" id="wiz-step-6" style="display:none">
-        <div class="req-photos-strip" id="wiz-preview-photos"></div>
+        <div class="wiz-preview-photos-strip" id="wiz-preview-photos"></div>
         <div class="req-body">
           <div class="req-title" id="wiz-preview-title"></div>
           <div class="req-budget-wrap" id="wiz-preview-budget-wrap">
@@ -776,11 +778,11 @@ textarea{resize:vertical;min-height:80px;}
       </div>
 
     </div>
-    <!-- Next button -->
-    <div class="wizard-footer">
-      <button class="wizard-next-btn" id="wizard-next-btn">Далі</button>
-    </div>
   </div>
+</div>
+<!-- Next button — fixed FAB -->
+<div class="wizard-footer" id="wizard-footer" style="display:none">
+  <button class="wizard-next-btn" id="wizard-next-btn">Далі</button>
 </div>
 
 <!-- CATEGORIES PAGE -->
@@ -939,6 +941,9 @@ function showPage(page) {
   if (fab) fab.style.display = hide ? 'none' : '';
   // Remove offer FAB when leaving request page
   if (page !== 'request') { var ofab = document.getElementById('req-offer-fab'); if (ofab) ofab.remove(); }
+  // Show/hide wizard footer
+  var wizFooter = document.getElementById('wizard-footer');
+  if (wizFooter) wizFooter.style.display = page === 'wizard' ? '' : 'none';
 }
 
 // ---- TOAST ----
@@ -1314,7 +1319,7 @@ function openWizard() {
 
 function wizGotoStep(n) {
   wizState.step = n;
-  var titles = {1:'Додайте фото',2:'Оберіть категорію',3:'Який бюджет?',4:'Назва',5:'Назва',6:'Публікуємо?'};
+  var titles = {1:'Додайте фото',2:'Оберіть категорію',3:'Який бюджет?',4:'Назва',5:'Опис',6:'Публікуємо?'};
   document.getElementById('wizard-title').textContent = titles[n] || '';
   for (var i = 1; i <= 5; i++) document.getElementById('wiz-bar-'+i).classList.toggle('active', i <= (n===6?5:n));
   for (var s = 1; s <= 6; s++) document.getElementById('wiz-step-'+s).style.display = s===n?'':'none';
@@ -1372,7 +1377,7 @@ function wizRenderBudget() {
 
 function wizRenderPreview() {
   var strip = document.getElementById('wiz-preview-photos');
-  strip.innerHTML = wizState.photos.map(function(p){ return '<img class="req-photo-item" src="'+p+'">'; }).join('');
+  strip.innerHTML = wizState.photos.map(function(p){ return '<img class="wiz-preview-photo" src="'+p+'">'; }).join('');
   document.getElementById('wiz-preview-title').textContent = wizState.title;
   var bw = document.getElementById('wiz-preview-budget-wrap');
   var bd = document.getElementById('wiz-preview-budget');
