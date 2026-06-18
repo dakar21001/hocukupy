@@ -939,6 +939,11 @@ function showPage(page) {
   var hide = hiddenPages.indexOf(page) !== -1;
   if (mobileHeader) mobileHeader.style.display = hide ? 'none' : '';
   if (fab) fab.style.display = hide ? 'none' : '';
+  // Hide bottom nav entirely on fullscreen wizard
+  var bottomNav = document.querySelector('.bottom-nav');
+  if (bottomNav) bottomNav.style.display = (page === 'wizard') ? 'none' : '';
+  // Lock body scroll on fullscreen wizard
+  document.body.style.overflow = (page === 'wizard') ? 'hidden' : '';
   // Remove offer FAB when leaving request page
   if (page !== 'request') { var ofab = document.getElementById('req-offer-fab'); if (ofab) ofab.remove(); }
   // Show/hide wizard footer
