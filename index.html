@@ -1488,20 +1488,6 @@ document.getElementById('wizard-next-btn').addEventListener('click', async funct
 
 document.getElementById('fab-btn').addEventListener('click', function() { openWizard(); });
 
-// ---- KEYBOARD-AWARE WIZARD FOOTER ----
-// Коли з'являється клавіатура, visualViewport.height зменшується.
-// Піднімаємо footer-кнопки wizard над клавіатурою на ту ж висоту.
-if (window.visualViewport) {
-  window.visualViewport.addEventListener('resize', function() {
-    var kbHeight = Math.max(0, window.innerHeight - window.visualViewport.height);
-    var wizFooter = document.getElementById('wizard-footer');
-    var owizFooter = document.getElementById('owizard-footer');
-    var offset = kbHeight > 50 ? kbHeight + 12 : 24; // 50px — порог щоб ігнорувати дрібні зміни (адресбар тощо)
-    if (wizFooter) wizFooter.style.bottom = offset + 'px';
-    if (owizFooter) owizFooter.style.bottom = offset + 'px';
-  });
-}
-
 // ---- OFFER WIZARD ----
 var owizState = { step: 1, photos: [], photoFiles: [], price: '', desc: '', requestId: null };
 
