@@ -787,6 +787,64 @@ textarea{resize:vertical;min-height:80px;}
   <button class="wizard-next-btn" id="wizard-next-btn">Далі</button>
 </div>
 
+<!-- OFFER WIZARD PAGE -->
+<div id="offer-wizard-page" style="display:none">
+  <div class="wizard-wrap">
+    <div class="wizard-header">
+      <button class="cats-back-btn" id="owiz-back-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <span class="wizard-title" id="owiz-title">Додайте фото</span>
+      <div style="width:44px"></div>
+    </div>
+    <div class="wizard-progress">
+      <div class="wizard-progress-bar" id="owiz-bar-1"></div>
+      <div class="wizard-progress-bar" id="owiz-bar-2"></div>
+      <div class="wizard-progress-bar" id="owiz-bar-3"></div>
+      <div class="wizard-progress-bar" id="owiz-bar-4"></div>
+    </div>
+    <div class="wizard-body" id="owizard-body">
+
+      <!-- STEP 1: Фото -->
+      <div class="wizard-step" id="owiz-step-1">
+        <div class="wiz-photo-area">
+          <div class="wiz-photos-grid" id="owiz-photos-grid"></div>
+        </div>
+        <div class="wiz-skip-hint">Можна продовжити без фото</div>
+      </div>
+
+      <!-- STEP 2: Опис -->
+      <div class="wizard-step" id="owiz-step-2" style="display:none">
+        <div class="wiz-text-display" id="owiz-desc-display" data-placeholder="Напишіть опис"></div>
+        <textarea id="owiz-desc-input" style="position:absolute;opacity:0;width:1px;height:1px;"></textarea>
+      </div>
+
+      <!-- STEP 3: Ціна -->
+      <div class="wizard-step" id="owiz-step-3" style="display:none">
+        <div class="wiz-budget-display" id="owiz-price-display">0</div>
+        <input type="number" id="owiz-price-input" inputmode="numeric" style="position:absolute;opacity:0;width:1px;height:1px;">
+        <div class="wiz-budget-hint">Вкажіть вашу ціну</div>
+      </div>
+
+      <!-- STEP 4: Публікація -->
+      <div class="wizard-step" id="owiz-step-4" style="display:none">
+        <div class="wiz-preview-photos-strip" id="owiz-preview-photos"></div>
+        <div class="req-body">
+          <div class="req-budget-wrap">
+            <div class="req-budget-label">Ваша ціна</div>
+            <div class="req-budget" id="owiz-preview-price"></div>
+          </div>
+          <div class="req-desc" id="owiz-preview-desc" style="text-align:center"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<div class="wizard-footer" id="owizard-footer" style="display:none">
+  <button class="wizard-next-btn" id="owizard-next-btn">Далі</button>
+</div>
+
 <!-- CATEGORIES PAGE -->
 <div id="cats-page" style="display:none">
   <div class="cats-page">
@@ -925,7 +983,7 @@ const photoState = {};
 
 // ---- PAGES ----
 function showPage(page) {
-  ['main-page','profile-page','chat-list-page','chat-window-page','cats-page','request-page','wizard-page'].forEach(function(id) {
+  ['main-page','profile-page','chat-list-page','chat-window-page','cats-page','request-page','wizard-page','offer-wizard-page'].forEach(function(id) {
     var el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
@@ -937,20 +995,23 @@ function showPage(page) {
   // Hide mobile-header and FAB on chat/cats pages
   var mobileHeader = document.querySelector('.mobile-header');
   var fab = document.getElementById('fab-btn');
-  var hiddenPages = ['chat-list','chat-window','cats','request','wizard'];
+  var hiddenPages = ['chat-list','chat-window','cats','request','wizard','offer-wizard'];
   var hide = hiddenPages.indexOf(page) !== -1;
   if (mobileHeader) mobileHeader.style.display = hide ? 'none' : '';
   if (fab) fab.style.display = hide ? 'none' : '';
   // Hide bottom nav entirely on fullscreen wizard
   var bottomNav = document.querySelector('.bottom-nav');
-  if (bottomNav) bottomNav.style.display = (page === 'wizard') ? 'none' : '';
+  var fullscreenPages = ['wizard','offer-wizard'];
+  if (bottomNav) bottomNav.style.display = (fullscreenPages.indexOf(page) !== -1) ? 'none' : '';
   // Lock body scroll on fullscreen wizard
-  document.body.style.overflow = (page === 'wizard') ? 'hidden' : '';
+  document.body.style.overflow = (fullscreenPages.indexOf(page) !== -1) ? 'hidden' : '';
   // Remove offer FAB when leaving request page
   if (page !== 'request') { var ofab = document.getElementById('req-offer-fab'); if (ofab) ofab.remove(); }
   // Show/hide wizard footer
   var wizFooter = document.getElementById('wizard-footer');
   if (wizFooter) wizFooter.style.display = page === 'wizard' ? '' : 'none';
+  var owizFooter = document.getElementById('owizard-footer');
+  if (owizFooter) owizFooter.style.display = page === 'offer-wizard' ? '' : 'none';
 }
 
 // ---- TOAST ----
@@ -1427,6 +1488,100 @@ document.getElementById('wizard-next-btn').addEventListener('click', async funct
 
 document.getElementById('fab-btn').addEventListener('click', function() { openWizard(); });
 
+// ---- OFFER WIZARD ----
+var owizState = { step: 1, photos: [], photoFiles: [], price: '', desc: '', requestId: null };
+
+function openOfferWizard(requestId) {
+  if (!currentUser) { openAuth(); return; }
+  owizState = { step: 1, photos: [], photoFiles: [], price: '', desc: '', requestId: requestId };
+  owizGotoStep(1);
+  showPage('offer-wizard');
+}
+
+function owizGotoStep(n) {
+  owizState.step = n;
+  var titles = {1:'Додайте фото',2:'Опис',3:'Яка ціна?',4:'Публікуємо?'};
+  document.getElementById('owiz-title').textContent = titles[n] || '';
+  for (var i = 1; i <= 4; i++) document.getElementById('owiz-bar-'+i).classList.toggle('active', i <= n);
+  for (var s = 1; s <= 4; s++) document.getElementById('owiz-step-'+s).style.display = s===n?'':'none';
+  var btn = document.getElementById('owizard-next-btn');
+  btn.textContent = n===4 ? 'Запропонувати' : 'Далі';
+  btn.disabled = false;
+  if (n===2) btn.disabled = !owizState.desc.trim();
+  if (n===3) btn.disabled = !owizState.price;
+  if (n===1) owizRenderPhotos();
+  if (n===2) { document.getElementById('owiz-desc-display').textContent = owizState.desc; setTimeout(function(){ document.getElementById('owiz-desc-input').focus(); },100); }
+  if (n===3) { owizRenderPrice(); setTimeout(function(){ document.getElementById('owiz-price-input').focus(); },100); }
+  if (n===4) owizRenderPreview();
+}
+
+function owizRenderPhotos() {
+  var grid = document.getElementById('owiz-photos-grid');
+  var photos = owizState.photos;
+  if (!photos.length) {
+    grid.innerHTML = '<label class="wiz-photo-empty"><input type="file" accept="image/*" multiple id="owiz-photo-input" style="display:none"><div class="wiz-photo-icon"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m3 9 4-4 4 4 4-4 4 4"/><circle cx="8.5" cy="14.5" r="1.5"/></svg></div><div class="wiz-photo-label-text">Додати фото</div><div class="wiz-photo-sub">Можна до 3 штук</div></label>';
+  } else {
+    var rem = 3 - photos.length;
+    var h = '<div class="wiz-main-photo-wrap"><img class="wiz-main-photo" src="'+photos[0]+'"><div class="wiz-main-badge">Головне фото</div><button class="wiz-remove-btn" data-idx="0"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>';
+    if (photos.length > 1 || rem > 0) {
+      h += '<div class="wiz-secondary-photos">';
+      for (var i=1;i<photos.length;i++) h += '<div class="wiz-secondary-wrap"><img class="wiz-secondary-photo" src="'+photos[i]+'"><button class="wiz-remove-btn" data-idx="'+i+'"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>';
+      if (rem>0) h += '<label class="wiz-add-more"><input type="file" accept="image/*" multiple id="owiz-photo-input" style="display:none"><span>Додати фото</span><small>Можна ще '+rem+'</small></label>';
+      h += '</div>';
+    }
+    grid.innerHTML = h;
+  }
+  var inp = document.getElementById('owiz-photo-input');
+  if (inp) inp.addEventListener('change', function() {
+    var files = Array.from(this.files).slice(0, 3-owizState.photos.length);
+    files.forEach(function(f) {
+      var r = new FileReader();
+      r.onload = function(e) { owizState.photos.push(e.target.result); owizState.photoFiles.push(f); owizRenderPhotos(); };
+      r.readAsDataURL(f);
+    });
+  });
+  document.querySelectorAll('#owiz-photos-grid .wiz-remove-btn').forEach(function(b) {
+    b.addEventListener('click', function(e) { e.preventDefault(); var idx=parseInt(this.dataset.idx); owizState.photos.splice(idx,1); owizState.photoFiles.splice(idx,1); owizRenderPhotos(); });
+  });
+}
+
+function owizRenderPrice() {
+  document.getElementById('owiz-price-display').textContent = owizState.price ? Number(owizState.price).toLocaleString('uk') : '0';
+}
+
+function owizRenderPreview() {
+  var strip = document.getElementById('owiz-preview-photos');
+  strip.innerHTML = owizState.photos.map(function(p){ return '<img class="wiz-preview-photo" src="'+p+'">'; }).join('');
+  document.getElementById('owiz-preview-price').textContent = Number(owizState.price||0).toLocaleString('uk') + ' ₴';
+  document.getElementById('owiz-preview-desc').textContent = owizState.desc;
+}
+
+document.getElementById('owiz-back-btn').addEventListener('click', function() {
+  if (owizState.step<=1) { openRequestPage(owizState.requestId); } else owizGotoStep(owizState.step-1);
+});
+document.getElementById('owiz-desc-display').addEventListener('click', function(){ document.getElementById('owiz-desc-input').focus(); });
+document.getElementById('owiz-desc-input').addEventListener('input', function(){ owizState.desc=this.value; document.getElementById('owiz-desc-display').textContent=this.value; document.getElementById('owizard-next-btn').disabled=!this.value.trim(); });
+document.getElementById('owiz-price-display').addEventListener('click', function(){ document.getElementById('owiz-price-input').focus(); });
+document.getElementById('owiz-price-input').addEventListener('input', function(){ owizState.price=this.value; owizRenderPrice(); document.getElementById('owizard-next-btn').disabled=!this.value; });
+
+document.getElementById('owizard-next-btn').addEventListener('click', async function() {
+  var step=owizState.step;
+  if (step<4) { owizGotoStep(step+1); return; }
+  this.disabled=true; this.textContent='Надсилаємо...';
+  await ensureProfile(currentUser);
+  var photoUrls=[];
+  for (var i=0;i<owizState.photoFiles.length;i++) {
+    var f=owizState.photoFiles[i], ext=f.name.split('.').pop(), path=currentUser.id+'/'+Date.now()+'_'+i+'.'+ext;
+    var up=await db.storage.from('offers-photos').upload(path,f,{upsert:true});
+    if (!up.error) { var pub=db.storage.from('offers-photos').getPublicUrl(path); photoUrls.push(pub.data.publicUrl); }
+  }
+  var res=await db.from('offers').insert({request_id:owizState.requestId,user_id:currentUser.id,description:owizState.desc,price:Number(owizState.price),photos:photoUrls.length?photoUrls:null});
+  if (res.error) { toast('Помилка: '+res.error.message,true); this.disabled=false; this.textContent='Запропонувати'; return; }
+  toast('Пропозицію надіслано!');
+  openRequestPage(owizState.requestId);
+  loadRequests();
+});
+
 // ---- REQUEST PAGE ----
 document.getElementById('back-from-request-btn').addEventListener('click', function() {
   history.back();
@@ -1583,7 +1738,7 @@ async function openRequestPage(requestId) {
     fab.style.cssText = 'position:fixed;bottom:calc(var(--nav-h) + 16px);left:50%;transform:translateX(-50%);width:214px;height:52px;background:#008000;color:#fff;border:none;border-radius:16px;font-size:15px;font-weight:700;cursor:pointer;z-index:9999;box-shadow:0 4px 24px rgba(0,128,0,0.35);';
     fab.addEventListener('click', function() {
       if (!currentUser) { openAuth(); return; }
-      toast('Незабаром 🛠');
+      openOfferWizard(r.id);
     });
     document.body.appendChild(fab);
   }
