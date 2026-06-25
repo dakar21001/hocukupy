@@ -214,8 +214,80 @@ textarea{resize:vertical;min-height:80px;}
 .req-offer-fab{position:fixed;bottom:calc(var(--nav-h)+16px);left:50%;transform:translateX(-50%);width:214px;height:52px;background:var(--green);color:#fff;border:none;border-radius:16px;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 24px rgba(0,128,0,0.35);z-index:110;transition:background 0.15s;white-space:nowrap;}
 .req-offer-fab:active{background:var(--green-dark);}
 
-/* WIZARD */
-.wizard-wrap{background:#fff;height:100dvh;display:flex;flex-direction:column;overflow:hidden;}
+/* AUTH FLOW */
+.auth-wrap{background:#fff;height:100dvh;display:flex;flex-direction:column;overflow:hidden;}
+.auth-header{padding:20px 20px 0;text-align:center;flex-shrink:0;}
+.auth-header-title{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:18px;font-weight:700;color:var(--text);}
+.auth-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 24px;display:flex;flex-direction:column;}
+.auth-step{display:flex;flex-direction:column;height:100%;}
+.auth-logo-wrap{display:flex;flex-direction:column;align-items:center;padding:36px 0 32px;flex-shrink:0;}
+.auth-logo-wrap svg{width:140px;height:auto;}
+.auth-field{width:100%;height:54px;border:1.5px solid var(--border);border-radius:16px;padding:0 18px;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:15px;color:var(--text);margin-bottom:12px;box-sizing:border-box;position:relative;}
+.auth-field input{width:100%;height:100%;border:none;outline:none;background:none;font-family:inherit;font-size:15px;color:var(--text);padding:0;}
+.auth-field input::placeholder{color:var(--text3);}
+.auth-field-wrap{position:relative;}
+.auth-field-eye{position:absolute;right:16px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px;display:flex;}
+.auth-field-eye svg{width:20px;height:20px;stroke:var(--text3);fill:none;stroke-width:1.5;}
+.auth-forgot-link{font-size:13px;font-weight:600;color:var(--green);text-decoration:underline;background:none;border:none;cursor:pointer;align-self:flex-start;margin-bottom:24px;padding:0;}
+.auth-social-row{display:flex;gap:10px;margin-bottom:24px;}
+.auth-social-btn{flex:1;height:50px;border-radius:14px;background:#F2F2F2;border:none;display:flex;align-items:center;justify-content:center;cursor:not-allowed;opacity:0.5;}
+.auth-social-btn svg{width:20px;height:20px;}
+.auth-switch-link{text-align:center;font-size:14px;color:var(--text2);margin-top:auto;padding:20px 0;flex-shrink:0;}
+.auth-switch-link a, .auth-switch-link .auth-link-btn{color:var(--green);font-weight:700;text-decoration:underline;background:none;border:none;cursor:pointer;padding:0;font-size:14px;font-family:inherit;}
+.auth-footer{padding:12px 20px calc(env(safe-area-inset-bottom) + 20px);flex-shrink:0;}
+.auth-next-btn{width:100%;height:54px;background:var(--green);color:#fff;border:none;border-radius:16px;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:background 0.15s,opacity 0.2s;}
+.auth-next-btn:disabled{background:#B8D9B8;cursor:not-allowed;}
+.auth-info-hint{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.5;}
+.auth-info-hint svg{width:16px;height:16px;stroke:var(--text2);fill:none;stroke-width:1.5;flex-shrink:0;margin-top:1px;}
+.auth-check-title{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:19px;font-weight:700;color:var(--text);text-align:center;margin-bottom:10px;}
+.auth-check-sub{font-size:14px;color:var(--text3);text-align:center;line-height:1.6;}
+.auth-pw-rules{margin-top:4px;margin-bottom:20px;}
+.auth-pw-rule{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text3);margin-bottom:4px;}
+.auth-pw-rule.valid{color:var(--green);}
+.auth-pw-rule.invalid{color:#E54D4D;}
+.auth-pw-rule svg{width:13px;height:13px;flex-shrink:0;}
+
+/* Splash screen — choose login/register */
+.auth-choice-row{display:flex;gap:20px;justify-content:center;padding:10px 0 28px;}
+.auth-choice-circle{display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;background:none;border:none;}
+.auth-choice-ring{width:104px;height:104px;border-radius:50%;border:3px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:34px;font-weight:700;color:var(--text3);position:relative;transition:all 0.2s;}
+.auth-choice-circle.selected .auth-choice-ring{border-color:var(--green);color:var(--green);}
+.auth-choice-check{position:absolute;top:-4px;right:-4px;width:26px;height:26px;border-radius:50%;background:var(--green);display:none;align-items:center;justify-content:center;}
+.auth-choice-circle.selected .auth-choice-check{display:flex;}
+.auth-choice-check svg{width:14px;height:14px;stroke:#fff;stroke-width:3;fill:none;}
+.auth-choice-label{font-size:13px;font-weight:600;color:var(--text3);letter-spacing:0.3px;}
+.auth-choice-circle.selected .auth-choice-label{color:var(--text);}
+
+/* City picker field (dashed when empty) */
+.auth-field.city-empty{border:1.5px dashed var(--border2);}
+.auth-field.city-filled{border:1.5px solid var(--green);}
+
+/* City picker sheet */
+.city-sheet-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:flex-end;justify-content:center;}
+.city-sheet-bg.open{display:flex;}
+.city-sheet{background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:480px;max-height:85vh;display:flex;flex-direction:column;}
+.city-sheet-handle{width:36px;height:4px;background:var(--border2);border-radius:99px;margin:12px auto 0;flex-shrink:0;}
+.city-sheet-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;flex-shrink:0;}
+.city-sheet-title{font-size:13px;font-weight:700;color:var(--text2);letter-spacing:0.5px;}
+.city-sheet-close{width:32px;height:32px;border-radius:50%;background:var(--bg);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.city-sheet-close svg{width:16px;height:16px;stroke:var(--text2);stroke-width:2;fill:none;}
+.city-sheet-search{margin:0 20px 14px;background:var(--bg);border-radius:14px;padding:0 14px;display:flex;align-items:center;gap:8px;height:48px;flex-shrink:0;}
+.city-sheet-search svg{width:18px;height:18px;stroke:var(--text3);fill:none;stroke-width:1.5;flex-shrink:0;}
+.city-sheet-search input{flex:1;border:none;outline:none;background:none;font-size:15px;color:var(--text);font-family:inherit;}
+.city-sheet-list{flex:1;overflow-y:auto;padding:0 20px 20px;-webkit-overflow-scrolling:touch;}
+.city-sheet-empty{text-align:center;color:var(--text3);font-size:14px;padding:60px 20px;}
+.city-row{display:flex;align-items:center;justify-content:space-between;height:54px;padding:0 16px;border:1.5px solid var(--border);border-radius:14px;margin-bottom:10px;cursor:pointer;font-size:15px;color:var(--text);}
+.city-row.selected{border-color:var(--green);color:var(--green);font-weight:700;}
+.city-row-match{color:var(--text);font-weight:600;}
+.city-row-rest{color:var(--text3);}
+.city-row.selected .city-row-rest{color:var(--green);opacity:0.7;}
+.city-row-check{width:18px;height:18px;stroke:var(--green);stroke-width:2.5;fill:none;display:none;}
+.city-row.selected .city-row-check{display:block;}
+.city-sheet-footer{padding:8px 20px calc(env(safe-area-inset-bottom) + 16px);flex-shrink:0;}
+.city-sheet-confirm{width:100%;height:54px;background:#B8D9B8;color:#fff;border:none;border-radius:16px;font-size:16px;font-weight:700;cursor:pointer;}
+.city-sheet-confirm.active{background:var(--green);cursor:pointer;}
+
+
 .wizard-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 0;flex-shrink:0;background:#fff;position:relative;z-index:1;}
 .wizard-title{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:17px;font-weight:700;color:var(--text);}
 .wizard-progress{display:flex;gap:6px;padding:16px 20px;flex-shrink:0;background:#fff;position:relative;z-index:1;}
@@ -613,25 +685,138 @@ textarea{resize:vertical;min-height:80px;}
 </div>
 
 <!-- AUTH MODAL -->
-<div class="modal-bg" id="auth-modal">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <button class="modal-close" id="close-auth-btn">×</button>
-    <h2>Вхід / Реєстрація</h2>
-    <div class="modal-tabs">
-      <button class="modal-tab active" id="tab-login">Увійти</button>
-      <button class="modal-tab" id="tab-register">Реєстрація</button>
+<!-- AUTH FLOW PAGE -->
+<div id="auth-page" style="display:none">
+  <div class="auth-wrap">
+    <div class="auth-header">
+      <span class="auth-header-title" id="auth-step-title">Раді бачити</span>
     </div>
-    <div id="login-form">
-      <div class="field-group"><div class="field-label">Email</div><input type="email" id="login-email" placeholder="you@example.com"></div>
-      <div class="field-group"><div class="field-label">Пароль</div><input type="password" id="login-pass" placeholder="••••••••"></div>
-      <button class="btn btn-primary btn-full" style="margin-top:8px" id="do-login-btn">Увійти</button>
+    <div class="auth-body" id="auth-body">
+
+      <!-- STEP: splash choice -->
+      <div class="auth-step" id="auth-step-splash">
+        <div class="auth-logo-wrap" id="auth-logo-1"></div>
+        <div class="auth-choice-row">
+          <button class="auth-choice-circle" id="auth-choice-login" data-choice="login">
+            <div class="auth-choice-ring">У<div class="auth-choice-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+            <div class="auth-choice-label">УВІЙТИ</div>
+          </button>
+          <button class="auth-choice-circle" id="auth-choice-register" data-choice="register">
+            <div class="auth-choice-ring">З<div class="auth-choice-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+            <div class="auth-choice-label">ЗАРЕЄСТРУВАТИСЯ</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP: login -->
+      <div class="auth-step" id="auth-step-login" style="display:none">
+        <div class="auth-logo-wrap" id="auth-logo-2"></div>
+        <div class="auth-field"><input type="email" id="al-email" placeholder="Email"></div>
+        <div class="auth-field auth-field-wrap">
+          <input type="password" id="al-pass" placeholder="Пароль">
+          <button class="auth-field-eye" data-toggle="al-pass"><svg viewBox="0 0 24 24"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg></button>
+        </div>
+        <button class="auth-forgot-link" id="auth-forgot-btn">Забулися пароль?</button>
+        <div class="auth-social-row">
+          <button class="auth-social-btn" disabled><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.365 1.43c0 1.14-.493 2.27-1.177 3.08-.744.9-1.99 1.59-3.014 1.59-.12 0-.23-.02-.3-.03-.01-.06-.04-.22-.04-.39 0-1.15.572-2.27 1.206-2.98.804-.94 2.142-1.64 3.248-1.68.03.13.06.28.06.41h.017zm4.565 15.71c-.03.07-.463 1.58-1.518 3.12-.972 1.42-1.98 2.83-3.55 2.86-1.54.03-2.04-.91-3.8-.91-1.76 0-2.32.88-3.78.94-1.52.06-2.67-1.53-3.65-2.95C2.43 17.06.97 13.62 1.46 10.34c.27-1.76 1.13-3.32 2.31-4.39 1.18-1.07 2.68-1.69 4.18-1.71 1.18-.02 2.27.6 3.16.6.88 0 2.04-.66 3.5-.66 1.41 0 2.93.55 3.96 1.51-1.18.92-2.13 2.43-2.16 4.32-.04 2.7 2.1 4.1 2.16 4.13z"/></svg></button>
+          <button class="auth-social-btn" disabled><svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.07 5.07 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11.99 11.99 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.09a6.6 6.6 0 0 1 0-4.18V7.07H2.18a12 12 0 0 0 0 10.86l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15A11.41 11.41 0 0 0 12 1 12 12 0 0 0 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg></button>
+        </div>
+        <div class="auth-switch-link">Немає профілю? <button class="auth-link-btn" id="auth-goto-register-1">Зареєструйтесь</button></div>
+      </div>
+
+      <!-- STEP: register email -->
+      <div class="auth-step" id="auth-step-reg-email" style="display:none">
+        <div class="auth-logo-wrap" id="auth-logo-3"></div>
+        <div class="auth-field"><input type="email" id="ar-email" placeholder="Email"></div>
+        <div class="auth-switch-link">Уже зареєстровані? <button class="auth-link-btn" id="auth-goto-login-1">Увійти</button></div>
+      </div>
+
+      <!-- STEP: check email (after register) -->
+      <div class="auth-step" id="auth-step-check-email" style="display:none">
+        <div class="auth-logo-wrap" id="auth-logo-4"></div>
+        <div class="auth-check-title">Перевірте пошту!</div>
+        <div class="auth-check-sub">На вашу пошту прийде посилання, перейдіть по ньому, аби продовжити реєстрацію</div>
+      </div>
+
+      <!-- STEP: create password -->
+      <div class="auth-step" id="auth-step-password" style="display:none">
+        <div class="auth-logo-wrap" id="auth-logo-5"></div>
+        <div class="auth-field auth-field-wrap">
+          <input type="password" id="ap-pass1" placeholder="Пароль">
+          <button class="auth-field-eye" data-toggle="ap-pass1"><svg viewBox="0 0 24 24"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg></button>
+        </div>
+        <div class="auth-field auth-field-wrap">
+          <input type="password" id="ap-pass2" placeholder="Повторити пароль">
+          <button class="auth-field-eye" data-toggle="ap-pass2"><svg viewBox="0 0 24 24"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg></button>
+        </div>
+      </div>
+
+      <!-- STEP: name + city -->
+      <div class="auth-step" id="auth-step-profile" style="display:none">
+        <div class="auth-logo-wrap" id="auth-logo-6"></div>
+        <div class="auth-field"><input type="text" id="apr-name" placeholder="Ім'я"></div>
+        <div class="auth-field city-empty" id="apr-city-field">
+          <input type="text" id="apr-city-display" placeholder="Оберіть місто" readonly style="cursor:pointer">
+        </div>
+      </div>
+
+      <!-- STEP: bio/slogan -->
+      <div class="auth-step" id="auth-step-bio" style="display:none">
+        <div class="auth-logo-wrap" id="auth-logo-7"></div>
+        <div class="auth-field"><input type="text" id="abio-text" placeholder="Ваш слоган по життю?"></div>
+      </div>
+
+      <!-- STEP: forgot password — email -->
+      <div class="auth-step" id="auth-step-forgot-email" style="display:none">
+        <div class="auth-logo-wrap" id="auth-logo-8"></div>
+        <div class="auth-field"><input type="email" id="afg-email" placeholder="Email"></div>
+        <div class="auth-info-hint"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>На вашу пошту буде надіслано лист для відновлення пароля</div>
+      </div>
+
+      <!-- STEP: forgot password — check email -->
+      <div class="auth-step" id="auth-step-forgot-check" style="display:none">
+        <div class="auth-logo-wrap" id="auth-logo-9"></div>
+        <div class="auth-check-title">Перевірте пошту!</div>
+        <div class="auth-check-sub">На вашу пошту прийде посилання, перейдіть по ньому, аби продовжити відновлення пароля</div>
+      </div>
+
+      <!-- STEP: forgot password — new password -->
+      <div class="auth-step" id="auth-step-forgot-newpass" style="display:none">
+        <div class="auth-logo-wrap" id="auth-logo-10"></div>
+        <div class="auth-field auth-field-wrap">
+          <input type="password" id="afn-pass1" placeholder="Новий пароль">
+          <button class="auth-field-eye" data-toggle="afn-pass1"><svg viewBox="0 0 24 24"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg></button>
+        </div>
+        <div class="auth-field auth-field-wrap">
+          <input type="password" id="afn-pass2" placeholder="Повторити пароль">
+          <button class="auth-field-eye" data-toggle="afn-pass2"><svg viewBox="0 0 24 24"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg></button>
+        </div>
+      </div>
+
     </div>
-    <div id="register-form" style="display:none">
-      <div class="field-group"><div class="field-label">Ім'я</div><input type="text" id="reg-name" placeholder="Ваше ім'я"></div>
-      <div class="field-group"><div class="field-label">Email</div><input type="email" id="reg-email" placeholder="you@example.com"></div>
-      <div class="field-group"><div class="field-label">Пароль</div><input type="password" id="reg-pass" placeholder="Мінімум 6 символів"></div>
-      <button class="btn btn-primary btn-full" style="margin-top:8px" id="do-register-btn">Зареєструватись</button>
+    <div class="auth-footer" id="auth-footer">
+      <button class="auth-next-btn" id="auth-next-btn" disabled>Продовжити</button>
+    </div>
+  </div>
+</div>
+
+<!-- CITY PICKER SHEET -->
+<div class="city-sheet-bg" id="city-sheet-bg">
+  <div class="city-sheet">
+    <div class="city-sheet-handle"></div>
+    <div class="city-sheet-header">
+      <span class="city-sheet-title">ВИБЕРІТЬ МІСТО</span>
+      <button class="city-sheet-close" id="city-sheet-close-btn"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="city-sheet-search">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="city-search-input" placeholder="Пошук міста">
+    </div>
+    <div class="city-sheet-list" id="city-sheet-list">
+      <div class="city-sheet-empty">Почніть вводити назву</div>
+    </div>
+    <div class="city-sheet-footer">
+      <button class="city-sheet-confirm" id="city-sheet-confirm-btn" disabled>Обрати</button>
     </div>
   </div>
 </div>
@@ -976,6 +1161,20 @@ const SUPABASE_KEY = 'sb_publishable_h6yGHLcCUJNZRRp6gxjhoQ_UW_G8zod';
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+
+// ---- LOGO RENDERING ----
+var LOGO_SVG_TEMPLATE = '<svg width="186" height="129" viewBox="0 0 186 129" fill="none" xmlns="http://www.w3.org/2000/svg">\n<path d="M150.885 37.1931L165.147 0.603394H171.566L185.445 37.1931H179.081L166.848 3.56568L169.152 3.34625L156.919 37.1931H150.885Z" fill="black"/>\n<path d="M116.679 37.1931V0.603394H129.515C135.44 0.603394 139.847 2.1394 142.736 5.2114C145.625 8.2834 147.069 12.8365 147.069 18.8708C147.069 24.9051 145.625 29.4765 142.736 32.5851C139.847 35.6571 135.44 37.1931 129.515 37.1931H116.679ZM122.713 32.0914H128.912C133.008 32.0914 136.025 31.0491 137.963 28.9645C139.901 26.8434 140.871 23.4788 140.871 18.8708C140.871 14.2994 139.901 10.9531 137.963 8.83197C136.025 6.71082 133.008 5.65025 128.912 5.65025H122.713V32.0914Z" fill="black"/>\n<path d="M92.4544 37.7966C88.8338 37.7966 85.7435 37.1017 83.1835 35.712C80.6601 34.3223 78.7401 32.2377 77.4235 29.4583C76.107 26.6789 75.4487 23.168 75.4487 18.9257C75.4487 12.672 76.8932 7.95429 79.7824 4.77257C82.7081 1.59086 86.9321 0 92.4544 0C96.1115 0 99.2018 0.694857 101.725 2.08457C104.249 3.47428 106.169 5.57714 107.485 8.39314C108.838 11.1726 109.515 14.6834 109.515 18.9257C109.515 25.1429 108.052 29.8423 105.126 33.024C102.237 36.2057 98.0132 37.7966 92.4544 37.7966ZM92.4544 32.5851C94.9047 32.5851 96.9161 32.128 98.4887 31.2137C100.098 30.2629 101.286 28.7817 102.054 26.7703C102.859 24.7589 103.261 22.1257 103.261 18.8709C103.261 15.6526 102.859 13.056 102.054 11.0811C101.286 9.06971 100.098 7.60686 98.4887 6.69257C96.9161 5.74171 94.9047 5.26629 92.4544 5.26629C90.0407 5.26629 88.0292 5.74171 86.4201 6.69257C84.811 7.64343 83.6041 9.12457 82.7995 11.136C82.0315 13.1109 81.6475 15.7074 81.6475 18.9257C81.6475 22.144 82.0315 24.7589 82.7995 26.7703C83.6041 28.7817 84.811 30.2629 86.4201 31.2137C88.0292 32.128 90.0407 32.5851 92.4544 32.5851Z" fill="black"/>\n<path d="M54.6407 37.7966C50.947 37.7966 47.8018 37.12 45.2053 35.7669C42.6453 34.4137 40.6887 32.3474 39.3356 29.568C37.9824 26.752 37.3058 23.1863 37.3058 18.8709C37.3058 14.592 37.9824 11.0629 39.3356 8.28343C40.6887 5.46743 42.6453 3.38286 45.2053 2.02972C47.8018 0.676573 50.9287 0 54.5858 0C56.7436 0 58.8464 0.21943 60.8944 0.658288C62.9424 1.06057 64.9173 1.68229 66.819 2.52343L61.1138 5.97943C59.2487 5.35772 57.3287 5.04686 55.3538 5.04686C52.6841 5.04686 50.4533 5.52229 48.6613 6.47315C46.9058 7.424 45.5893 8.90514 44.7116 10.9166C43.8338 12.928 43.395 15.5794 43.395 18.8709C43.395 22.1257 43.8338 24.7771 44.7116 26.8251C45.6258 28.8731 46.9607 30.3726 48.7161 31.3234C50.4716 32.2743 52.611 32.7497 55.1344 32.7497C56.4144 32.7497 57.6396 32.6583 58.8098 32.4754C59.9801 32.256 61.0956 31.9634 62.1561 31.5977V22.8754H58.1663L54.4761 17.7189H68.1904V34.5051C66.0693 35.6023 63.875 36.4251 61.6076 36.9737C59.3401 37.5223 57.0178 37.7966 54.6407 37.7966Z" fill="black"/>\n<path d="M15.36 37.9611C10.3863 37.9611 6.58286 36.6994 3.94971 34.176C1.31657 31.616 0 27.8308 0 22.8205V0.603394H6.19886V22.7657C6.19886 26.2034 6.94857 28.7634 8.448 30.4457C9.94743 32.0914 12.1966 32.9143 15.1954 32.9143C18.1211 32.9143 20.352 32.0914 21.888 30.4457C23.4606 28.7634 24.2469 26.2034 24.2469 22.7657V0.603394H30.0617V22.8205C30.0617 26.1485 29.4583 28.9463 28.2514 31.2137C27.0811 33.4811 25.3989 35.1817 23.2046 36.3154C21.0103 37.4125 18.3954 37.9611 15.36 37.9611Z" fill="black"/>\n<g filter="url(#filter0_d_163_1998)">\n<g filter="url(#filter1_i_163_1998)">\n<path d="M96.295 62.0524C94.8227 63.5569 92.0327 63.5569 90.5605 62.0524C83.8422 55.187 72.9496 55.187 66.2312 62.0524C59.5129 68.9179 59.5129 80.049 66.2312 86.9145C67.7034 88.419 67.7034 91.2701 66.2312 92.7745C59.5129 99.64 59.5129 110.771 66.2312 117.637C72.9496 124.502 83.8422 124.502 90.5605 117.637C97.2789 110.771 97.2789 99.64 90.5605 92.7745C89.0883 91.2701 89.0883 88.419 90.5605 86.9145C92.0327 85.41 94.8227 85.4101 96.295 86.9145C103.013 93.78 113.906 93.78 120.624 86.9145C127.343 80.049 127.343 68.9179 120.624 62.0524C113.906 55.187 103.013 55.187 96.295 62.0524Z" fill="url(#paint0_linear_163_1998)" fill-opacity="0.8" style="mix-blend-mode:plus-darker"/>\n</g>\n</g>\n<defs>\n<filter id="filter0_d_163_1998" x="56.0164" y="54.0787" width="73.4118" height="74.354" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">\n<feFlood flood-opacity="0" result="BackgroundImageFix"/>\n<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>\n<feOffset dy="1.88235"/>\n<feGaussianBlur stdDeviation="1.88235"/>\n<feComposite in2="hardAlpha" operator="out"/>\n<feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.5 0"/>\n<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_163_1998"/>\n<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_163_1998" result="shape"/>\n</filter>\n<filter id="filter1_i_163_1998" x="61.1924" y="56.9033" width="64.4706" height="67.9922" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">\n<feFlood flood-opacity="0" result="BackgroundImageFix"/>\n<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>\n<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>\n<feOffset dy="2.10989"/>\n<feGaussianBlur stdDeviation="3.16484"/>\n<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>\n<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.12 0"/>\n<feBlend mode="normal" in2="shape" result="effect1_innerShadow_163_1998"/>\n</filter>\n<linearGradient id="paint0_linear_163_1998" x1="93.4277" y1="56.9033" x2="93.4277" y2="122.786" gradientUnits="userSpaceOnUse">\n<stop stop-color="#188B18"/>\n<stop offset="1" stop-color="#188B18" stop-opacity="0.8"/>\n</linearGradient>\n</defs>\n</svg>';
+function renderLogo(containerId) {
+  var el = document.getElementById(containerId);
+  if (!el) return;
+  var suffix = '_' + containerId;
+  var svg = LOGO_SVG_TEMPLATE.replace(/163_1998/g, '163_1998' + suffix);
+  el.innerHTML = svg;
+}
+function renderAllLogos() {
+  for (var i = 1; i <= 10; i++) renderLogo('auth-logo-' + i);
+}
+
 let currentUser = null, currentCat = '', confirmCb = null;
 let searchQuery = '', searchTimeout = null;
 let savedIds = JSON.parse(localStorage.getItem('savedIds') || '[]');
@@ -983,7 +1182,7 @@ const photoState = {};
 
 // ---- PAGES ----
 function showPage(page) {
-  ['main-page','profile-page','chat-list-page','chat-window-page','cats-page','request-page','wizard-page','offer-wizard-page'].forEach(function(id) {
+  ['main-page','profile-page','chat-list-page','chat-window-page','cats-page','request-page','wizard-page','offer-wizard-page','auth-page'].forEach(function(id) {
     var el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
@@ -995,13 +1194,13 @@ function showPage(page) {
   // Hide mobile-header and FAB on chat/cats pages
   var mobileHeader = document.querySelector('.mobile-header');
   var fab = document.getElementById('fab-btn');
-  var hiddenPages = ['chat-list','chat-window','cats','request','wizard','offer-wizard'];
+  var hiddenPages = ['chat-list','chat-window','cats','request','wizard','offer-wizard','auth'];
   var hide = hiddenPages.indexOf(page) !== -1;
   if (mobileHeader) mobileHeader.style.display = hide ? 'none' : '';
   if (fab) fab.style.display = hide ? 'none' : '';
   // Hide bottom nav entirely on fullscreen wizard
   var bottomNav = document.querySelector('.bottom-nav');
-  var fullscreenPages = ['wizard','offer-wizard'];
+  var fullscreenPages = ['wizard','offer-wizard','auth'];
   if (bottomNav) bottomNav.style.display = (fullscreenPages.indexOf(page) !== -1) ? 'none' : '';
   // Lock body scroll on fullscreen wizard
   document.body.style.overflow = (fullscreenPages.indexOf(page) !== -1) ? 'hidden' : '';
@@ -1037,33 +1236,309 @@ function showConfirm(title, text, cb) {
 document.getElementById('confirm-cancel-btn').addEventListener('click', function() { document.getElementById('confirm-modal').classList.remove('open'); confirmCb = null; });
 document.getElementById('confirm-ok-btn').addEventListener('click', function() { document.getElementById('confirm-modal').classList.remove('open'); if (confirmCb) confirmCb(); confirmCb = null; });
 
-// ---- AUTH ----
-function openAuth() { document.getElementById('auth-modal').classList.add('open'); }
-function closeAuth() { document.getElementById('auth-modal').classList.remove('open'); }
+// ---- AUTH FLOW ----
+var UKR_CITIES = ["Авдіївка","Арциз","Балаклія","Балта","Бахмач","Бахмут","Бердянськ","Берегове","Бережани","Берёзовка","Біла Церква","Білгород-Дністровський","Білопілля","Богодухів","Богородчани","Боярка","Богуслав","Болград","Бориспіль","Борщів","Бровари","Броди","Буча","Бучач","Валки","Васильків","Великий Березний","Вербгородка","Верховина","Виноградів","Вінниця","Вишгород","Володарка","Володимир","Глухів","Городенка","Городище","Городня","Городок","Гостомель","Гусятин","Дніпро","Долина","Донецьк","Драбів","Дрогобич","Дружківка","Дубно","Дунаївці","Енергодар","Євпаторія","Жашків","Жмеринка","Житомир","Жовті Води","Запоріжжя","Звенигородка","Здолбунів","Збараж","Зборів","Зміїв","Знам'янка","Золотоноша","Золочів","Ізмаїл","Ізюм","Іршава","Ірпінь","Івано-Франківськ","Ічня","Кагарлик","Кам'янець-Подільський","Кам'янка","Кам'янка-Бузька","Кам'янське","Канів","Керч","Київ","Кіровоград","Ковель","Козова","Коломия","Конотоп","Корсунь-Шевченківський","Корюківка","Косів","Костянтинівка","Котовськ","Краматорськ","Красноград","Кременець","Кремінна","Кривий Ріг","Кролевець","Кропивницький","Куп'янськ","Лановці","Лебедин","Лиман","Лисянка","Лозова","Луганськ","Луцьк","Любешів","Любомль","Львів","Маловідне","Мар'їнка","Маріуполь","Мелітополь","Миколаїв","Миронівка","Мирноград","Мостиська","Мукачево","Надвірна","Нетішин","Ніжин","Нікополь","Нова Каховка","Новомосковськ","Новопсков","Носівка","Обухів","Одеса","Олександрія","Охтирка","Первомайськ","Перемишляни","Перечин","Першотравенськ","Підгайці","Підволочиськ","Подільськ","Полтава","Покровськ","Прилуки","Пустомити","Радехів","Рахів","Реni","Ренi","Рівне","Рогатин","Рожнятів","Рокитне","Ромни","Рубіжне","Самбір","Саврань","Сарни","Світловодськ","Севастополь","Селидове","Сватове","Сквира","Сколе","Слов'янськ","Сміла","Сніжне","Снятин","Сокаль","Старобільськ","Старий Самбір","Ставище","Старокостянтинів","Стрий","Суми","Сумита","Тальне","Тараща","Тарутине","Татарбунари","Теплодар","Теребовля","Тернопіль","Тетіїв","Тисмениця","Тлумач","Торецьк","Тростянець","Турка","Тячів","Ужгород","Узин","Умань","Фастів","Харків","Херсон","Хмельницький","Христинівка","Хуст","Часів Яр","Червоноград","Черкаси","Чернівці","Чернігів","Чигирин","Чоп","Чорнобай","Чорноморськ","Чортків","Шепетівка","Шостка","Шпола","Шумськ","Южне"];
+
+var authState = { mode: null, step: 'splash', email: '', pass: '', name: '', city: '', bio: '', isRecovery: false };
+var citySheetTarget = 'profile'; // 'profile' or other target
+
+function openAuth() {
+  authState = { mode: null, step: 'splash', email: '', pass: '', name: '', city: '', bio: '', isRecovery: false };
+  showPage('auth');
+  authGoto('splash');
+}
+function closeAuth() { showPage('main'); loadRequests(); }
+
+function authGoto(step) {
+  authState.step = step;
+  var titles = {
+    splash: 'Раді бачити',
+    login: 'Раді бачити',
+    'reg-email': 'Приєднуйтесь! У нас класно',
+    'check-email': 'Завершуємо реєстрацію...',
+    password: 'Придумайте пароль',
+    profile: 'Трішки про вас...',
+    bio: 'Трішки про вас...',
+    'forgot-email': 'Відновлення пароля',
+    'forgot-check': 'Відновлення пароля',
+    'forgot-newpass': 'Відновлення пароля'
+  };
+  document.getElementById('auth-step-title').textContent = titles[step] || '';
+  ['splash','login','reg-email','check-email','password','profile','bio','forgot-email','forgot-check','forgot-newpass'].forEach(function(s) {
+    var el = document.getElementById('auth-step-' + s);
+    if (el) el.style.display = (s === step) ? '' : 'none';
+  });
+  // footer button state per step
+  var btn = document.getElementById('auth-next-btn');
+  var footer = document.getElementById('auth-footer');
+  footer.style.display = '';
+  btn.textContent = 'Продовжити';
+  if (step === 'splash') { btn.disabled = !authState.mode; }
+  if (step === 'login') { btn.disabled = true; }
+  if (step === 'reg-email') { btn.textContent = 'Відправити лист'; btn.disabled = true; }
+  if (step === 'check-email') { footer.style.display = 'none'; }
+  if (step === 'password') { btn.disabled = true; }
+  if (step === 'profile') { btn.disabled = !authState.name; }
+  if (step === 'bio') { btn.textContent = 'Готово!'; btn.disabled = false; }
+  if (step === 'forgot-email') { btn.textContent = 'Відправити лист'; btn.disabled = true; }
+  if (step === 'forgot-check') { footer.style.display = 'none'; }
+  if (step === 'forgot-newpass') { btn.disabled = true; }
+}
+
+renderAllLogos();
+
+// splash choice
+document.getElementById('auth-choice-login').addEventListener('click', function() {
+  authState.mode = 'login';
+  document.getElementById('auth-choice-login').classList.add('selected');
+  document.getElementById('auth-choice-register').classList.remove('selected');
+  document.getElementById('auth-next-btn').disabled = false;
+});
+document.getElementById('auth-choice-register').addEventListener('click', function() {
+  authState.mode = 'register';
+  document.getElementById('auth-choice-register').classList.add('selected');
+  document.getElementById('auth-choice-login').classList.remove('selected');
+  document.getElementById('auth-next-btn').disabled = false;
+});
+
+// login step validation
+function validateLogin() {
+  var email = document.getElementById('al-email').value.trim();
+  var pass = document.getElementById('al-pass').value;
+  document.getElementById('auth-next-btn').disabled = !(email && pass);
+}
+document.getElementById('al-email').addEventListener('input', validateLogin);
+document.getElementById('al-pass').addEventListener('input', validateLogin);
+document.getElementById('auth-forgot-btn').addEventListener('click', function() { authGoto('forgot-email'); });
+document.getElementById('auth-goto-register-1').addEventListener('click', function() { authState.mode = 'register'; authGoto('reg-email'); });
+document.getElementById('auth-goto-login-1').addEventListener('click', function() { authState.mode = 'login'; authGoto('login'); });
+
+// register email step
+document.getElementById('ar-email').addEventListener('input', function() {
+  document.getElementById('auth-next-btn').disabled = !this.value.trim();
+});
+
+// password step validation (8+ chars, uppercase, digit, special char)
+function checkPwRules(pw) {
+  return {
+    length: pw.length >= 8,
+    upper: /[A-ZА-ЯЁІЇЄ]/.test(pw),
+    digit: /[0-9]/.test(pw),
+    special: /[!@#$%^&*(),.?":{}|<>]/.test(pw)
+  };
+}
+function validatePasswordStep() {
+  var p1 = document.getElementById('ap-pass1').value;
+  var p2 = document.getElementById('ap-pass2').value;
+  var rules = checkPwRules(p1);
+  var allValid = rules.length && rules.upper && rules.digit && rules.special;
+  document.getElementById('auth-next-btn').disabled = !(allValid && p1 === p2 && p2.length > 0);
+}
+document.getElementById('ap-pass1').addEventListener('input', validatePasswordStep);
+document.getElementById('ap-pass2').addEventListener('input', validatePasswordStep);
+
+// profile step (name + city)
+document.getElementById('apr-name').addEventListener('input', function() {
+  authState.name = this.value.trim();
+  document.getElementById('auth-next-btn').disabled = !authState.name;
+});
+document.getElementById('apr-city-field').addEventListener('click', function() {
+  citySheetTarget = 'profile';
+  openCitySheet();
+});
+
+// forgot password steps
+document.getElementById('afg-email').addEventListener('input', function() {
+  document.getElementById('auth-next-btn').disabled = !this.value.trim();
+});
+function validateForgotNewPass() {
+  var p1 = document.getElementById('afn-pass1').value;
+  var p2 = document.getElementById('afn-pass2').value;
+  var rules = checkPwRules(p1);
+  var allValid = rules.length && rules.upper && rules.digit && rules.special;
+  document.getElementById('auth-next-btn').disabled = !(allValid && p1 === p2 && p2.length > 0);
+}
+document.getElementById('afn-pass1').addEventListener('input', validateForgotNewPass);
+document.getElementById('afn-pass2').addEventListener('input', validateForgotNewPass);
+
+// password show/hide toggles
+document.querySelectorAll('.auth-field-eye').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var input = document.getElementById(this.dataset.toggle);
+    input.type = input.type === 'password' ? 'text' : 'password';
+  });
+});
+
+// MAIN NEXT BUTTON LOGIC
+document.getElementById('auth-next-btn').addEventListener('click', async function() {
+  var step = authState.step;
+  var btn = this;
+
+  if (step === 'splash') {
+    authGoto(authState.mode === 'login' ? 'login' : 'reg-email');
+    return;
+  }
+
+  if (step === 'login') {
+    var email = document.getElementById('al-email').value.trim();
+    var pass = document.getElementById('al-pass').value;
+    btn.disabled = true; btn.textContent = 'Входимо...';
+    var res = await db.auth.signInWithPassword({ email: email, password: pass });
+    btn.disabled = false; btn.textContent = 'Продовжити';
+    if (res.error) { toast(res.error.message, true); return; }
+    closeAuth(); toast('Вітаємо!');
+    return;
+  }
+
+  if (step === 'reg-email') {
+    var email = document.getElementById('ar-email').value.trim();
+    authState.email = email;
+    btn.disabled = true; btn.textContent = 'Надсилаємо...';
+    var res = await db.auth.signUp({ email: email, password: Math.random().toString(36) + 'Aa1!', options: { data: {} } });
+    btn.disabled = false; btn.textContent = 'Відправити лист';
+    if (res.error) { toast(res.error.message, true); return; }
+    authGoto('check-email');
+    return;
+  }
+
+  if (step === 'password') {
+    authState.pass = document.getElementById('ap-pass1').value;
+    btn.disabled = true; btn.textContent = 'Зберігаємо...';
+    var res = await db.auth.updateUser({ password: authState.pass });
+    btn.disabled = false; btn.textContent = 'Продовжити';
+    if (res.error) { toast(res.error.message, true); return; }
+    authGoto('profile');
+    return;
+  }
+
+  if (step === 'profile') {
+    authState.city = document.getElementById('apr-city-display').value;
+    authGoto('bio');
+    return;
+  }
+
+  if (step === 'bio') {
+    authState.bio = document.getElementById('abio-text').value.trim();
+    btn.disabled = true; btn.textContent = 'Завершуємо...';
+    var sess = await db.auth.getSession();
+    var uid = sess.data.session ? sess.data.session.user.id : null;
+    if (uid) {
+      await db.auth.updateUser({ data: { name: authState.name } });
+      await db.from('profiles').upsert({ id: uid, name: authState.name, city: authState.city || null, bio: authState.bio || null });
+    }
+    btn.disabled = false; btn.textContent = 'Готово!';
+    closeAuth(); toast('Акаунт створено! 🎉');
+    return;
+  }
+
+  if (step === 'forgot-email') {
+    var email = document.getElementById('afg-email').value.trim();
+    btn.disabled = true; btn.textContent = 'Надсилаємо...';
+    var res = await db.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + window.location.pathname + '?recovery=1' });
+    btn.disabled = false; btn.textContent = 'Відправити лист';
+    if (res.error) { toast(res.error.message, true); return; }
+    authGoto('forgot-check');
+    return;
+  }
+
+  if (step === 'forgot-newpass') {
+    var pass = document.getElementById('afn-pass1').value;
+    btn.disabled = true; btn.textContent = 'Зберігаємо...';
+    var res = await db.auth.updateUser({ password: pass });
+    btn.disabled = false; btn.textContent = 'Продовжити';
+    if (res.error) { toast(res.error.message, true); return; }
+    closeAuth(); toast('Пароль змінено!');
+    return;
+  }
+});
+
+// ---- CITY PICKER SHEET ----
+var citySelectedTemp = '';
+function openCitySheet() {
+  citySelectedTemp = authState.city || '';
+  document.getElementById('city-search-input').value = '';
+  renderCityList('');
+  document.getElementById('city-sheet-bg').classList.add('open');
+  setTimeout(function() { document.getElementById('city-search-input').focus(); }, 150);
+}
+function closeCitySheet() { document.getElementById('city-sheet-bg').classList.remove('open'); }
+document.getElementById('city-sheet-close-btn').addEventListener('click', closeCitySheet);
+document.getElementById('city-sheet-bg').addEventListener('click', function(e) { if (e.target === this) closeCitySheet(); });
+
+function renderCityList(query) {
+  var list = document.getElementById('city-sheet-list');
+  var confirmBtn = document.getElementById('city-sheet-confirm-btn');
+  if (!query) {
+    list.innerHTML = '<div class="city-sheet-empty">Почніть вводити назву</div>';
+    confirmBtn.disabled = !citySelectedTemp;
+    confirmBtn.classList.toggle('active', !!citySelectedTemp);
+    return;
+  }
+  var q = query.toLowerCase();
+  var matches = UKR_CITIES.filter(function(c) { return c.toLowerCase().indexOf(q) === 0; }).slice(0, 30);
+  if (!matches.length) {
+    list.innerHTML = '<div class="city-sheet-empty">Нічого не знайдено</div>';
+    confirmBtn.disabled = !citySelectedTemp;
+    confirmBtn.classList.toggle('active', !!citySelectedTemp);
+    return;
+  }
+  var html = '';
+  matches.forEach(function(city) {
+    var matchPart = city.substring(0, query.length);
+    var restPart = city.substring(query.length);
+    var isSelected = city === citySelectedTemp;
+    html += '<div class="city-row' + (isSelected ? ' selected' : '') + '" data-city="' + esc(city) + '">';
+    html += '<span><span class="city-row-match">' + esc(matchPart) + '</span><span class="city-row-rest">' + esc(restPart) + '</span></span>';
+    html += '<svg class="city-row-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
+    html += '</div>';
+  });
+  list.innerHTML = html;
+  document.querySelectorAll('.city-row').forEach(function(row) {
+    row.addEventListener('click', function() {
+      citySelectedTemp = this.dataset.city;
+      renderCityList(query);
+    });
+  });
+  confirmBtn.disabled = !citySelectedTemp;
+  confirmBtn.classList.toggle('active', !!citySelectedTemp);
+}
+document.getElementById('city-search-input').addEventListener('input', function() { renderCityList(this.value.trim()); });
+document.getElementById('city-sheet-confirm-btn').addEventListener('click', function() {
+  if (!citySelectedTemp) return;
+  authState.city = citySelectedTemp;
+  document.getElementById('apr-city-display').value = citySelectedTemp;
+  var field = document.getElementById('apr-city-field');
+  field.classList.remove('city-empty');
+  field.classList.add('city-filled');
+  closeCitySheet();
+});
+
+// ---- URL RECOVERY/CONFIRM HANDLING ----
+function checkAuthUrlParams() {
+  var hash = window.location.hash;
+  var params = new URLSearchParams(window.location.search);
+  // Supabase email confirm / recovery links arrive with #access_token=...&type=signup|recovery in hash
+  if (hash.indexOf('type=recovery') !== -1) {
+    openAuth();
+    authState.mode = 'login';
+    authGoto('forgot-newpass');
+  } else if (hash.indexOf('type=signup') !== -1 || params.get('recovery')) {
+    // After email confirm, Supabase auto-logs the session in; continue registration flow
+    setTimeout(async function() {
+      var sess = await db.auth.getSession();
+      if (sess.data.session) {
+        openAuth();
+        authState.mode = 'register';
+        authGoto('password');
+      }
+    }, 300);
+  }
+}
+
 document.getElementById('auth-btn').addEventListener('click', openAuth);
 document.getElementById('logout-btn').addEventListener('click', function() { db.auth.signOut(); setUserUI(null); toast('До побачення!'); });
-document.getElementById('close-auth-btn').addEventListener('click', closeAuth);
 document.getElementById('logo-btn').addEventListener('click', function() { showPage('main'); loadRequests(); });
-document.getElementById('tab-login').addEventListener('click', function() { document.getElementById('login-form').style.display=''; document.getElementById('register-form').style.display='none'; document.getElementById('tab-login').classList.add('active'); document.getElementById('tab-register').classList.remove('active'); });
-document.getElementById('tab-register').addEventListener('click', function() { document.getElementById('login-form').style.display='none'; document.getElementById('register-form').style.display=''; document.getElementById('tab-login').classList.remove('active'); document.getElementById('tab-register').classList.add('active'); });
-
-document.getElementById('do-login-btn').addEventListener('click', async function() {
-  var email = document.getElementById('login-email').value.trim();
-  var pass = document.getElementById('login-pass').value;
-  var res = await db.auth.signInWithPassword({ email: email, password: pass });
-  if (res.error) { toast(res.error.message, true); return; }
-  closeAuth(); toast('Вітаємо!');
-});
-document.getElementById('do-register-btn').addEventListener('click', async function() {
-  var name = document.getElementById('reg-name').value.trim();
-  var email = document.getElementById('reg-email').value.trim();
-  var pass = document.getElementById('reg-pass').value;
-  if (!name) { toast("Введіть ім'я", true); return; }
-  var res = await db.auth.signUp({ email: email, password: pass, options: { data: { name: name } } });
-  if (res.error) { toast(res.error.message, true); return; }
-  if (res.data.user) await db.from('profiles').upsert({ id: res.data.user.id, name: name });
-  closeAuth(); toast('Акаунт створено!');
-});
+checkAuthUrlParams();
 
 function updateGreeting(user) {
   if (user) {
