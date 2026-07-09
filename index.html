@@ -214,6 +214,72 @@ textarea{resize:vertical;min-height:80px;}
 .req-offer-fab{position:fixed;bottom:calc(var(--nav-h)+16px);left:50%;transform:translateX(-50%);width:214px;height:52px;background:var(--green);color:#fff;border:none;border-radius:16px;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 24px rgba(0,128,0,0.35);z-index:110;transition:background 0.15s;white-space:nowrap;}
 .req-offer-fab:active{background:var(--green-dark);}
 
+/* PROFILE NEW */
+.prof-wrap{background:#fff;min-height:100vh;padding-bottom:calc(var(--nav-h)+24px);}
+.prof-header-row{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 0;}
+.prof-top{display:flex;flex-direction:column;align-items:center;padding:8px 20px 20px;}
+.prof-avatar-wrap{position:relative;margin-bottom:12px;}
+.prof-avatar{width:88px;height:88px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:var(--green-dark);overflow:hidden;}
+.prof-avatar img{width:100%;height:100%;object-fit:cover;}
+.prof-avatar-edit{position:absolute;bottom:2px;right:2px;width:28px;height:28px;border-radius:50%;background:var(--green);border:2.5px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.prof-avatar-edit svg{width:13px;height:13px;stroke:#fff;}
+.prof-name{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.prof-bio{font-size:14px;color:var(--text3);margin-bottom:12px;text-align:center;}
+.prof-bio:empty{display:none;}
+.prof-tags{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+.prof-stats{display:flex;gap:10px;padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:20px;}
+.prof-stat-card{flex:1;border:1.5px solid var(--border);border-radius:16px;background:#fff;padding:14px 8px;text-align:center;cursor:pointer;transition:background 0.15s;}
+.prof-stat-card:active{background:var(--bg);}
+.prof-stat-num{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:22px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.prof-stat-label{font-size:12px;color:var(--text3);}
+.prof-actions{display:flex;gap:10px;padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:20px;}
+.prof-action-btn{flex:1;height:52px;border:none;border-radius:14px;background:var(--green-light);color:var(--green-dark);font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background 0.15s;}
+.prof-action-btn:active{background:#D5EEDD;}
+.prof-action-btn svg{width:16px;height:16px;stroke:var(--green);}
+.prof-reviews-section{padding:0 20px;}
+.prof-reviews-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.prof-reviews-title{font-size:12px;font-weight:700;color:var(--text3);letter-spacing:0.5px;}
+.prof-reviews-rating{font-size:13px;font-weight:600;color:var(--text2);}
+.prof-review-item{padding:12px 0;border-bottom:1px solid #F2F2F2;}
+.prof-review-top{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.prof-review-avatar{width:32px;height:32px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--green-dark);flex-shrink:0;overflow:hidden;}
+.prof-review-avatar img{width:100%;height:100%;object-fit:cover;}
+.prof-review-name{font-size:14px;font-weight:700;color:var(--text);flex:1;}
+.prof-review-date{font-size:12px;color:var(--text3);}
+.prof-review-text{font-size:13px;color:var(--text2);margin-bottom:4px;line-height:1.5;}
+.prof-review-stars{color:#F5D90A;font-size:13px;letter-spacing:2px;}
+.prof-reviews-empty{text-align:center;color:var(--text3);font-size:14px;padding:40px 20px;}
+
+/* PHOTO SHEET */
+.photo-sheet-body{padding:8px 20px calc(env(safe-area-inset-bottom) + 24px);display:flex;flex-direction:column;align-items:center;}
+.photo-sheet-avatar{width:80px;height:80px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:var(--green-dark);overflow:hidden;margin-bottom:12px;}
+.photo-sheet-avatar img{width:100%;height:100%;object-fit:cover;}
+.photo-sheet-hint{font-size:13px;color:var(--text3);margin-bottom:20px;}
+.photo-sheet-option{display:flex;align-items:center;gap:12px;width:100%;height:54px;padding:0 16px;border:1.5px solid var(--border);border-radius:14px;background:#fff;font-size:15px;font-weight:600;color:var(--text);cursor:pointer;margin-bottom:10px;box-sizing:border-box;font-family:inherit;}
+.photo-sheet-option svg{width:20px;height:20px;stroke:var(--text2);flex-shrink:0;}
+.photo-sheet-option:active{background:var(--bg);}
+.photo-sheet-danger{color:#E54D4D;}
+.photo-sheet-danger svg{stroke:#E54D4D;}
+
+/* SETTINGS */
+.settings-section{padding:0 20px 24px;}
+.settings-section-title{font-size:12px;font-weight:700;color:var(--text3);letter-spacing:0.5px;margin-bottom:14px;}
+.settings-field-hint{font-size:12px;color:var(--text3);margin:-4px 0 14px 4px;line-height:1.5;}
+.settings-row{display:flex;align-items:center;gap:12px;width:100%;height:56px;padding:0 16px;border:1.5px solid var(--border);border-radius:14px;background:#fff;font-size:15px;font-weight:600;color:var(--text);cursor:pointer;margin-bottom:10px;box-sizing:border-box;font-family:inherit;text-align:left;}
+.settings-row:active{background:var(--bg);}
+.settings-row-icon{width:32px;height:32px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.settings-row-icon svg{width:16px;height:16px;stroke:var(--text2);}
+.settings-row-icon-red{background:#FDEBEB;}
+.settings-row-icon-red svg{stroke:#E54D4D;}
+.settings-row-arrow{width:18px;height:18px;stroke:var(--text3);margin-left:auto;flex-shrink:0;}
+.settings-row-arrow-red{stroke:#E54D4D;}
+.settings-delete-btn{display:block;width:100%;background:none;border:none;color:#E54D4D;font-size:14px;font-weight:700;cursor:pointer;margin-top:16px;font-family:inherit;}
+.settings-delete-hint{text-align:center;font-size:12px;color:var(--text3);margin-top:4px;}
+.settings-footer{text-align:center;padding:20px;border-top:1px solid var(--border);}
+.settings-version{font-size:12px;color:var(--text3);letter-spacing:0.5px;margin-bottom:8px;}
+.settings-links{display:flex;gap:20px;justify-content:center;}
+.settings-links a{font-size:12px;color:var(--text3);text-decoration:none;}
+
 /* AUTH FLOW */
 .auth-wrap{background:#fff;height:100dvh;display:flex;flex-direction:column;overflow:hidden;}
 .auth-header{padding:20px 20px 0;text-align:center;flex-shrink:0;}
@@ -591,43 +657,148 @@ textarea{resize:vertical;min-height:80px;}
 
 <!-- PROFILE PAGE -->
 <div id="profile-page" style="display:none">
-  <div class="profile-page">
-    <button class="back-btn" id="back-from-profile-btn">← Назад</button>
-    <div class="profile-header">
-      <div class="profile-top">
-        <div class="avatar" id="profile-avatar">?</div>
-        <div>
-          <div class="profile-name" id="profile-name">—</div>
-          <div class="profile-meta">
-            <span id="profile-city-show"></span>
-            <span id="profile-joined"></span>
-          </div>
-          <div style="margin-top:6px;font-size:13px;color:var(--text2)" id="profile-bio-show"></div>
-        </div>
+  <div class="prof-wrap">
+    <div class="prof-header-row">
+      <button class="cats-back-btn" id="back-from-profile-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div style="width:44px"></div>
+    </div>
+    <div class="prof-top">
+      <div class="prof-avatar-wrap" id="prof-avatar-wrap">
+        <div class="prof-avatar" id="profile-avatar">?</div>
+        <button class="prof-avatar-edit" id="prof-avatar-edit-btn" style="display:none">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+        </button>
       </div>
-      <div class="profile-stats">
-        <div class="stat-card"><div class="stat-num" id="stat-requests">0</div><div class="stat-label">Запитів</div></div>
-        <div class="stat-card"><div class="stat-num" id="stat-offers">0</div><div class="stat-label">Пропозицій</div></div>
-        <div class="stat-card"><div class="stat-num" id="stat-closed">0</div><div class="stat-label">Знайдено</div></div>
-      </div>
-      <div id="edit-profile-wrap"></div>
-      <div class="profile-edit-form" id="profile-edit-form">
-        <div class="field-label" style="font-size:14px;font-weight:700;text-transform:none">Редагувати профіль</div>
-        <div class="field-group"><div class="field-label">Ім'я</div><input type="text" id="edit-name"></div>
-        <div class="field-group"><div class="field-label">Місто</div><input type="text" id="edit-city" placeholder="Київ..."></div>
-        <div class="field-group"><div class="field-label">Про себе</div><textarea id="edit-bio" style="min-height:60px"></textarea></div>
-        <div style="display:flex;gap:10px">
-          <button class="btn btn-primary btn-sm" id="save-profile-btn">Зберегти</button>
-          <button class="btn btn-sm" id="cancel-edit-btn">Скасувати</button>
-        </div>
+      <div class="prof-name" id="profile-name">—</div>
+      <div class="prof-bio" id="profile-bio-show"></div>
+      <div class="prof-tags">
+        <span class="req-tag" id="profile-city-tag" style="display:none"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg><span id="profile-city-show"></span></span>
+        <span class="req-tag" id="profile-joined-tag" style="display:none"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg><span id="profile-joined"></span></span>
       </div>
     </div>
-    <div class="profile-section-title">Мої запити</div>
-    <div id="profile-requests"><div class="spinner"></div></div>
-    <div id="profile-reviews-section" style="margin-top:20px">
-      <div class="profile-section-title">Відгуки</div>
+    <div class="prof-stats">
+      <button class="prof-stat-card" id="stat-card-requests" data-tab="requests"><div class="prof-stat-num" id="stat-requests">0</div><div class="prof-stat-label">Запитів</div></button>
+      <button class="prof-stat-card" id="stat-card-offers" data-tab="offers"><div class="prof-stat-num" id="stat-offers">0</div><div class="prof-stat-label">Пропозицій</div></button>
+      <button class="prof-stat-card" id="stat-card-found" data-tab="found"><div class="prof-stat-num" id="stat-closed">0</div><div class="prof-stat-label">Знайдено</div></button>
+    </div>
+    <div class="prof-actions" id="prof-own-actions" style="display:none">
+      <button class="prof-action-btn" id="prof-my-requests-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
+        Запити
+      </button>
+      <button class="prof-action-btn" id="prof-settings-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+        Налаштування
+      </button>
+    </div>
+    <div class="prof-reviews-section">
+      <div class="prof-reviews-header">
+        <span class="prof-reviews-title">ВІДГУКИ</span>
+        <span class="prof-reviews-rating" id="prof-rating-display"></span>
+      </div>
       <div id="profile-reviews"></div>
     </div>
+  </div>
+</div>
+
+<!-- PHOTO CHANGE SHEET -->
+<div class="city-sheet-bg" id="photo-sheet-bg">
+  <div class="city-sheet" style="max-height:none">
+    <div class="city-sheet-handle"></div>
+    <div class="city-sheet-header">
+      <span class="city-sheet-title">ФОТО ПРОФІЛЮ</span>
+      <button class="city-sheet-close" id="photo-sheet-close-btn"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="photo-sheet-body">
+      <div class="photo-sheet-avatar" id="photo-sheet-avatar">?</div>
+      <div class="photo-sheet-hint">Ваше фото профілю буде видно всім</div>
+      <label class="photo-sheet-option">
+        <input type="file" accept="image/*" id="photo-gallery-input" style="display:none">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+        Вибрати з галереї
+      </label>
+      <label class="photo-sheet-option">
+        <input type="file" accept="image/*" capture="user" id="photo-camera-input" style="display:none">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+        Зробити фото
+      </label>
+      <button class="photo-sheet-option photo-sheet-danger" id="photo-delete-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+        Видалити поточне зображення
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS PAGE -->
+<div id="settings-page" style="display:none">
+  <div class="prof-wrap">
+    <div class="prof-header-row">
+      <button class="cats-back-btn" id="back-from-settings-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div style="width:44px"></div>
+    </div>
+    <div class="prof-top">
+      <div class="prof-avatar-wrap">
+        <div class="prof-avatar" id="settings-avatar">?</div>
+        <button class="prof-avatar-edit" id="settings-avatar-edit-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+        </button>
+      </div>
+      <div class="prof-name" id="settings-name-display">—</div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-section-title">ОСОБИСТА ІНФОРМАЦІЯ</div>
+      <div class="auth-field"><input type="text" id="settings-name" placeholder="Ім'я"></div>
+      <div class="settings-field-hint">Старайтесь не вигадувати щось, люди довіряють вашому реальному імені</div>
+      <div class="auth-field"><input type="text" id="settings-bio" placeholder="Слоган"></div>
+      <div class="settings-field-hint">Ваш слоган</div>
+      <div class="auth-field city-empty" id="settings-city-field">
+        <input type="text" id="settings-city-display" placeholder="Оберіть місто" readonly style="cursor:pointer">
+      </div>
+      <div class="settings-field-hint">Місто, де ви знаходитесь, аби люди розуміли де знаходиться річ, яку ви продали</div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-section-title">ОБЛІКОВИЙ ЗАПИС</div>
+      <button class="settings-row" id="settings-change-pass-btn">
+        <span class="settings-row-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg></span>
+        Змінити пароль
+        <svg class="settings-row-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+      <button class="settings-row" id="settings-support-btn">
+        <span class="settings-row-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></span>
+        Чат підтримки
+        <svg class="settings-row-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+      <button class="settings-row" id="settings-logout-btn">
+        <span class="settings-row-icon settings-row-icon-red"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg></span>
+        Вийти
+        <svg class="settings-row-arrow settings-row-arrow-red" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+      <button class="settings-delete-btn" id="settings-delete-account-btn">Видалити обліковий запис</button>
+      <div class="settings-delete-hint">Це незворотня дія</div>
+    </div>
+    <div class="settings-footer">
+      <div class="settings-version">ХОЧУКУПИТИ V1.0.0</div>
+      <div class="settings-links"><a href="#" onclick="return false">Privacy Policy</a><a href="#" onclick="return false">Terms & Conditions</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- USER ITEMS LIST PAGE (requests / offers / found) -->
+<div id="user-items-page" style="display:none">
+  <div class="prof-wrap">
+    <div class="prof-header-row">
+      <button class="cats-back-btn" id="back-from-user-items-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <span class="cats-title" id="user-items-title">Запити</span>
+      <div style="width:44px"></div>
+    </div>
+    <div id="user-items-container" style="padding:0 16px"><div class="spinner"></div></div>
   </div>
 </div>
 
@@ -1182,7 +1353,7 @@ const photoState = {};
 
 // ---- PAGES ----
 function showPage(page) {
-  ['main-page','profile-page','chat-list-page','chat-window-page','cats-page','request-page','wizard-page','offer-wizard-page','auth-page'].forEach(function(id) {
+  ['main-page','profile-page','chat-list-page','chat-window-page','cats-page','request-page','wizard-page','offer-wizard-page','auth-page','settings-page','user-items-page'].forEach(function(id) {
     var el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
@@ -1194,7 +1365,7 @@ function showPage(page) {
   // Hide mobile-header and FAB on chat/cats pages
   var mobileHeader = document.querySelector('.mobile-header');
   var fab = document.getElementById('fab-btn');
-  var hiddenPages = ['chat-list','chat-window','cats','request','wizard','offer-wizard','auth'];
+  var hiddenPages = ['chat-list','chat-window','cats','request','wizard','offer-wizard','auth','settings','user-items'];
   var hide = hiddenPages.indexOf(page) !== -1;
   if (mobileHeader) mobileHeader.style.display = hide ? 'none' : '';
   if (fab) fab.style.display = hide ? 'none' : '';
@@ -1505,11 +1676,18 @@ function renderCityList(query) {
 document.getElementById('city-search-input').addEventListener('input', function() { renderCityList(this.value.trim()); });
 document.getElementById('city-sheet-confirm-btn').addEventListener('click', function() {
   if (!citySelectedTemp) return;
-  authState.city = citySelectedTemp;
-  document.getElementById('apr-city-display').value = citySelectedTemp;
-  var field = document.getElementById('apr-city-field');
-  field.classList.remove('city-empty');
-  field.classList.add('city-filled');
+  if (citySheetTarget === 'settings') {
+    settingsCityTemp = citySelectedTemp;
+    document.getElementById('settings-city-display').value = citySelectedTemp;
+    var f = document.getElementById('settings-city-field');
+    f.classList.remove('city-empty'); f.classList.add('city-filled');
+  } else {
+    authState.city = citySelectedTemp;
+    document.getElementById('apr-city-display').value = citySelectedTemp;
+    var field = document.getElementById('apr-city-field');
+    field.classList.remove('city-empty');
+    field.classList.add('city-filled');
+  }
   closeCitySheet();
 });
 
@@ -2293,17 +2471,48 @@ document.getElementById('back-from-profile-btn').addEventListener('click', funct
 
 async function openProfile(userId) {
   showPage('profile');
-  document.getElementById('profile-requests').innerHTML = '<div class="spinner"></div>';
+  var isOwn = currentUser && currentUser.id === userId;
+  window._profileUserId = userId;
+  document.getElementById('profile-reviews').innerHTML = '<div class="spinner"></div>';
+
   var res = await db.from('profiles').select('*').eq('id', userId).single();
   var profile = res.data || {};
+  window._profileData = profile;
   var name = profile.name || 'Без імені';
+
   var avatarEl = document.getElementById('profile-avatar');
-  if (profile.avatar_url) { avatarEl.innerHTML = '<img src="' + profile.avatar_url + '" alt="">'; }
+  if (profile.avatar_url) { avatarEl.innerHTML = '<img src="' + esc(profile.avatar_url) + '" alt="">'; }
   else { avatarEl.textContent = name.charAt(0).toUpperCase(); }
+
   document.getElementById('profile-name').textContent = name;
-  document.getElementById('profile-city-show').textContent = profile.city ? '📍 ' + profile.city : '';
   document.getElementById('profile-bio-show').textContent = profile.bio || '';
-  document.getElementById('profile-joined').textContent = profile.created_at ? '📅 З ' + new Date(profile.created_at).toLocaleDateString('uk') : '';
+
+  // City tag
+  var cityTag = document.getElementById('profile-city-tag');
+  if (profile.city) { cityTag.style.display = ''; document.getElementById('profile-city-show').textContent = profile.city; }
+  else { cityTag.style.display = 'none'; }
+
+  // Joined tag: >1 year → "N років тому", else date
+  var joinedTag = document.getElementById('profile-joined-tag');
+  if (profile.created_at) {
+    joinedTag.style.display = '';
+    var created = new Date(profile.created_at);
+    var years = Math.floor((Date.now() - created) / (1000*60*60*24*365));
+    var joinedText;
+    if (years >= 1) {
+      var word = years === 1 ? 'рік' : (years < 5 ? 'роки' : 'років');
+      joinedText = years + ' ' + word + ' тому';
+    } else {
+      joinedText = created.toLocaleDateString('uk', {day:'2-digit',month:'2-digit',year:'2-digit'});
+    }
+    document.getElementById('profile-joined').textContent = joinedText;
+  } else { joinedTag.style.display = 'none'; }
+
+  // Own profile controls
+  document.getElementById('prof-avatar-edit-btn').style.display = isOwn ? '' : 'none';
+  document.getElementById('prof-own-actions').style.display = isOwn ? '' : 'none';
+
+  // Stats
   var reqRes = await db.from('requests').select('id, closed_at').eq('user_id', userId);
   var offRes = await db.from('offers').select('id').eq('user_id', userId);
   var requests = reqRes.data || [];
@@ -2311,62 +2520,170 @@ async function openProfile(userId) {
   document.getElementById('stat-requests').textContent = requests.length;
   document.getElementById('stat-offers').textContent = (offRes.data || []).length;
   document.getElementById('stat-closed').textContent = closed;
-  var editWrap = document.getElementById('edit-profile-wrap');
-  if (currentUser && currentUser.id === userId) {
-    editWrap.innerHTML = '<button class="btn btn-sm" id="edit-profile-btn" style="margin-top:4px">Редагувати профіль</button>';
-    document.getElementById('edit-profile-btn').addEventListener('click', function() {
-      document.getElementById('edit-name').value = profile.name || '';
-      document.getElementById('edit-city').value = profile.city || '';
-      document.getElementById('edit-bio').value = profile.bio || '';
-      document.getElementById('profile-edit-form').classList.add('open');
-    });
-  } else { editWrap.innerHTML = ''; }
-  var rRes = await db.from('requests').select('*, offers(id)').eq('user_id', userId).order('created_at', { ascending: false });
-  renderProfileRequests(rRes.data || []);
 
+  // Rating
   var ratingRes = await db.from('reviews').select('rating').eq('seller_id', userId);
   var ratingData = ratingRes.data || [];
+  var ratingEl = document.getElementById('prof-rating-display');
   if (ratingData.length) {
-    var avgRating = (ratingData.reduce(function(s,r){return s+r.rating;},0)/ratingData.length).toFixed(1);
-    document.getElementById('stat-closed').parentElement.parentElement.innerHTML =
-      '<div class="stat-card"><div class="stat-num">' + requests.length + '</div><div class="stat-label">Запитів</div></div>' +
-      '<div class="stat-card"><div class="stat-num">' + (offRes.data||[]).length + '</div><div class="stat-label">Пропозицій</div></div>' +
-      '<div class="stat-card"><div class="stat-num" id="stat-rating">' + avgRating + '</div><div class="stat-label">⭐ Рейтинг</div></div>';
-  }
+    var avg = ratingData.reduce(function(s,r){return s+r.rating;},0)/ratingData.length;
+    var stars = '★'.repeat(Math.round(avg)) + '☆'.repeat(5-Math.round(avg));
+    ratingEl.innerHTML = '<span style="color:#F5D90A">' + stars + '</span> ' + avg.toFixed(1) + '/5';
+  } else { ratingEl.textContent = ''; }
+
   loadReviews(userId);
 }
 
-function renderProfileRequests(requests) {
-  var c = document.getElementById('profile-requests');
-  if (!requests.length) { c.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><p>Запитів ще немає</p></div>'; return; }
+// Stats cards → user items pages
+document.querySelectorAll('.prof-stat-card').forEach(function(card) {
+  card.addEventListener('click', function() {
+    openUserItems(window._profileUserId, this.dataset.tab);
+  });
+});
+document.getElementById('prof-my-requests-btn').addEventListener('click', function() {
+  openUserItems(window._profileUserId, 'requests');
+});
+document.getElementById('prof-settings-btn').addEventListener('click', function() { openSettings(); });
+
+// ---- USER ITEMS PAGE ----
+async function openUserItems(userId, tab) {
+  showPage('user-items');
+  var titles = { requests: 'Запити', offers: 'Пропозиції', found: 'Знайдено' };
+  document.getElementById('user-items-title').textContent = titles[tab] || 'Запити';
+  var c = document.getElementById('user-items-container');
+  c.innerHTML = '<div class="spinner"></div>';
+  window._userItemsBack = { userId: userId };
+
   var html = '';
-  for (var i = 0; i < requests.length; i++) {
-    var r = requests[i];
-    var isClosed = !!r.closed_at;
-    html += '<div style="background:var(--surface);border-radius:var(--radius);padding:14px;margin-bottom:10px;cursor:pointer" data-action="open-request" data-id="' + r.id + '">';
-    html += '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px"><div style="font-size:14px;font-weight:700">' + esc(r.title) + '</div>';
-    html += (isClosed ? '<span class="card-found-badge" style="position:relative;top:auto;left:auto;white-space:nowrap">✓ Знайдено</span>' : '<span class="card-offers-tag">' + (r.offers?r.offers.length:0) + ' пропозицій</span>') + '</div>';
-    html += '<div style="font-size:12px;color:var(--text3);margin-top:4px">🕐 ' + timeAgo(r.created_at) + (r.budget ? ' · до ' + Number(r.budget).toLocaleString('uk') + ' ₴' : '') + '</div>';
-    html += '</div>';
+  if (tab === 'requests' || tab === 'found') {
+    var q = db.from('requests').select('*, offers(id)').eq('user_id', userId).order('created_at', { ascending: false });
+    if (tab === 'found') q = q.not('closed_at', 'is', null);
+    else q = q.is('closed_at', null);
+    var res = await q;
+    var items = res.data || [];
+    if (!items.length) { c.innerHTML = '<div class="empty" style="padding:60px 20px;text-align:center;color:var(--text3)">Поки що пусто</div>'; return; }
+    items.forEach(function(r) {
+      var isClosed = !!r.closed_at;
+      html += '<div style="border:1.5px solid var(--border);border-radius:16px;padding:14px;margin-bottom:10px;cursor:pointer" data-action="open-request" data-id="' + r.id + '">';
+      html += '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px"><div style="font-size:14px;font-weight:700">' + esc(r.title) + '</div>';
+      html += (isClosed ? '<span class="card-found-badge" style="position:relative;top:auto;left:auto;white-space:nowrap">✓ Знайдено</span>' : '<span class="card-offers-tag">' + (r.offers?r.offers.length:0) + ' пропозицій</span>') + '</div>';
+      html += '<div style="font-size:12px;color:var(--text3);margin-top:4px">' + timeAgo(r.created_at) + (r.budget ? ' · до ' + Number(r.budget).toLocaleString('uk') + ' ₴' : '') + '</div>';
+      html += '</div>';
+    });
+  } else if (tab === 'offers') {
+    var res = await db.from('offers').select('*, request:request_id(id, title)').eq('user_id', userId).order('created_at', { ascending: false });
+    var items = res.data || [];
+    if (!items.length) { c.innerHTML = '<div class="empty" style="padding:60px 20px;text-align:center;color:var(--text3)">Поки що пусто</div>'; return; }
+    items.forEach(function(o) {
+      var reqTitle = o.request ? o.request.title : '';
+      var reqId = o.request ? o.request.id : '';
+      html += '<div style="border:1.5px solid var(--border);border-radius:16px;padding:14px;margin-bottom:10px;cursor:pointer" data-action="open-request" data-id="' + reqId + '">';
+      html += '<div style="font-size:12px;color:var(--text3);margin-bottom:4px">До запиту: ' + esc(reqTitle) + '</div>';
+      html += '<div style="font-size:14px;font-weight:600;color:var(--text2)">' + esc(o.description) + '</div>';
+      html += '<div style="font-size:15px;font-weight:700;color:var(--green-dark);margin-top:6px">' + Number(o.price).toLocaleString('uk') + ' ₴</div>';
+      html += '</div>';
+    });
   }
   c.innerHTML = html;
 }
+document.getElementById('back-from-user-items-btn').addEventListener('click', function() {
+  openProfile(window._userItemsBack ? window._userItemsBack.userId : currentUser.id);
+});
 
-document.getElementById('save-profile-btn').addEventListener('click', async function() {
-  if (!currentUser) return;
-  var name = document.getElementById('edit-name').value.trim();
-  var city = document.getElementById('edit-city').value.trim();
-  var bio = document.getElementById('edit-bio').value.trim();
-  if (!name) { toast("Введіть ім'я", true); return; }
-  var res = await db.from('profiles').update({ name: name, city: city || null, bio: bio || null }).eq('id', currentUser.id);
-  if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
-  toast('Профіль збережено!');
-  document.getElementById('profile-edit-form').classList.remove('open');
-  document.getElementById('user-pill').textContent = name;
-  updateGreeting(currentUser);
+// ---- SETTINGS PAGE ----
+var settingsCityTemp = '';
+function openSettings() {
+  showPage('settings');
+  var p = window._profileData || {};
+  var name = p.name || '';
+  document.getElementById('settings-name-display').textContent = name || '—';
+  var av = document.getElementById('settings-avatar');
+  if (p.avatar_url) { av.innerHTML = '<img src="' + esc(p.avatar_url) + '">'; }
+  else { av.textContent = name ? name.charAt(0).toUpperCase() : '?'; }
+  document.getElementById('settings-name').value = name;
+  document.getElementById('settings-bio').value = p.bio || '';
+  settingsCityTemp = p.city || '';
+  var cityDisp = document.getElementById('settings-city-display');
+  cityDisp.value = settingsCityTemp;
+  var cityField = document.getElementById('settings-city-field');
+  cityField.classList.toggle('city-empty', !settingsCityTemp);
+  cityField.classList.toggle('city-filled', !!settingsCityTemp);
+}
+document.getElementById('back-from-settings-btn').addEventListener('click', async function() {
+  // Auto-save on back
+  if (!currentUser) { openProfile(window._profileUserId); return; }
+  var name = document.getElementById('settings-name').value.trim();
+  var bio = document.getElementById('settings-bio').value.trim();
+  var city = document.getElementById('settings-city-display').value.trim();
+  if (name) {
+    await db.from('profiles').update({ name: name, bio: bio || null, city: city || null }).eq('id', currentUser.id);
+    await db.auth.updateUser({ data: { name: name } });
+    updateGreeting(currentUser);
+    toast('Збережено');
+  }
   openProfile(currentUser.id);
 });
-document.getElementById('cancel-edit-btn').addEventListener('click', function() { document.getElementById('profile-edit-form').classList.remove('open'); });
+document.getElementById('settings-city-field').addEventListener('click', function() {
+  citySheetTarget = 'settings';
+  citySelectedTemp = settingsCityTemp;
+  document.getElementById('city-search-input').value = '';
+  renderCityList('');
+  document.getElementById('city-sheet-bg').classList.add('open');
+  setTimeout(function() { document.getElementById('city-search-input').focus(); }, 150);
+});
+document.getElementById('settings-change-pass-btn').addEventListener('click', function() {
+  openAuth(); authState.mode = 'login'; authGoto('forgot-email');
+});
+document.getElementById('settings-support-btn').addEventListener('click', function() { toast('Незабаром 🛠'); });
+document.getElementById('settings-logout-btn').addEventListener('click', function() {
+  db.auth.signOut(); setUserUI(null); toast('До побачення!');
+  showPage('main'); setActiveNav('nav-home'); loadRequests();
+});
+document.getElementById('settings-delete-account-btn').addEventListener('click', function() {
+  showConfirm('Видалити обліковий запис?', 'Це незворотня дія. Для видалення зверніться у підтримку.', function() {
+    toast('Зверніться у чат підтримки');
+  });
+});
+
+// ---- PHOTO SHEET ----
+function openPhotoSheet() {
+  var p = window._profileData || {};
+  var av = document.getElementById('photo-sheet-avatar');
+  if (p.avatar_url) { av.innerHTML = '<img src="' + esc(p.avatar_url) + '">'; }
+  else { av.textContent = (p.name || '?').charAt(0).toUpperCase(); }
+  document.getElementById('photo-sheet-bg').classList.add('open');
+}
+function closePhotoSheet() { document.getElementById('photo-sheet-bg').classList.remove('open'); }
+document.getElementById('prof-avatar-edit-btn').addEventListener('click', openPhotoSheet);
+document.getElementById('settings-avatar-edit-btn').addEventListener('click', openPhotoSheet);
+document.getElementById('photo-sheet-close-btn').addEventListener('click', closePhotoSheet);
+document.getElementById('photo-sheet-bg').addEventListener('click', function(e) { if (e.target === this) closePhotoSheet(); });
+
+async function uploadAvatar(file) {
+  if (!currentUser || !file) return;
+  toast('Завантажуємо...');
+  var ext = file.name.split('.').pop();
+  var path = currentUser.id + '/avatar_' + Date.now() + '.' + ext;
+  var up = await db.storage.from('avatars').upload(path, file, { upsert: true });
+  if (up.error) { toast('Помилка: ' + up.error.message, true); return; }
+  var pub = db.storage.from('avatars').getPublicUrl(path);
+  var url = pub.data.publicUrl;
+  var res = await db.from('profiles').update({ avatar_url: url }).eq('id', currentUser.id);
+  if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
+  toast('Фото оновлено!');
+  closePhotoSheet();
+  openProfile(currentUser.id);
+}
+document.getElementById('photo-gallery-input').addEventListener('change', function() { if (this.files[0]) uploadAvatar(this.files[0]); });
+document.getElementById('photo-camera-input').addEventListener('change', function() { if (this.files[0]) uploadAvatar(this.files[0]); });
+document.getElementById('photo-delete-btn').addEventListener('click', async function() {
+  if (!currentUser) return;
+  var res = await db.from('profiles').update({ avatar_url: null }).eq('id', currentUser.id);
+  if (res.error) { toast('Помилка', true); return; }
+  toast('Фото видалено');
+  closePhotoSheet();
+  openProfile(currentUser.id);
+});
 
 // ---- REVIEWS ----
 var selectedRating = 0;
@@ -2407,19 +2724,24 @@ document.getElementById('submit-review-btn').addEventListener('click', async fun
   openProfile(sellerId);
 });
 async function loadReviews(userId) {
-  var res = await db.from('reviews').select('*, reviewer:reviewer_id(name)').eq('seller_id', userId).order('created_at', { ascending: false });
+  var res = await db.from('reviews').select('*, reviewer:reviewer_id(name, avatar_url)').eq('seller_id', userId).order('created_at', { ascending: false });
   var reviews = res.data || [];
   var container = document.getElementById('profile-reviews');
-  if (!reviews.length) { container.innerHTML = '<div style="font-size:13px;color:var(--text3);padding:8px 0">Відгуків ще немає</div>'; return; }
-  var total = reviews.reduce(function(sum,r){return sum+r.rating;},0);
-  var avg = (total/reviews.length).toFixed(1);
-  var stars = '';
-  for (var i=1;i<=5;i++) stars += i<=Math.round(avg)?'★':'☆';
-  var html = '<div class="rating-summary"><div><div class="rating-avg">' + avg + '</div><div class="rating-avg-stars">' + stars + '</div><div class="rating-count">' + reviews.length + ' відгуків</div></div></div>';
+  if (!reviews.length) { container.innerHTML = '<div class="prof-reviews-empty">Відгуків ще немає</div>'; return; }
+  var html = '';
   for (var j=0;j<reviews.length;j++) {
     var r=reviews[j];
+    var rName = r.reviewer ? r.reviewer.name : 'Анонім';
+    var rAv = r.reviewer && r.reviewer.avatar_url
+      ? '<img src="'+esc(r.reviewer.avatar_url)+'">'
+      : rName.charAt(0).toUpperCase();
     var rs='';for(var k=1;k<=5;k++)rs+=k<=r.rating?'★':'☆';
-    html+='<div class="review-card"><div class="review-header"><div><div class="review-author">'+esc(r.reviewer?r.reviewer.name:'Анонім')+'</div><div class="review-stars">'+rs+'</div></div><div class="review-date">'+timeAgo(r.created_at)+'</div></div>'+(r.comment?'<div class="review-text">'+esc(r.comment)+'</div>':'')+'</div>';
+    var dateStr = new Date(r.created_at).toLocaleDateString('uk',{day:'2-digit',month:'2-digit',year:'numeric'});
+    html+='<div class="prof-review-item">';
+    html+='<div class="prof-review-top"><div class="prof-review-avatar">'+rAv+'</div><div class="prof-review-name">'+esc(rName)+'</div><div class="prof-review-date">'+dateStr+'</div></div>';
+    if (r.comment) html+='<div class="prof-review-text">'+esc(r.comment)+'</div>';
+    html+='<div class="prof-review-stars">'+rs+'</div>';
+    html+='</div>';
   }
   container.innerHTML = html;
 }
