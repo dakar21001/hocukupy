@@ -62,7 +62,7 @@ body{font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', sans-serif;background:#
 @media(min-width:701px){.cards-grid{grid-template-columns:1fr;}}
 
 /* REQUEST CARD */
-.req-card-new{background:#fff;border-radius:16px;overflow:hidden;cursor:pointer;transition:transform 0.15s;display:flex;flex-direction:column;width:100%;}
+.req-card-new{background:#fff;cursor:pointer;transition:transform 0.15s;display:flex;flex-direction:column;width:100%;}
 .req-card-new:active{transform:scale(0.97);}
 .req-card-new.closed{opacity:0.65;}
 .card-img-wrap{position:relative;height:160px;background:#E8E8E8;overflow:hidden;border-radius:16px;}
@@ -151,7 +151,7 @@ textarea{resize:vertical;min-height:80px;}
 
 /* REQUEST PAGE */
 .req-page-wrap{background:#fff;min-height:100vh;padding-bottom:calc(var(--nav-h)+80px);}
-.req-page-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:#fff;}
+.req-page-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:#fff;position:sticky;top:0;z-index:20;}
 .req-page-share-btn{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--border);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .req-page-share-btn svg{width:20px;height:20px;stroke:var(--text2);}
 
@@ -556,7 +556,7 @@ textarea{resize:vertical;min-height:80px;}
 
 /* CATEGORIES PAGE */
 .cats-page{background:#fff;min-height:100vh;padding-bottom:calc(var(--nav-h)+16px);}
-.cats-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 20px;}
+.cats-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 20px;position:sticky;top:0;background:#fff;z-index:20;}
 .cats-back-btn{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--border);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .cats-back-btn svg{width:20px;height:20px;stroke:var(--text);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 .cats-title{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:18px;font-weight:700;color:var(--text);letter-spacing:-0.2px;}
