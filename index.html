@@ -848,7 +848,7 @@ textarea{resize:vertical;min-height:80px;}
       </button>
       <span class="cats-title">Запит</span>
       <button class="req-page-share-btn" id="share-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        <span id="share-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></span>
       </button>
     </div>
     <div id="request-page-content"><div class="spinner" style="margin:40px auto"></div></div>
@@ -2300,11 +2300,43 @@ document.getElementById('owizard-next-btn').addEventListener('click', async func
 
 // ---- REQUEST PAGE ----
 document.getElementById('back-from-request-btn').addEventListener('click', function() {
-  history.back();
+  closeRequestModal();
 });
+var SHARE_ICON_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>';
+var CHECK_ICON_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+
+function copyToClipboard(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    return navigator.clipboard.writeText(text);
+  }
+  // fallback для старих/незахищених контекстів
+  return new Promise(function(resolve, reject) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try {
+      document.execCommand('copy') ? resolve() : reject();
+    } catch (e) { reject(e); }
+    document.body.removeChild(ta);
+  });
+}
+
+var _shareResetTimer = null;
 document.getElementById('share-btn').addEventListener('click', function() {
   var url = window.location.origin + window.location.pathname + '?request=' + (window._currentRequestId || '');
-  navigator.clipboard.writeText(url).then(function() { toast('Посилання скопійовано!'); });
+  var iconEl = document.getElementById('share-icon');
+  copyToClipboard(url).then(function() {
+    iconEl.innerHTML = CHECK_ICON_SVG;
+    toast('Посилання скопійовано!');
+    clearTimeout(_shareResetTimer);
+    _shareResetTimer = setTimeout(function() { iconEl.innerHTML = SHARE_ICON_SVG; }, 1500);
+  }).catch(function() {
+    toast('Не вдалося скопіювати');
+  });
 });
 
 var _prevPage = 'main';
@@ -2320,6 +2352,8 @@ async function openRequestPage(requestId) {
   _prevPage = document.getElementById('request-page').style.display === '' ? 'request' : 'main';
   history.pushState({ requestId: requestId }, '', '?request=' + requestId);
   showPage('request');
+  clearTimeout(_shareResetTimer);
+  document.getElementById('share-icon').innerHTML = SHARE_ICON_SVG;
   document.getElementById('request-page-content').innerHTML = '<div class="spinner" style="margin:40px auto"></div>';
 
   if (!currentUser) {
