@@ -1365,7 +1365,7 @@ function showPage(page) {
   // Hide mobile-header and FAB on chat/cats pages
   var mobileHeader = document.querySelector('.mobile-header');
   var fab = document.getElementById('fab-btn');
-  var hiddenPages = ['chat-list','chat-window','cats','request','wizard','offer-wizard','auth','settings','user-items'];
+  var hiddenPages = ['profile','chat-list','chat-window','cats','request','wizard','offer-wizard','auth','settings','user-items'];
   var hide = hiddenPages.indexOf(page) !== -1;
   if (mobileHeader) mobileHeader.style.display = hide ? 'none' : '';
   if (fab) fab.style.display = hide ? 'none' : '';
