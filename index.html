@@ -2862,7 +2862,7 @@ async function openChatList() {
   showPage('chat-list');
   if (!currentUser) return;
   document.getElementById('chat-list-container').innerHTML = '<div class="spinner"></div>';
-  var res = await db.from('chats').select('*, buyer:buyer_id(name), seller:seller_id(name), request:request_id(id,title,budget,photos), offer:offer_id(description,price,photos), messages(text, created_at, sender_id)').or('buyer_id.eq.' + currentUser.id + ',seller_id.eq.' + currentUser.id).order('created_at', { ascending: false });
+  var res = await db.from('chats').select('*, buyer:buyer_id(name), seller:seller_id(name), request:request_id(id,title,budget,photos), offer:offer_id(description,price,photos), messages(text, image_url, created_at, sender_id)').or('buyer_id.eq.' + currentUser.id + ',seller_id.eq.' + currentUser.id).order('created_at', { ascending: false });
   var chats = res.data || [];
   if (!chats.length) {
     document.getElementById('chat-list-container').innerHTML = '<div class="chat-list-empty">Більше чатів немає</div>';
@@ -2874,11 +2874,12 @@ async function openChatList() {
     var isbuyer=currentUser.id===c.buyer_id;
     var partner=isbuyer?(c.seller?c.seller.name:'Продавець'):(c.buyer?c.buyer.name:'Покупець');
     var msgs=c.messages||[];
-    var last=msgs.length?msgs[msgs.length-1].text:'Немає повідомлень';
+    var lastMsgObj = msgs.length ? msgs[msgs.length-1] : null;
+    var last = lastMsgObj ? (lastMsgObj.image_url ? '📷 Фото' : (lastMsgObj.text || '')) : 'Немає повідомлень';
     var lastTime=msgs.length?formatChatTime(msgs[msgs.length-1].created_at):'';
     var initials=partner.charAt(0).toUpperCase();
     var partnerId=isbuyer?c.seller_id:c.buyer_id;
-    var lastMsg = msgs.length ? msgs[msgs.length-1] : null;
+    var lastMsg = lastMsgObj;
     var isUnread = lastMsg && isChatUnread(c.id, lastMsg);
     var req = c.request || {};
     var offer = c.offer || {};
