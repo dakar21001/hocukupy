@@ -509,14 +509,21 @@ textarea{resize:vertical;min-height:80px;}
 .msg-mine{background:var(--green);color:#fff;align-self:flex-end;border-radius:18px 18px 4px 18px;}
 .msg-other{background:#F2F2F2;color:var(--text);align-self:flex-start;border-radius:18px 18px 18px 4px;}
 .msg-time{font-size:11px;opacity:0.6;margin-top:4px;text-align:right;display:block;}
+.msg-photo{padding:4px;}
+.msg-img{width:200px;max-width:60vw;border-radius:14px;display:block;cursor:pointer;object-fit:cover;}
+.msg-photo .msg-time{padding:0 6px 2px;}
 .msg-mine .msg-time{color:#fff;}
 .msg-other .msg-time{color:var(--text3);opacity:1;}
 .chat-input-wrap{padding:10px 16px calc(var(--nav-h) + 10px);background:#fff;flex-shrink:0;border-top:1px solid var(--border);}
-.chat-input-inner{display:flex;align-items:center;gap:10px;background:#F5F5F5;border-radius:99px;padding:10px 16px;}
-.chat-attach-btn{width:24px;height:24px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:none;border:none;cursor:pointer;padding:0;}
-.chat-attach-btn svg{width:22px;height:22px;stroke:var(--text3);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
-.chat-input-inner input{flex:1;background:none;border:none;outline:none;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:15px;color:var(--text);padding:0;}
-.chat-input-inner input::placeholder{color:#B0AEAE;}
+.chat-input-row{display:flex;align-items:center;gap:10px;}
+.chat-attach-btn{width:52px;height:52px;border-radius:50%;background:#F5F5F5;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;border:none;}
+.chat-attach-btn svg{stroke:var(--text3);}
+.chat-input-field{flex:1;background:#F5F5F5;border-radius:99px;padding:0 20px;height:52px;display:flex;align-items:center;}
+.chat-input-field input{width:100%;background:none;border:none;outline:none;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:15px;color:var(--text);padding:0;}
+.chat-input-field input::placeholder{color:#B0AEAE;}
+.chat-send-btn{width:52px;height:52px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;border:none;transition:background 0.15s;}
+.chat-send-btn svg{stroke:#fff;}
+.chat-send-btn:active{background:var(--green-dark);}
 .chat-send-btn{background:var(--green);border:none;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:background 0.15s;}
 .chat-send-btn:active{background:var(--green-dark);}
 .chat-send-btn svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;margin-left:2px;}
@@ -825,13 +832,16 @@ textarea{resize:vertical;min-height:80px;}
     <div id="chat-req-card-wrap"></div>
     <div class="chat-messages" id="chat-messages"></div>
     <div class="chat-input-wrap">
-      <div class="chat-input-inner">
-        <button class="chat-attach-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-        </button>
-        <input type="text" id="chat-input" placeholder="Повідомлення">
+      <div class="chat-input-row">
+        <label class="chat-attach-btn">
+          <input type="file" accept="image/*" id="chat-photo-input" style="display:none">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13.234 20.252 21 12.3"/><path d="m16 6-8.414 8.586a2 2 0 0 0 2.829 2.829l8.414-8.586a4 4 0 1 0-5.657-5.657l-8.379 8.551a6 6 0 1 0 8.485 8.485l8.379-8.551"/></svg>
+        </label>
+        <div class="chat-input-field">
+          <input type="text" id="chat-input" placeholder="Повідомлення">
+        </div>
         <button class="chat-send-btn" id="chat-send-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg>
         </button>
       </div>
     </div>
@@ -2976,7 +2986,11 @@ async function loadMessages(chatId) {
       lastDate = dateLabel;
     }
     var timeStr = msgDate.toLocaleTimeString('uk', {hour:'2-digit',minute:'2-digit'});
-    html+='<div class="msg '+(mine?'msg-mine':'msg-other')+'">'+esc(m.text)+'<span class="msg-time">'+timeStr+'</span></div>';
+    if (m.image_url) {
+      html+='<div class="msg '+(mine?'msg-mine':'msg-other')+' msg-photo"><img src="'+esc(m.image_url)+'" class="msg-img" onclick="openLightbox(\''+esc(m.image_url)+'\')"><span class="msg-time">'+timeStr+'</span></div>';
+    } else {
+      html+='<div class="msg '+(mine?'msg-mine':'msg-other')+'">'+esc(m.text)+'<span class="msg-time">'+timeStr+'</span></div>';
+    }
   }
   c.innerHTML = html;
   c.scrollTop = c.scrollHeight;
@@ -2994,6 +3008,23 @@ async function sendMessage() {
 }
 document.getElementById('chat-send-btn').addEventListener('click', sendMessage);
 document.getElementById('chat-input').addEventListener('keydown', function(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
+
+async function sendChatPhoto(file) {
+  if (!currentUser || !currentChatId || !file) return;
+  toast('Надсилаємо фото...');
+  var ext = file.name.split('.').pop();
+  var path = currentUser.id + '/chat_' + Date.now() + '.' + ext;
+  var up = await db.storage.from('offers-photos').upload(path, file, { upsert: true });
+  if (up.error) { toast('Помилка: ' + up.error.message, true); return; }
+  var pub = db.storage.from('offers-photos').getPublicUrl(path);
+  var res = await db.from('messages').insert({ chat_id: currentChatId, sender_id: currentUser.id, image_url: pub.data.publicUrl });
+  if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
+  loadMessages(currentChatId);
+}
+document.getElementById('chat-photo-input').addEventListener('change', function() {
+  if (this.files[0]) sendChatPhoto(this.files[0]);
+  this.value = '';
+});
 
 // ---- HELPERS ----
 function esc(str) {
