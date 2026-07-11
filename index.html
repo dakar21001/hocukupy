@@ -514,7 +514,7 @@ textarea{resize:vertical;min-height:80px;}
 .msg-photo .msg-time{padding:0 6px 2px;}
 .msg-mine .msg-time{color:#fff;}
 .msg-other .msg-time{color:var(--text3);opacity:1;}
-.chat-input-wrap{padding:10px 16px calc(var(--nav-h) + 10px);background:#fff;flex-shrink:0;border-top:1px solid var(--border);}
+.chat-input-wrap{padding:10px 16px calc(env(safe-area-inset-bottom) + 10px);background:#fff;flex-shrink:0;border-top:1px solid var(--border);}
 .chat-input-row{display:flex;align-items:center;gap:10px;}
 .chat-attach-btn{width:52px;height:52px;border-radius:50%;background:#F5F5F5;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;border:none;}
 .chat-attach-btn svg{stroke:var(--text3);}
@@ -1440,7 +1440,7 @@ function showPage(page) {
   if (fab) fab.style.display = hide ? 'none' : '';
   // Hide bottom nav entirely on fullscreen wizard
   var bottomNav = document.querySelector('.bottom-nav');
-  var fullscreenPages = ['wizard','offer-wizard','auth'];
+  var fullscreenPages = ['wizard','offer-wizard','auth','chat-window'];
   if (bottomNav) bottomNav.style.display = (fullscreenPages.indexOf(page) !== -1) ? 'none' : '';
   // Lock body scroll on fullscreen wizard
   document.body.style.overflow = (fullscreenPages.indexOf(page) !== -1) ? 'hidden' : '';
