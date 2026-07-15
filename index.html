@@ -216,9 +216,9 @@ textarea{resize:vertical;min-height:80px;}
 
 /* ACTIVITY PAGE */
 .activity-wrap{background:#fff;min-height:100vh;padding-bottom:calc(var(--nav-h) + 24px);}
-.activity-header{padding:20px 20px 0;}
-.activity-title{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:28px;font-weight:800;color:var(--text);text-align:center;margin:0 0 24px;}
-.activity-tabs{display:flex;gap:8px;justify-content:center;margin-bottom:8px;}
+.activity-header{padding:20px 20px 12px;position:sticky;top:0;background:#fff;z-index:10;}
+.activity-title{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:28px;font-weight:800;color:var(--text);text-align:center;margin:0 0 20px;}
+.activity-tabs{display:flex;gap:8px;justify-content:center;}
 .activity-tab{padding:12px 28px;border-radius:99px;border:none;background:none;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:17px;font-weight:700;color:var(--text3);cursor:pointer;transition:all 0.15s;}
 .activity-tab.active{background:#F0F0F0;color:var(--text);}
 .activity-date-sep{display:flex;align-items:center;gap:12px;padding:20px 20px 12px;}
@@ -231,8 +231,8 @@ textarea{resize:vertical;min-height:80px;}
 .activity-card-img-ph{width:110px;height:96px;border-radius:14px;background:var(--bg);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
 .activity-card-img-ph svg{width:32px;height:32px;stroke:var(--text3);fill:none;stroke-width:1.5;}
 .activity-card-body{flex:1;min-width:0;display:flex;flex-direction:column;}
-.activity-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:4px;}
-.activity-card-status{font-size:12px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;line-height:1.3;}
+.activity-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;}
+.activity-card-status{font-size:12px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
 .activity-card-status.new{color:#A855F7;}
 .activity-card-status.none{color:var(--text3);}
 .activity-card-status.count-orange{color:#F59E0B;}
@@ -242,8 +242,8 @@ textarea{resize:vertical;min-height:80px;}
 .activity-badge.closed{background:#FEE2E2;color:#EF4444;}
 .activity-badge.found{background:#DCFCE7;color:#22C55E;}
 .activity-card-name{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:19px;font-weight:700;color:var(--text);line-height:1.2;margin-bottom:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.activity-card-tags{display:flex;gap:8px;flex-wrap:wrap;}
-.activity-card-tag{display:flex;align-items:center;gap:5px;padding:7px 13px;border:1.5px solid var(--border);border-radius:99px;font-size:13px;color:var(--text2);font-weight:500;white-space:nowrap;}
+.activity-card-tags{display:flex;gap:8px;flex-wrap:nowrap;min-width:0;}
+.activity-card-tag{display:flex;align-items:center;gap:5px;padding:7px 13px;border:1.5px solid var(--border);border-radius:99px;font-size:13px;color:var(--text2);font-weight:500;white-space:nowrap;flex-shrink:0;}
 .activity-card-tag svg{width:14px;height:14px;flex-shrink:0;}
 .activity-card-divider{height:1px;background:var(--border);margin:8px 20px 0;}
 .activity-empty{text-align:center;color:var(--text3);font-size:15px;padding:120px 20px;}
