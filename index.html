@@ -2003,7 +2003,7 @@ document.getElementById('sidebar-photo-input').addEventListener('change', functi
 async function loadRequests() {
   document.getElementById('requests-container').innerHTML = '<div class="spinner"></div>';
   var query = db.from('requests')
-    .select('*, profiles(name), photos, offers(id, user_id, description, price, photos, profiles(name))')
+    .select('*, profiles(name), photos, offers!request_id(id, user_id, description, price, photos, profiles(name))')
     .order('closed_at', { ascending: true, nullsFirst: true })
     .order('created_at', { ascending: false });
   if (currentCat) query = query.eq('category', currentCat);
@@ -2104,7 +2104,7 @@ async function showSaved() {
     return;
   }
   var res = await db.from('requests')
-    .select('*, profiles(name), photos, offers(id, user_id, description, price, photos, profiles(name))')
+    .select('*, profiles(name), photos, offers!request_id(id, user_id, description, price, photos, profiles(name))')
     .in('id', savedIds).order('created_at', { ascending: false });
   if (res.error) { toast('Помилка', true); return; }
   renderRequests(res.data || []);
@@ -2420,7 +2420,7 @@ async function openRequestPage(requestId) {
   }
 
   var res = await db.from('requests')
-    .select('*, profiles(id, name, avatar_url, created_at), photos, offers(id, user_id, description, price, photos, profiles(id, name, avatar_url))')
+    .select('*, profiles(id, name, avatar_url, created_at), photos, offers!request_id(id, user_id, description, price, photos, profiles(id, name, avatar_url))')
     .eq('id', requestId).single();
 
   if (res.error || !res.data) {
@@ -2737,12 +2737,12 @@ async function loadActivity() {
   if (!currentUser) { c.innerHTML = '<div class="activity-empty">Увійдіть, щоб бачити активність</div>'; return; }
 
   if (activityTab === 'requests') {
-    var res = await db.from('requests').select('*, offers(id, created_at)').eq('user_id', currentUser.id).order('created_at', { ascending: false });
+    var res = await db.from('requests').select('*, offers!request_id(id, created_at)').eq('user_id', currentUser.id).order('created_at', { ascending: false });
     var items = res.data || [];
     if (!items.length) { c.innerHTML = '<div class="activity-empty">Ви ще не робили запитів</div>'; return; }
     c.innerHTML = renderActivityRequests(items);
   } else {
-    var res = await db.from('offers').select('*, request:request_id(id, title, category, photos, status, closed_at, offers(id))').eq('user_id', currentUser.id).order('created_at', { ascending: false });
+    var res = await db.from('offers').select('*, request:request_id(id, title, category, photos, status, closed_at, offers!request_id(id))').eq('user_id', currentUser.id).order('created_at', { ascending: false });
     var items = res.data || [];
     if (!items.length) { c.innerHTML = '<div class="activity-empty">Ви ще не залишали пропозицій</div>'; return; }
     c.innerHTML = renderActivityOffers(items);
