@@ -493,14 +493,14 @@ textarea{resize:vertical;min-height:80px;}
 .chat-win-name-wrap{flex:1;display:flex;flex-direction:column;align-items:center;min-width:0;}
 
 /* CHAT REQUEST CARD */
-.chat-req-card{display:flex;align-items:center;gap:12px;margin:12px 16px;padding:12px;border:1.5px solid var(--border);border-radius:16px;background:#fff;cursor:pointer;transition:background 0.15s;flex-shrink:0;}
+.chat-req-card{display:flex;align-items:stretch;gap:14px;margin:12px 16px;padding:12px;border:1.5px solid var(--border);border-radius:16px;background:#fff;cursor:pointer;transition:background 0.15s;flex-shrink:0;}
 .chat-req-card:active{background:var(--bg);}
-.chat-req-img{width:56px;height:56px;border-radius:10px;object-fit:cover;background:var(--bg);flex-shrink:0;}
-.chat-req-img-placeholder{width:56px;height:56px;border-radius:10px;background:var(--bg);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
-.chat-req-img-placeholder svg{width:24px;height:24px;stroke:var(--text3);fill:none;stroke-width:1.5;}
-.chat-req-info{flex:1;min-width:0;}
-.chat-req-title{font-size:14px;font-weight:600;color:var(--text);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.chat-req-budget{font-size:13px;color:var(--text3);margin-top:3px;}
+.chat-req-img{width:64px;height:64px;border-radius:12px;object-fit:cover;background:var(--bg);flex-shrink:0;}
+.chat-req-img-placeholder{width:64px;height:64px;border-radius:12px;background:var(--bg);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.chat-req-img-placeholder svg{width:26px;height:26px;stroke:var(--text3);fill:none;stroke-width:1.5;}
+.chat-req-info{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;}
+.chat-req-title{font-size:15px;font-weight:700;color:var(--text);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:8px;}
+.chat-req-budget{font-size:15px;color:var(--text3);}
 .chat-req-budget b{color:var(--text);font-weight:700;}
 .chat-win-avatar{width:44px;height:44px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:15px;font-weight:700;color:var(--green-dark);overflow:hidden;flex-shrink:0;}
 .chat-win-avatar img{width:100%;height:100%;object-fit:cover;}
@@ -510,12 +510,23 @@ textarea{resize:vertical;min-height:80px;}
 .msg-mine{background:var(--green);color:#fff;align-self:flex-end;border-radius:18px 18px 4px 18px;}
 .msg-other{background:#F2F2F2;color:var(--text);align-self:flex-start;border-radius:18px 18px 18px 4px;}
 .msg-time{font-size:11px;opacity:0.6;margin-top:4px;text-align:right;display:block;}
-.msg-photo{padding:4px;max-width:70%;}
-.msg-img{width:200px;height:200px;max-width:60vw;border-radius:14px;display:block;cursor:pointer;object-fit:cover;background:#F2F2F2;}
-.msg-photo .msg-time{padding:0 6px 2px;}
+.msg-photo{padding:4px;max-width:75%;}
+.msg-photos{display:flex;flex-direction:column;gap:4px;}
+.msg-photos.msg-photo-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;}
+.msg-img{width:200px;max-width:100%;aspect-ratio:1;border-radius:14px;display:block;cursor:pointer;object-fit:cover;background:#F2F2F2;}
+.msg-photo-grid .msg-img{width:100%;}
+.msg-caption{padding:6px 6px 0;font-size:14px;line-height:1.4;}
+.msg-mine .msg-caption{color:#fff;}
+.msg-other .msg-caption{color:var(--text);}
+.msg-photo .msg-time{padding:2px 6px 2px;}
 .msg-mine .msg-time{color:#fff;}
 .msg-other .msg-time{color:var(--text3);opacity:1;}
 .chat-input-wrap{padding:10px 16px max(10px, env(safe-area-inset-bottom)) ;background:#fff;flex-shrink:0;border-top:1px solid var(--border);}
+.chat-photo-preview{display:flex;gap:10px;padding:4px 0 12px;}
+.chat-photo-preview-item{position:relative;width:72px;height:72px;flex-shrink:0;}
+.chat-photo-preview-item img{width:100%;height:100%;object-fit:cover;border-radius:12px;}
+.chat-photo-preview-remove{position:absolute;top:-6px;right:-6px;width:24px;height:24px;border-radius:50%;background:#FF3B30;border:2px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;}
+.chat-photo-preview-remove svg{width:12px;height:12px;stroke:#fff;stroke-width:3;fill:none;}
 .chat-input-row{display:flex;align-items:center;gap:10px;}
 .chat-attach-btn{width:52px;height:52px;border-radius:50%;background:#F5F5F5;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;border:none;}
 .chat-attach-btn svg{stroke:var(--text3);}
@@ -833,9 +844,10 @@ textarea{resize:vertical;min-height:80px;}
     <div id="chat-req-card-wrap"></div>
     <div class="chat-messages" id="chat-messages"></div>
     <div class="chat-input-wrap">
+      <div class="chat-photo-preview" id="chat-photo-preview" style="display:none"></div>
       <div class="chat-input-row">
         <label class="chat-attach-btn">
-          <input type="file" accept="image/*" id="chat-photo-input" style="display:none">
+          <input type="file" accept="image/*" multiple id="chat-photo-input" style="display:none">
           <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13.234 20.252 21 12.3"/><path d="m16 6-8.414 8.586a2 2 0 0 0 2.829 2.829l8.414-8.586a4 4 0 1 0-5.657-5.657l-8.379 8.551a6 6 0 1 0 8.485 8.485l8.379-8.551"/></svg>
         </label>
         <div class="chat-input-field">
@@ -2863,7 +2875,7 @@ async function openChatList() {
   showPage('chat-list');
   if (!currentUser) return;
   document.getElementById('chat-list-container').innerHTML = '<div class="spinner"></div>';
-  var res = await db.from('chats').select('*, buyer:buyer_id(name), seller:seller_id(name), request:request_id(id,title,budget,photos), offer:offer_id(description,price,photos), messages(text, image_url, created_at, sender_id)').or('buyer_id.eq.' + currentUser.id + ',seller_id.eq.' + currentUser.id).order('created_at', { ascending: false });
+  var res = await db.from('chats').select('*, buyer:buyer_id(name), seller:seller_id(name), request:request_id(id,title,budget,photos), offer:offer_id(description,price,photos), messages(text, image_url, image_urls, created_at, sender_id)').or('buyer_id.eq.' + currentUser.id + ',seller_id.eq.' + currentUser.id).order('created_at', { ascending: false });
   var chats = res.data || [];
   if (!chats.length) {
     document.getElementById('chat-list-container').innerHTML = '<div class="chat-list-empty">Більше чатів немає</div>';
@@ -2876,7 +2888,7 @@ async function openChatList() {
     var partner=isbuyer?(c.seller?c.seller.name:'Продавець'):(c.buyer?c.buyer.name:'Покупець');
     var msgs=c.messages||[];
     var lastMsgObj = msgs.length ? msgs[msgs.length-1] : null;
-    var last = lastMsgObj ? (lastMsgObj.image_url ? '📷 Фото' : (lastMsgObj.text || '')) : 'Немає повідомлень';
+    var last = lastMsgObj ? (((lastMsgObj.image_urls && lastMsgObj.image_urls.length) || lastMsgObj.image_url) ? '📷 Фото' : (lastMsgObj.text || '')) : 'Немає повідомлень';
     var lastTime=msgs.length?formatChatTime(msgs[msgs.length-1].created_at):'';
     var initials=partner.charAt(0).toUpperCase();
     var partnerId=isbuyer?c.seller_id:c.buyer_id;
@@ -2922,6 +2934,9 @@ async function openOrCreateChat(sellerId, requestId, sellerName, reqTitle, offer
 
 function openChatWindow(chatId, partnerName, reqTitle, partnerId, reqId, reqBudget, reqPhoto, offerDesc, offerPrice, offerPhoto) {
   currentChatId = chatId;
+  pendingChatPhotos = [];
+  if (document.getElementById('chat-photo-preview')) renderChatPhotoPreview();
+  var ci = document.getElementById('chat-input'); if (ci) ci.value = '';
   showPage('chat-window');
   document.getElementById('chat-header-name').textContent = partnerName || 'Чат';
   var av = document.getElementById('chat-win-avatar');
@@ -2940,7 +2955,7 @@ function openChatWindow(chatId, partnerName, reqTitle, partnerId, reqId, reqBudg
       var imgHtml = cardPhoto
         ? '<img class="chat-req-img" src="'+esc(cardPhoto)+'" alt="">'
         : '<div class="chat-req-img-placeholder"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m3 9 4-4 4 4 4-4 4 4"/><circle cx="8.5" cy="14.5" r="1.5"/></svg></div>';
-      var priceHtml = cardPrice ? '<div class="chat-req-budget"><b>'+esc(cardPrice)+'</b></div>' : '';
+      var priceHtml = cardPrice ? '<div class="chat-req-budget">' + (offerPrice ? '<b>'+esc(cardPrice)+'</b>' : 'До <b>'+esc((reqBudget ? Number(reqBudget).toLocaleString('uk') + ' ₴' : ''))+'</b>') + '</div>' : '';
       cardWrap.innerHTML = '<div class="chat-req-card" data-action="open-req-from-chat" data-reqid="'+(reqId||'')+'">'+imgHtml+'<div class="chat-req-info"><div class="chat-req-title">'+esc(cardTitle)+'</div>'+priceHtml+'</div></div>';
     } else {
       cardWrap.innerHTML = '';
@@ -2988,8 +3003,15 @@ async function loadMessages(chatId) {
       lastDate = dateLabel;
     }
     var timeStr = msgDate.toLocaleTimeString('uk', {hour:'2-digit',minute:'2-digit'});
-    if (m.image_url) {
-      html+='<div class="msg '+(mine?'msg-mine':'msg-other')+' msg-photo"><img src="'+esc(m.image_url)+'" class="msg-img" onclick="openLightbox(\''+esc(m.image_url)+'\')"><span class="msg-time">'+timeStr+'</span></div>';
+    // photos: new image_urls array, or legacy single image_url
+    var photos = (m.image_urls && m.image_urls.length) ? m.image_urls : (m.image_url ? [m.image_url] : []);
+    if (photos.length) {
+      var imgsHtml = photos.map(function(u) {
+        return '<img src="'+esc(u)+'" class="msg-img" onclick="openLightbox(\''+esc(u)+'\')">';
+      }).join('');
+      var gridCls = photos.length > 1 ? ' msg-photo-grid' : '';
+      var textHtml = m.text ? '<div class="msg-caption">'+esc(m.text)+'</div>' : '';
+      html+='<div class="msg '+(mine?'msg-mine':'msg-other')+' msg-photo"><div class="msg-photos'+gridCls+'">'+imgsHtml+'</div>'+textHtml+'<span class="msg-time">'+timeStr+'</span></div>';
     } else {
       html+='<div class="msg '+(mine?'msg-mine':'msg-other')+'">'+esc(m.text)+'<span class="msg-time">'+timeStr+'</span></div>';
     }
@@ -2998,35 +3020,75 @@ async function loadMessages(chatId) {
   c.scrollTop = c.scrollHeight;
 }
 
+var pendingChatPhotos = []; // {file, dataUrl}
+
+function renderChatPhotoPreview() {
+  var wrap = document.getElementById('chat-photo-preview');
+  if (!pendingChatPhotos.length) { wrap.style.display = 'none'; wrap.innerHTML = ''; return; }
+  wrap.style.display = 'flex';
+  wrap.innerHTML = pendingChatPhotos.map(function(p, i) {
+    return '<div class="chat-photo-preview-item"><img src="'+p.dataUrl+'"><button class="chat-photo-preview-remove" data-idx="'+i+'"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>';
+  }).join('');
+  wrap.querySelectorAll('.chat-photo-preview-remove').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      pendingChatPhotos.splice(parseInt(this.dataset.idx), 1);
+      renderChatPhotoPreview();
+    });
+  });
+}
+
+document.getElementById('chat-photo-input').addEventListener('change', function() {
+  var files = Array.from(this.files).slice(0, 3 - pendingChatPhotos.length);
+  files.forEach(function(f) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      if (pendingChatPhotos.length >= 3) return;
+      pendingChatPhotos.push({ file: f, dataUrl: e.target.result });
+      renderChatPhotoPreview();
+    };
+    reader.readAsDataURL(f);
+  });
+  this.value = '';
+});
+
 async function sendMessage() {
   if (!currentUser || !currentChatId) return;
   var input = document.getElementById('chat-input');
   var text = input.value.trim();
-  if (!text) return;
+  var photos = pendingChatPhotos.slice();
+  if (!text && !photos.length) return;
+
+  // clear UI immediately
   input.value = '';
-  var res = await db.from('messages').insert({ chat_id: currentChatId, sender_id: currentUser.id, text: text });
+  pendingChatPhotos = [];
+  renderChatPhotoPreview();
+
+  var imageUrls = [];
+  if (photos.length) {
+    var sendBtn = document.getElementById('chat-send-btn');
+    sendBtn.disabled = true;
+    for (var i = 0; i < photos.length; i++) {
+      var f = photos[i].file;
+      var ext = f.name.split('.').pop();
+      var path = currentUser.id + '/chat_' + Date.now() + '_' + i + '.' + ext;
+      var up = await db.storage.from('offers-photos').upload(path, f, { upsert: true });
+      if (!up.error) {
+        var pub = db.storage.from('offers-photos').getPublicUrl(path);
+        imageUrls.push(pub.data.publicUrl);
+      }
+    }
+    sendBtn.disabled = false;
+  }
+
+  var payload = { chat_id: currentChatId, sender_id: currentUser.id };
+  if (text) payload.text = text;
+  if (imageUrls.length) payload.image_urls = imageUrls;
+  var res = await db.from('messages').insert(payload);
   if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
   loadMessages(currentChatId);
 }
 document.getElementById('chat-send-btn').addEventListener('click', sendMessage);
 document.getElementById('chat-input').addEventListener('keydown', function(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
-
-async function sendChatPhoto(file) {
-  if (!currentUser || !currentChatId || !file) return;
-  toast('Надсилаємо фото...');
-  var ext = file.name.split('.').pop();
-  var path = currentUser.id + '/chat_' + Date.now() + '.' + ext;
-  var up = await db.storage.from('offers-photos').upload(path, file, { upsert: true });
-  if (up.error) { toast('Помилка: ' + up.error.message, true); return; }
-  var pub = db.storage.from('offers-photos').getPublicUrl(path);
-  var res = await db.from('messages').insert({ chat_id: currentChatId, sender_id: currentUser.id, image_url: pub.data.publicUrl });
-  if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
-  loadMessages(currentChatId);
-}
-document.getElementById('chat-photo-input').addEventListener('change', function() {
-  if (this.files[0]) sendChatPhoto(this.files[0]);
-  this.value = '';
-});
 
 // ---- HELPERS ----
 function esc(str) {
