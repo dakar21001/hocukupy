@@ -214,7 +214,42 @@ textarea{resize:vertical;min-height:80px;}
 .req-offer-fab{position:fixed;bottom:calc(var(--nav-h)+16px);left:50%;transform:translateX(-50%);width:214px;height:52px;background:var(--green);color:#fff;border:none;border-radius:16px;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 24px rgba(0,128,0,0.35);z-index:110;transition:background 0.15s;white-space:nowrap;}
 .req-offer-fab:active{background:var(--green-dark);}
 
-/* PROFILE NEW */
+/* ACTIVITY PAGE */
+.activity-wrap{background:#fff;min-height:100vh;padding-bottom:calc(var(--nav-h) + 24px);}
+.activity-header{padding:20px 20px 0;}
+.activity-title{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:28px;font-weight:800;color:var(--text);text-align:center;margin:0 0 24px;}
+.activity-tabs{display:flex;gap:8px;justify-content:center;margin-bottom:8px;}
+.activity-tab{padding:12px 28px;border-radius:99px;border:none;background:none;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:17px;font-weight:700;color:var(--text3);cursor:pointer;transition:all 0.15s;}
+.activity-tab.active{background:#F0F0F0;color:var(--text);}
+.activity-date-sep{display:flex;align-items:center;gap:12px;padding:20px 20px 12px;}
+.activity-date-label{font-size:15px;font-weight:700;color:var(--text);white-space:nowrap;}
+.activity-date-label.past{color:var(--text3);}
+.activity-date-line{flex:1;height:1px;background:var(--border);}
+.activity-card{display:flex;gap:14px;padding:12px 20px;cursor:pointer;transition:background 0.15s;}
+.activity-card:active{background:var(--bg);}
+.activity-card-img{width:110px;height:96px;border-radius:14px;object-fit:cover;background:var(--bg);flex-shrink:0;}
+.activity-card-img-ph{width:110px;height:96px;border-radius:14px;background:var(--bg);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.activity-card-img-ph svg{width:32px;height:32px;stroke:var(--text3);fill:none;stroke-width:1.5;}
+.activity-card-body{flex:1;min-width:0;display:flex;flex-direction:column;}
+.activity-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:4px;}
+.activity-card-status{font-size:12px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;line-height:1.3;}
+.activity-card-status.new{color:#A855F7;}
+.activity-card-status.none{color:var(--text3);}
+.activity-card-status.count-orange{color:#F59E0B;}
+.activity-card-status.count-green{color:#22C55E;}
+.activity-badge{font-size:12px;font-weight:600;padding:5px 12px;border-radius:99px;white-space:nowrap;flex-shrink:0;}
+.activity-badge.open{background:#F3E8FF;color:#A855F7;}
+.activity-badge.closed{background:#FEE2E2;color:#EF4444;}
+.activity-badge.found{background:#DCFCE7;color:#22C55E;}
+.activity-card-name{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:19px;font-weight:700;color:var(--text);line-height:1.2;margin-bottom:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.activity-card-tags{display:flex;gap:8px;flex-wrap:wrap;}
+.activity-card-tag{display:flex;align-items:center;gap:5px;padding:7px 13px;border:1.5px solid var(--border);border-radius:99px;font-size:13px;color:var(--text2);font-weight:500;white-space:nowrap;}
+.activity-card-tag svg{width:14px;height:14px;flex-shrink:0;}
+.activity-card-divider{height:1px;background:var(--border);margin:8px 20px 0;}
+.activity-empty{text-align:center;color:var(--text3);font-size:15px;padding:120px 20px;}
+
+/* ACTIVITY PAGE END */
+
 .prof-wrap{background:#fff;min-height:100vh;padding-bottom:calc(var(--nav-h)+24px);}
 .prof-header-row{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 8px;position:sticky;top:0;background:#fff;z-index:20;}
 .prof-top{display:flex;flex-direction:column;align-items:center;padding:8px 20px 20px;}
@@ -809,15 +844,15 @@ textarea{resize:vertical;min-height:80px;}
 
 <!-- USER ITEMS LIST PAGE (requests / offers / found) -->
 <div id="user-items-page" style="display:none">
-  <div class="prof-wrap">
-    <div class="prof-header-row">
-      <button class="cats-back-btn" id="back-from-user-items-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
-      </button>
-      <span class="cats-title" id="user-items-title">Запити</span>
-      <div style="width:44px"></div>
+  <div class="activity-wrap">
+    <div class="activity-header">
+      <h1 class="activity-title">Активність</h1>
+      <div class="activity-tabs">
+        <button class="activity-tab active" id="activity-tab-requests" data-tab="requests">Запити</button>
+        <button class="activity-tab" id="activity-tab-offers" data-tab="offers">Пропозиції</button>
+      </div>
     </div>
-    <div id="user-items-container" style="padding:0 16px"><div class="spinner"></div></div>
+    <div id="activity-container"><div class="spinner"></div></div>
   </div>
 </div>
 
@@ -1880,7 +1915,7 @@ function setActiveNav(id) {
 }
 document.getElementById('nav-home').addEventListener('click', function() { showPage('main'); setActiveNav('nav-home'); loadRequests(); });
 document.getElementById('nav-chats').addEventListener('click', function() { if (!currentUser) { openAuth(); return; } openChatList(); setActiveNav('nav-chats'); });
-document.getElementById('nav-my-requests').addEventListener('click', function() { if (!currentUser) { openAuth(); return; } openProfile(currentUser.id); setActiveNav('nav-my-requests'); });
+document.getElementById('nav-my-requests').addEventListener('click', function() { if (!currentUser) { openAuth(); return; } openActivity('requests'); });
 document.getElementById('nav-saved').addEventListener('click', function() { showSaved(); setActiveNav('nav-saved'); });
 
 // ---- SEARCH ----
@@ -2397,6 +2432,8 @@ async function openRequestPage(requestId) {
   var isClosed = !!r.closed_at;
   var isOwner = currentUser && currentUser.id === r.user_id;
   var offers = r.offers || [];
+  // Mark request as viewed (for "+N нові пропозиції" on Activity page)
+  if (isOwner) { localStorage.setItem('req_viewed_' + requestId, String(Date.now())); }
   var html = '';
 
   // --- PHOTO STRIP ---
@@ -2655,61 +2692,159 @@ async function openProfile(userId) {
   loadReviews(userId);
 }
 
-// Stats cards → user items pages
+// ---- ACTIVITY PAGE ----
+var activityTab = 'requests';
+
+function openActivity(tab) {
+  activityTab = tab || 'requests';
+  showPage('user-items');
+  setActiveNav('nav-my-requests');
+  document.getElementById('activity-tab-requests').classList.toggle('active', activityTab === 'requests');
+  document.getElementById('activity-tab-offers').classList.toggle('active', activityTab === 'offers');
+  loadActivity();
+}
+
+// Backward-compat alias (profile stat cards / buttons still call openUserItems)
+function openUserItems(userId, tab) {
+  openActivity(tab === 'offers' ? 'offers' : 'requests');
+}
+
+function activityDateLabel(dateStr) {
+  var d = new Date(dateStr);
+  var now = new Date();
+  var startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  var startOfDay = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  var diffDays = Math.round((startOfToday - startOfDay) / (1000*60*60*24));
+  if (diffDays === 0) return { label: 'Сьогодні', past: false };
+  if (diffDays === 1) return { label: 'Вчора', past: true };
+  return { label: d.toLocaleDateString('uk', {day:'2-digit',month:'2-digit',year:'numeric'}), past: true };
+}
+
+function reqNewOffersCount(reqId, offers) {
+  var key = 'req_viewed_' + reqId;
+  var viewedAt = parseInt(localStorage.getItem(key) || '0');
+  if (!viewedAt) return offers.length; // ніколи не переглядав → всі нові
+  return offers.filter(function(o) { return new Date(o.created_at).getTime() > viewedAt; }).length;
+}
+
+var CAT_TAG_ICON_SM = function(cat) {
+  return (catIcons[cat] || catIcons['Інше']).replace('width="16" height="16"', 'width="14" height="14"');
+};
+
+async function loadActivity() {
+  var c = document.getElementById('activity-container');
+  c.innerHTML = '<div class="spinner"></div>';
+  if (!currentUser) { c.innerHTML = '<div class="activity-empty">Увійдіть, щоб бачити активність</div>'; return; }
+
+  if (activityTab === 'requests') {
+    var res = await db.from('requests').select('*, offers(id, created_at)').eq('user_id', currentUser.id).order('created_at', { ascending: false });
+    var items = res.data || [];
+    if (!items.length) { c.innerHTML = '<div class="activity-empty">Ви ще не робили запитів</div>'; return; }
+    c.innerHTML = renderActivityRequests(items);
+  } else {
+    var res = await db.from('offers').select('*, request:request_id(id, title, category, photos, status, closed_at, offers(id))').eq('user_id', currentUser.id).order('created_at', { ascending: false });
+    var items = res.data || [];
+    if (!items.length) { c.innerHTML = '<div class="activity-empty">Ви ще не залишали пропозицій</div>'; return; }
+    c.innerHTML = renderActivityOffers(items);
+  }
+}
+
+function statusOf(r) {
+  // 'found' | 'closed' | 'open'
+  if (r.status === 'found') return 'found';
+  if (r.status === 'closed' || r.closed_at) return 'closed';
+  return 'open';
+}
+
+function renderActivityRequests(items) {
+  var html = '';
+  var lastDate = null;
+  items.forEach(function(r) {
+    var dl = activityDateLabel(r.created_at);
+    if (dl.label !== lastDate) {
+      html += '<div class="activity-date-sep"><span class="activity-date-label' + (dl.past?' past':'') + '">' + dl.label + '</span><span class="activity-date-line"></span></div>';
+      lastDate = dl.label;
+    }
+    var offers = r.offers || [];
+    var st = statusOf(r);
+    // status text (top, colored)
+    var statusText, statusCls;
+    if (st === 'open') {
+      var newCount = reqNewOffersCount(r.id, offers);
+      if (newCount > 0) { statusText = '+' + newCount + ' нові пропозиції'; statusCls = 'new'; }
+      else if (offers.length === 0) { statusText = 'Нових пропозицій немає'; statusCls = 'none'; }
+      else { statusText = offers.length + ' ' + pluralOffers(offers.length); statusCls = 'none'; }
+    } else if (st === 'closed') {
+      statusText = offers.length + ' ' + pluralOffers(offers.length); statusCls = 'count-orange';
+    } else { // found
+      statusText = offers.length + ' ' + pluralOffers(offers.length); statusCls = 'count-green';
+    }
+    // badge (right)
+    var badgeText = st === 'open' ? 'Відкритий' : (st === 'found' ? 'Знайдено' : 'Закритий');
+    html += activityCardHtml(r.id, r.photos, statusText, statusCls, badgeText, st, r.title, r.category, offers.length);
+  });
+  return html;
+}
+
+function renderActivityOffers(items) {
+  var html = '';
+  var lastDate = null;
+  items.forEach(function(o) {
+    var dl = activityDateLabel(o.created_at);
+    if (dl.label !== lastDate) {
+      html += '<div class="activity-date-sep"><span class="activity-date-label' + (dl.past?' past':'') + '">' + dl.label + '</span><span class="activity-date-line"></span></div>';
+      lastDate = dl.label;
+    }
+    var req = o.request || {};
+    var reqOffers = req.offers || [];
+    var st = statusOf(req);
+    var statusText = reqOffers.length + ' ' + pluralOffers(reqOffers.length);
+    var statusCls = st === 'open' ? 'new' : (st === 'found' ? 'count-green' : 'count-orange');
+    var badgeText = st === 'open' ? 'Запит відкритий' : (st === 'found' ? 'Знайдено' : 'Запит закритий');
+    html += activityCardHtml(req.id, req.photos, statusText, statusCls, badgeText, st, req.title || '—', req.category, reqOffers.length);
+  });
+  return html;
+}
+
+function activityCardHtml(reqId, photos, statusText, statusCls, badgeText, st, title, category, offersCount) {
+  var photo = (photos && photos.length) ? photos[0] : '';
+  var imgHtml = photo
+    ? '<img class="activity-card-img" src="' + esc(photo) + '">'
+    : '<div class="activity-card-img-ph"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m3 9 4-4 4 4 4-4 4 4"/><circle cx="8.5" cy="14.5" r="1.5"/></svg></div>';
+  var badgeCls = st === 'open' ? 'open' : (st === 'found' ? 'found' : 'closed');
+  var h = '<div class="activity-card" data-action="open-request" data-id="' + (reqId||'') + '">';
+  h += imgHtml;
+  h += '<div class="activity-card-body">';
+  h += '<div class="activity-card-top"><span class="activity-card-status ' + statusCls + '">' + esc(statusText) + '</span><span class="activity-badge ' + badgeCls + '">' + badgeText + '</span></div>';
+  h += '<div class="activity-card-name">' + esc(title) + '</div>';
+  h += '<div class="activity-card-tags">';
+  h += '<span class="activity-card-tag">' + CAT_TAG_ICON_SM(category) + esc(category || 'Інше') + '</span>';
+  h += '<span class="activity-card-tag">' + offersCount + ' ' + pluralOffers(offersCount) + '</span>';
+  h += '</div></div></div>';
+  h += '<div class="activity-card-divider"></div>';
+  return h;
+}
+
+function pluralOffers(n) {
+  var mod10 = n % 10, mod100 = n % 100;
+  if (mod10 === 1 && mod100 !== 11) return 'пропозиція';
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return 'пропозиції';
+  return 'пропозицій';
+}
+
+document.getElementById('activity-tab-requests').addEventListener('click', function() { openActivity('requests'); });
+document.getElementById('activity-tab-offers').addEventListener('click', function() { openActivity('offers'); });
+
+// Stats cards on profile → open activity
 document.querySelectorAll('.prof-stat-card').forEach(function(card) {
   card.addEventListener('click', function() {
-    openUserItems(window._profileUserId, this.dataset.tab);
+    openActivity(this.dataset.tab === 'offers' ? 'offers' : 'requests');
   });
 });
 document.getElementById('prof-my-requests-btn').addEventListener('click', function() {
-  openUserItems(window._profileUserId, 'requests');
+  openActivity('requests');
 });
 document.getElementById('prof-settings-btn').addEventListener('click', function() { openSettings(); });
-
-// ---- USER ITEMS PAGE ----
-async function openUserItems(userId, tab) {
-  showPage('user-items');
-  var titles = { requests: 'Запити', offers: 'Пропозиції', found: 'Знайдено' };
-  document.getElementById('user-items-title').textContent = titles[tab] || 'Запити';
-  var c = document.getElementById('user-items-container');
-  c.innerHTML = '<div class="spinner"></div>';
-  window._userItemsBack = { userId: userId };
-
-  var html = '';
-  if (tab === 'requests' || tab === 'found') {
-    var q = db.from('requests').select('*, offers(id)').eq('user_id', userId).order('created_at', { ascending: false });
-    if (tab === 'found') q = q.not('closed_at', 'is', null);
-    else q = q.is('closed_at', null);
-    var res = await q;
-    var items = res.data || [];
-    if (!items.length) { c.innerHTML = '<div class="empty" style="padding:60px 20px;text-align:center;color:var(--text3)">Поки що пусто</div>'; return; }
-    items.forEach(function(r) {
-      var isClosed = !!r.closed_at;
-      html += '<div style="border:1.5px solid var(--border);border-radius:16px;padding:14px;margin-bottom:10px;cursor:pointer" data-action="open-request" data-id="' + r.id + '">';
-      html += '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px"><div style="font-size:14px;font-weight:700">' + esc(r.title) + '</div>';
-      html += (isClosed ? '<span class="card-found-badge" style="position:relative;top:auto;left:auto;white-space:nowrap">✓ Знайдено</span>' : '<span class="card-offers-tag">' + (r.offers?r.offers.length:0) + ' пропозицій</span>') + '</div>';
-      html += '<div style="font-size:12px;color:var(--text3);margin-top:4px">' + timeAgo(r.created_at) + (r.budget ? ' · до ' + Number(r.budget).toLocaleString('uk') + ' ₴' : '') + '</div>';
-      html += '</div>';
-    });
-  } else if (tab === 'offers') {
-    var res = await db.from('offers').select('*, request:request_id(id, title)').eq('user_id', userId).order('created_at', { ascending: false });
-    var items = res.data || [];
-    if (!items.length) { c.innerHTML = '<div class="empty" style="padding:60px 20px;text-align:center;color:var(--text3)">Поки що пусто</div>'; return; }
-    items.forEach(function(o) {
-      var reqTitle = o.request ? o.request.title : '';
-      var reqId = o.request ? o.request.id : '';
-      html += '<div style="border:1.5px solid var(--border);border-radius:16px;padding:14px;margin-bottom:10px;cursor:pointer" data-action="open-request" data-id="' + reqId + '">';
-      html += '<div style="font-size:12px;color:var(--text3);margin-bottom:4px">До запиту: ' + esc(reqTitle) + '</div>';
-      html += '<div style="font-size:14px;font-weight:600;color:var(--text2)">' + esc(o.description) + '</div>';
-      html += '<div style="font-size:15px;font-weight:700;color:var(--green-dark);margin-top:6px">' + Number(o.price).toLocaleString('uk') + ' ₴</div>';
-      html += '</div>';
-    });
-  }
-  c.innerHTML = html;
-}
-document.getElementById('back-from-user-items-btn').addEventListener('click', function() {
-  openProfile(window._userItemsBack ? window._userItemsBack.userId : currentUser.id);
-});
 
 // ---- SETTINGS PAGE ----
 var settingsCityTemp = '';
