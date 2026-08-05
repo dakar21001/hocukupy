@@ -187,13 +187,16 @@ textarea{resize:vertical;min-height:80px;}
 .saved-card-body{flex:1;min-width:0;padding-right:44px;}
 .saved-card-name{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-weight:700;font-size:19px;color:var(--text);margin:2px 0 12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .saved-card-tags{display:flex;gap:10px;flex-wrap:wrap;}
+.saved-tag{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;border:1.5px solid #DFDEDE;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:13px;font-weight:600;color:#292526;background:#fff;white-space:nowrap;line-height:1.4;-webkit-text-size-adjust:none;}
+.saved-tag svg{width:16px;height:16px;flex-shrink:0;stroke:#292526;color:#292526;}
 .saved-card-fav{position:absolute;top:34px;right:0;width:38px;height:38px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;flex-shrink:0;}
 .saved-card-fav svg{width:20px;height:20px;fill:#fff;}
-/* ---- REQUEST PAGE SAVE FAB ---- */
-.req-save-fab{position:fixed;bottom:calc(var(--nav-h) + 16px);width:52px;height:52px;border-radius:16px;background:var(--surface);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:9999;box-shadow:0 4px 24px rgba(0,0,0,0.12);transition:all 0.15s;}
-.req-save-fab svg{width:24px;height:24px;fill:none;stroke:var(--text2);stroke-width:1.8;}
-.req-save-fab.saved{border-color:var(--green);}
-.req-save-fab.saved svg{fill:var(--green);stroke:var(--green);}
+/* ---- REQUEST PAGE SAVE HEART (under photos, right-aligned) ---- */
+.req-save-heart{display:flex;justify-content:flex-end;padding:0 20px 12px;}
+.req-save-heart button{width:44px;height:44px;border-radius:50%;background:var(--green);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background 0.15s;}
+.req-save-heart button svg{width:22px;height:22px;fill:#fff;stroke:#fff;}
+.req-save-heart button:not(.saved){background:var(--surface);border:1.5px solid var(--border);}
+.req-save-heart button:not(.saved) svg{fill:none;stroke:var(--text2);stroke-width:1.8;}
 
 /* Author block */
 .req-author-label{font-size:13px;font-weight:600;color:var(--text3);margin-bottom:10px;}
@@ -1517,7 +1520,7 @@ function showPage(page) {
   // Lock body scroll on fullscreen wizard
   document.body.style.overflow = (fullscreenPages.indexOf(page) !== -1) ? 'hidden' : '';
   // Remove offer FAB when leaving request page
-  if (page !== 'request') { var ofab = document.getElementById('req-offer-fab'); if (ofab) ofab.remove(); var osfab = document.getElementById('req-save-fab'); if (osfab) osfab.remove(); }
+  if (page !== 'request') { var ofab = document.getElementById('req-offer-fab'); if (ofab) ofab.remove(); }
   // Show/hide wizard footer
   var wizFooter = document.getElementById('wizard-footer');
   if (wizFooter) wizFooter.style.display = page === 'wizard' ? '' : 'none';
@@ -2101,6 +2104,7 @@ document.addEventListener('click', function(e) {
   if (action === 'decline-offer') { declineOffer(btn.dataset.offerid, btn.dataset.reqid); }
   if (action === 'toggle-save')   { e.stopPropagation(); toggleSave(id, btn); }
   if (action === 'toggle-save-list') { e.stopPropagation(); removeSavedFromList(id, btn); }
+  if (action === 'toggle-req-save') { e.stopPropagation(); toggleReqSave(id, btn); }
   if (action === 'close-req')     { closeRequest(id); }
   if (action === 'delete-req')    { deleteRequest(id); }
   if (action === 'leave-review')  { openReviewModal(btn.dataset.seller, btn.dataset.reqid); }
@@ -2113,6 +2117,14 @@ document.addEventListener('click', function(e) {
 
 // ---- TOGGLE SAVE ----
 function toggleSave(id, btn) {
+  var idx = savedIds.indexOf(id);
+  if (idx === -1) { savedIds.push(id); btn.classList.add('saved'); toast('Збережено ❤️'); }
+  else { savedIds.splice(idx, 1); btn.classList.remove('saved'); toast('Видалено зі збережених'); }
+  localStorage.setItem('savedIds', JSON.stringify(savedIds));
+}
+
+// Toggle save on request page heart
+function toggleReqSave(id, btn) {
   var idx = savedIds.indexOf(id);
   if (idx === -1) { savedIds.push(id); btn.classList.add('saved'); toast('Збережено ❤️'); }
   else { savedIds.splice(idx, 1); btn.classList.remove('saved'); toast('Видалено зі збережених'); }
@@ -2166,19 +2178,19 @@ function renderSaved(requests) {
   for (var i = 0; i < requests.length; i++) {
     var r = requests[i];
     var offers = r.offers || [];
-    var catIcon = (catIcons[r.category] || catIcons['Інше']).replace('width="16" height="16"', 'width="16" height="16"');
+    var catIcon = (catIcons[r.category] || catIcons['Інше']).replace(/currentColor/g, '#292526');
     var imgHtml = r.photos && r.photos.length
       ? '<img class="saved-card-img" src="' + esc(r.photos[0]) + '" alt="" loading="lazy">'
       : '<div class="saved-card-img-ph"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>';
     var offersTag = offers.length
-      ? '<span class="card-cat-tag">З пропозиціями</span>'
-      : '<span class="card-cat-tag">Без пропозицій</span>';
+      ? '<span class="saved-tag">З пропозиціями</span>'
+      : '<span class="saved-tag">Без пропозицій</span>';
     html += '<div class="saved-card" data-action="open-request" data-id="' + r.id + '">';
     html += imgHtml;
     html += '<div class="saved-card-body">';
     html += '<div class="saved-card-name">' + esc(r.title) + '</div>';
     html += '<div class="saved-card-tags">';
-    html += '<span class="card-cat-tag">' + catIcon + ' ' + esc(r.category || 'Інше') + '</span>';
+    html += '<span class="saved-tag">' + catIcon + esc(r.category || 'Інше') + '</span>';
     html += offersTag;
     html += '</div></div>';
     html += '<button class="saved-card-fav" data-action="toggle-save-list" data-id="' + r.id + '" aria-label="Прибрати зі збережених">' + HEART_FILLED_SVG + '</button>';
@@ -2524,6 +2536,10 @@ async function openRequestPage(requestId) {
     html += '<div class="req-photo-placeholder"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>';
   }
 
+  // --- SAVE HEART (under photos, right) ---
+  var _isSavedNow = savedIds.indexOf(r.id) !== -1;
+  html += '<div class="req-save-heart"><button id="req-save-heart-btn" class="' + (_isSavedNow ? 'saved' : '') + '" data-action="toggle-req-save" data-id="' + r.id + '" aria-label="Зберегти"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></button></div>';
+
   html += '<div class="req-body">';
 
   // --- TITLE & BUDGET ---
@@ -2615,45 +2631,15 @@ async function openRequestPage(requestId) {
   document.getElementById('request-page-content').innerHTML = html;
   document.getElementById('request-page-content').scrollTop = 0;
 
-  // FAB "Зробити пропозицію" + кнопка "Зберегти"
+  // FAB "Зробити пропозицію"
   var existingFab = document.getElementById('req-offer-fab');
   if (existingFab) existingFab.remove();
-  var existingSaveFab = document.getElementById('req-save-fab');
-  if (existingSaveFab) existingSaveFab.remove();
-
-  var showOfferBtn = !isClosed && !isOwner;
-  var isReqSaved = savedIds.indexOf(r.id) !== -1;
-
-  // Save button — показуємо завжди (крім власника закритого — теж можна, лишаємо всім не-власникам; власнику ховаємо)
-  if (!isOwner) {
-    var saveFab = document.createElement('button');
-    saveFab.id = 'req-save-fab';
-    saveFab.className = 'req-save-fab' + (isReqSaved ? ' saved' : '');
-    saveFab.setAttribute('aria-label', 'Зберегти');
-    saveFab.innerHTML = '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7.5-4.9-10-9.3C.5 8.6 2 5 5.3 5c1.9 0 3.3 1 3.7 2 .4-1 1.8-2 3.7-2C16 5 17.5 8.6 22 11.7 19.5 16.1 12 21 12 21z"/></svg>';
-    // Позиція: якщо є кнопка пропозиції — серце зліва, кнопка зсунута; інакше серце по центру
-    if (showOfferBtn) {
-      saveFab.style.cssText += 'left:50%;transform:translateX(calc(-50% - 133px));';
-    } else {
-      saveFab.style.cssText += 'left:50%;transform:translateX(-50%);';
-    }
-    saveFab.addEventListener('click', function() {
-      var i = savedIds.indexOf(r.id);
-      if (i === -1) { savedIds.push(r.id); saveFab.classList.add('saved'); toast('Збережено ❤️'); }
-      else { savedIds.splice(i, 1); saveFab.classList.remove('saved'); toast('Видалено зі збережених'); }
-      localStorage.setItem('savedIds', JSON.stringify(savedIds));
-    });
-    document.body.appendChild(saveFab);
-  }
-
-  if (showOfferBtn) {
+  if (!isClosed && !isOwner) {
     var fab = document.createElement('button');
     fab.id = 'req-offer-fab';
     fab.className = 'req-offer-fab';
     fab.textContent = 'Зробити пропозицію';
-    // Якщо поряд є серце — зсуваємо кнопку праворуч, щоб не перекривалися
-    var offsetX = (!isOwner) ? 'calc(-50% + 33px)' : '-50%';
-    fab.style.cssText = 'position:fixed;bottom:calc(var(--nav-h) + 16px);left:50%;transform:translateX(' + offsetX + ');width:214px;height:52px;background:#008000;color:#fff;border:none;border-radius:16px;font-size:15px;font-weight:700;cursor:pointer;z-index:9999;box-shadow:0 4px 24px rgba(0,128,0,0.35);';
+    fab.style.cssText = 'position:fixed;bottom:calc(var(--nav-h) + 16px);left:50%;transform:translateX(-50%);width:214px;height:52px;background:#008000;color:#fff;border:none;border-radius:16px;font-size:15px;font-weight:700;cursor:pointer;z-index:9999;box-shadow:0 4px 24px rgba(0,128,0,0.35);';
     fab.addEventListener('click', function() {
       if (!currentUser) { openAuth(); return; }
       openOfferWizard(r.id);
