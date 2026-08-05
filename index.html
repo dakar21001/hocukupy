@@ -175,6 +175,25 @@ textarea{resize:vertical;min-height:80px;}
 .req-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;}
 .req-tag{display:flex;align-items:center;gap:5px;padding:7px 14px;border:1.5px solid var(--border);border-radius:99px;font-size:13px;color:var(--text2);font-weight:500;}
 .req-tag svg{flex-shrink:0;}
+/* ---- SAVED PAGE ---- */
+#saved-page{background:#fff;min-height:100vh;}
+.saved-title{text-align:center;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-weight:800;font-size:30px;line-height:1.2;color:var(--text);margin:0;padding:20px 20px 24px;}
+.saved-list-wrap{padding:0 16px calc(var(--nav-h) + 16px);}
+.saved-empty-state{display:flex;align-items:center;justify-content:center;min-height:50vh;color:#949293;font-size:17px;font-weight:500;text-align:center;padding:0 20px;}
+.saved-card{display:flex;align-items:flex-start;gap:14px;padding:16px 0;border-bottom:1px solid var(--border);position:relative;cursor:pointer;}
+.saved-card:last-child{border-bottom:none;}
+.saved-card-img{width:88px;height:88px;border-radius:14px;object-fit:cover;flex-shrink:0;background:#f0f0f0;}
+.saved-card-img-ph{width:88px;height:88px;border-radius:14px;flex-shrink:0;background:#f0f0f0;display:flex;align-items:center;justify-content:center;}
+.saved-card-body{flex:1;min-width:0;padding-right:44px;}
+.saved-card-name{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-weight:700;font-size:19px;color:var(--text);margin:2px 0 12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.saved-card-tags{display:flex;gap:10px;flex-wrap:wrap;}
+.saved-card-fav{position:absolute;top:34px;right:0;width:38px;height:38px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;flex-shrink:0;}
+.saved-card-fav svg{width:20px;height:20px;fill:#fff;}
+/* ---- REQUEST PAGE SAVE FAB ---- */
+.req-save-fab{position:fixed;bottom:calc(var(--nav-h) + 16px);width:52px;height:52px;border-radius:16px;background:var(--surface);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:9999;box-shadow:0 4px 24px rgba(0,0,0,0.12);transition:all 0.15s;}
+.req-save-fab svg{width:24px;height:24px;fill:none;stroke:var(--text2);stroke-width:1.8;}
+.req-save-fab.saved{border-color:var(--green);}
+.req-save-fab.saved svg{fill:var(--green);stroke:var(--green);}
 
 /* Author block */
 .req-author-label{font-size:13px;font-weight:600;color:var(--text3);margin-bottom:10px;}
@@ -913,6 +932,11 @@ textarea{resize:vertical;min-height:80px;}
   </div>
 </div>
 
+<div id="saved-page" style="display:none">
+  <h1 class="saved-title">Збережені</h1>
+  <div class="saved-list-wrap" id="saved-list-wrap"><div class="spinner" style="margin:40px auto"></div></div>
+</div>
+
 <!-- AUTH MODAL -->
 <!-- AUTH FLOW PAGE -->
 <div id="auth-page" style="display:none">
@@ -1470,7 +1494,7 @@ const photoState = {};
 
 // ---- PAGES ----
 function showPage(page) {
-  ['main-page','profile-page','chat-list-page','chat-window-page','cats-page','request-page','wizard-page','offer-wizard-page','auth-page','settings-page','user-items-page'].forEach(function(id) {
+  ['main-page','profile-page','chat-list-page','chat-window-page','cats-page','request-page','wizard-page','offer-wizard-page','auth-page','settings-page','user-items-page','saved-page'].forEach(function(id) {
     var el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
@@ -1482,7 +1506,7 @@ function showPage(page) {
   // Hide mobile-header and FAB on chat/cats pages
   var mobileHeader = document.querySelector('.mobile-header');
   var fab = document.getElementById('fab-btn');
-  var hiddenPages = ['profile','chat-list','chat-window','cats','request','wizard','offer-wizard','auth','settings','user-items'];
+  var hiddenPages = ['profile','chat-list','chat-window','cats','request','wizard','offer-wizard','auth','settings','user-items','saved'];
   var hide = hiddenPages.indexOf(page) !== -1;
   if (mobileHeader) mobileHeader.style.display = hide ? 'none' : '';
   if (fab) fab.style.display = hide ? 'none' : '';
@@ -1493,7 +1517,7 @@ function showPage(page) {
   // Lock body scroll on fullscreen wizard
   document.body.style.overflow = (fullscreenPages.indexOf(page) !== -1) ? 'hidden' : '';
   // Remove offer FAB when leaving request page
-  if (page !== 'request') { var ofab = document.getElementById('req-offer-fab'); if (ofab) ofab.remove(); }
+  if (page !== 'request') { var ofab = document.getElementById('req-offer-fab'); if (ofab) ofab.remove(); var osfab = document.getElementById('req-save-fab'); if (osfab) osfab.remove(); }
   // Show/hide wizard footer
   var wizFooter = document.getElementById('wizard-footer');
   if (wizFooter) wizFooter.style.display = page === 'wizard' ? '' : 'none';
@@ -2076,6 +2100,7 @@ document.addEventListener('click', function(e) {
   if (action === 'open-profile')  { openProfile(btn.dataset.id); }
   if (action === 'decline-offer') { declineOffer(btn.dataset.offerid, btn.dataset.reqid); }
   if (action === 'toggle-save')   { e.stopPropagation(); toggleSave(id, btn); }
+  if (action === 'toggle-save-list') { e.stopPropagation(); removeSavedFromList(id, btn); }
   if (action === 'close-req')     { closeRequest(id); }
   if (action === 'delete-req')    { deleteRequest(id); }
   if (action === 'leave-review')  { openReviewModal(btn.dataset.seller, btn.dataset.reqid); }
@@ -2094,20 +2119,72 @@ function toggleSave(id, btn) {
   localStorage.setItem('savedIds', JSON.stringify(savedIds));
 }
 
+// Remove from saved page: animate card out, then refresh list
+function removeSavedFromList(id, btn) {
+  var idx = savedIds.indexOf(id);
+  if (idx !== -1) { savedIds.splice(idx, 1); localStorage.setItem('savedIds', JSON.stringify(savedIds)); }
+  toast('Видалено зі збережених');
+  var card = btn.closest('.saved-card');
+  if (card) {
+    card.style.transition = 'opacity 0.2s';
+    card.style.opacity = '0';
+    setTimeout(function() {
+      card.remove();
+      if (!document.querySelector('#saved-list-wrap .saved-card')) {
+        document.getElementById('saved-list-wrap').innerHTML = '<div class="saved-empty-state">Ви ще нічого не зберегли</div>';
+      }
+    }, 200);
+  }
+}
+
 // ---- SAVED PAGE ----
 async function showSaved() {
-  showPage('main');
+  showPage('saved');
   setActiveNav('nav-saved');
-  document.getElementById('requests-container').innerHTML = '<div class="spinner"></div>';
+  var wrap = document.getElementById('saved-list-wrap');
   if (!savedIds.length) {
-    document.getElementById('requests-container').innerHTML = '<div class="empty"><div class="empty-icon">❤️</div><p>Збережених запитів немає</p></div>';
+    wrap.innerHTML = '<div class="saved-empty-state">Ви ще нічого не зберегли</div>';
     return;
   }
+  wrap.innerHTML = '<div class="spinner" style="margin:40px auto"></div>';
   var res = await db.from('requests')
-    .select('*, profiles(name), photos, offers!request_id(id, user_id, description, price, photos, profiles(name))')
+    .select('*, profiles(name), photos, offers!request_id(id)')
     .in('id', savedIds).order('created_at', { ascending: false });
   if (res.error) { toast('Помилка', true); return; }
-  renderRequests(res.data || []);
+  renderSaved(res.data || []);
+}
+
+var HEART_FILLED_SVG = '<svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.9-10-9.3C.5 8.6 2 5 5.3 5c1.9 0 3.3 1 3.7 2 .4-1 1.8-2 3.7-2C16 5 17.5 8.6 22 11.7 19.5 16.1 12 21 12 21z"/></svg>';
+
+function renderSaved(requests) {
+  var wrap = document.getElementById('saved-list-wrap');
+  if (!requests.length) {
+    wrap.innerHTML = '<div class="saved-empty-state">Ви ще нічого не зберегли</div>';
+    return;
+  }
+  var html = '';
+  for (var i = 0; i < requests.length; i++) {
+    var r = requests[i];
+    var offers = r.offers || [];
+    var catIcon = (catIcons[r.category] || catIcons['Інше']).replace('width="16" height="16"', 'width="16" height="16"');
+    var imgHtml = r.photos && r.photos.length
+      ? '<img class="saved-card-img" src="' + esc(r.photos[0]) + '" alt="" loading="lazy">'
+      : '<div class="saved-card-img-ph"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>';
+    var offersTag = offers.length
+      ? '<span class="card-cat-tag">З пропозиціями</span>'
+      : '<span class="card-cat-tag">Без пропозицій</span>';
+    html += '<div class="saved-card" data-action="open-request" data-id="' + r.id + '">';
+    html += imgHtml;
+    html += '<div class="saved-card-body">';
+    html += '<div class="saved-card-name">' + esc(r.title) + '</div>';
+    html += '<div class="saved-card-tags">';
+    html += '<span class="card-cat-tag">' + catIcon + ' ' + esc(r.category || 'Інше') + '</span>';
+    html += offersTag;
+    html += '</div></div>';
+    html += '<button class="saved-card-fav" data-action="toggle-save-list" data-id="' + r.id + '" aria-label="Прибрати зі збережених">' + HEART_FILLED_SVG + '</button>';
+    html += '</div>';
+  }
+  wrap.innerHTML = html;
 }
 
 // ---- SUBMIT REQUEST (desktop sidebar) ----
@@ -2538,15 +2615,45 @@ async function openRequestPage(requestId) {
   document.getElementById('request-page-content').innerHTML = html;
   document.getElementById('request-page-content').scrollTop = 0;
 
-  // FAB "Зробити пропозицію"
+  // FAB "Зробити пропозицію" + кнопка "Зберегти"
   var existingFab = document.getElementById('req-offer-fab');
   if (existingFab) existingFab.remove();
-  if (!isClosed && !isOwner) {
+  var existingSaveFab = document.getElementById('req-save-fab');
+  if (existingSaveFab) existingSaveFab.remove();
+
+  var showOfferBtn = !isClosed && !isOwner;
+  var isReqSaved = savedIds.indexOf(r.id) !== -1;
+
+  // Save button — показуємо завжди (крім власника закритого — теж можна, лишаємо всім не-власникам; власнику ховаємо)
+  if (!isOwner) {
+    var saveFab = document.createElement('button');
+    saveFab.id = 'req-save-fab';
+    saveFab.className = 'req-save-fab' + (isReqSaved ? ' saved' : '');
+    saveFab.setAttribute('aria-label', 'Зберегти');
+    saveFab.innerHTML = '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7.5-4.9-10-9.3C.5 8.6 2 5 5.3 5c1.9 0 3.3 1 3.7 2 .4-1 1.8-2 3.7-2C16 5 17.5 8.6 22 11.7 19.5 16.1 12 21 12 21z"/></svg>';
+    // Позиція: якщо є кнопка пропозиції — серце зліва, кнопка зсунута; інакше серце по центру
+    if (showOfferBtn) {
+      saveFab.style.cssText += 'left:50%;transform:translateX(calc(-50% - 133px));';
+    } else {
+      saveFab.style.cssText += 'left:50%;transform:translateX(-50%);';
+    }
+    saveFab.addEventListener('click', function() {
+      var i = savedIds.indexOf(r.id);
+      if (i === -1) { savedIds.push(r.id); saveFab.classList.add('saved'); toast('Збережено ❤️'); }
+      else { savedIds.splice(i, 1); saveFab.classList.remove('saved'); toast('Видалено зі збережених'); }
+      localStorage.setItem('savedIds', JSON.stringify(savedIds));
+    });
+    document.body.appendChild(saveFab);
+  }
+
+  if (showOfferBtn) {
     var fab = document.createElement('button');
     fab.id = 'req-offer-fab';
     fab.className = 'req-offer-fab';
     fab.textContent = 'Зробити пропозицію';
-    fab.style.cssText = 'position:fixed;bottom:calc(var(--nav-h) + 16px);left:50%;transform:translateX(-50%);width:214px;height:52px;background:#008000;color:#fff;border:none;border-radius:16px;font-size:15px;font-weight:700;cursor:pointer;z-index:9999;box-shadow:0 4px 24px rgba(0,128,0,0.35);';
+    // Якщо поряд є серце — зсуваємо кнопку праворуч, щоб не перекривалися
+    var offsetX = (!isOwner) ? 'calc(-50% + 33px)' : '-50%';
+    fab.style.cssText = 'position:fixed;bottom:calc(var(--nav-h) + 16px);left:50%;transform:translateX(' + offsetX + ');width:214px;height:52px;background:#008000;color:#fff;border:none;border-radius:16px;font-size:15px;font-weight:700;cursor:pointer;z-index:9999;box-shadow:0 4px 24px rgba(0,128,0,0.35);';
     fab.addEventListener('click', function() {
       if (!currentUser) { openAuth(); return; }
       openOfferWizard(r.id);
