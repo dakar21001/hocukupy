@@ -180,16 +180,16 @@ textarea{resize:vertical;min-height:80px;}
 .saved-title{text-align:center;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-weight:800;font-size:30px;line-height:1.2;color:var(--text);margin:0;padding:20px 20px 24px;}
 .saved-list-wrap{padding:0 16px calc(var(--nav-h) + 16px);}
 .saved-empty-state{display:flex;align-items:center;justify-content:center;min-height:50vh;color:#949293;font-size:17px;font-weight:500;text-align:center;padding:0 20px;}
-.saved-card{display:flex;align-items:flex-start;gap:14px;padding:16px 0;border-bottom:1px solid var(--border);position:relative;cursor:pointer;}
+.saved-card{display:flex;align-items:flex-start;gap:14px;padding:16px 50px 16px 0;border-bottom:1px solid var(--border);position:relative;cursor:pointer;}
 .saved-card:last-child{border-bottom:none;}
 .saved-card-img{width:88px;height:88px;border-radius:14px;object-fit:cover;flex-shrink:0;background:#f0f0f0;}
 .saved-card-img-ph{width:88px;height:88px;border-radius:14px;flex-shrink:0;background:#f0f0f0;display:flex;align-items:center;justify-content:center;}
-.saved-card-body{flex:1;min-width:0;padding-right:44px;}
-.saved-card-name{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-weight:700;font-size:19px;color:var(--text);margin:2px 0 12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.saved-card-tags{display:flex;gap:10px;flex-wrap:wrap;}
-.saved-tag{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;border:1.5px solid #DFDEDE;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:13px;font-weight:600;color:#292526;background:#fff;white-space:nowrap;line-height:1.4;-webkit-text-size-adjust:none;}
-.saved-tag svg{width:16px;height:16px;flex-shrink:0;stroke:#292526;color:#292526;}
-.saved-card-fav{position:absolute;top:34px;right:0;width:38px;height:38px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;flex-shrink:0;}
+.saved-card-body{flex:1;min-width:0;padding-right:12px;}
+.saved-card-name{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-weight:700;font-size:19px;color:var(--text);margin:2px 0 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.saved-card-tags{display:flex;gap:8px;flex-wrap:nowrap;overflow:hidden;}
+.saved-tag{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:8px;border:1.5px solid #DFDEDE;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:12px;font-weight:600;color:#292526;background:#fff;white-space:nowrap;line-height:1.3;flex-shrink:0;-webkit-text-size-adjust:none;}
+.saved-tag svg{width:15px;height:15px;flex-shrink:0;stroke:#292526;color:#292526;}
+.saved-card-fav{position:absolute;top:50%;transform:translateY(-50%);right:0;width:38px;height:38px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;flex-shrink:0;}
 .saved-card-fav svg{width:20px;height:20px;fill:#fff;}
 /* ---- REQUEST PAGE SAVE HEART (under photos, right-aligned) ---- */
 .req-save-heart{display:flex;justify-content:flex-end;padding:0 20px 12px;}
@@ -2166,7 +2166,7 @@ async function showSaved() {
   renderSaved(res.data || []);
 }
 
-var HEART_FILLED_SVG = '<svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.9-10-9.3C.5 8.6 2 5 5.3 5c1.9 0 3.3 1 3.7 2 .4-1 1.8-2 3.7-2C16 5 17.5 8.6 22 11.7 19.5 16.1 12 21 12 21z"/></svg>';
+var HEART_FILLED_SVG = '<svg viewBox="0 0 24 24" fill="#fff" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>';
 
 function renderSaved(requests) {
   var wrap = document.getElementById('saved-list-wrap');
