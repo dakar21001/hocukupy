@@ -175,31 +175,9 @@ textarea{resize:vertical;min-height:80px;}
 .req-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;}
 .req-tag{display:flex;align-items:center;gap:5px;padding:7px 14px;border:1.5px solid var(--border);border-radius:99px;font-size:13px;color:var(--text2);font-weight:500;}
 .req-tag svg{flex-shrink:0;}
-/* ---- SAVED PAGE ---- */
-#saved-page{background:#fff;min-height:100vh;}
-.saved-title{text-align:center;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-weight:800;font-size:30px;line-height:1.2;color:var(--text);margin:0;padding:20px 20px 24px;}
-.saved-list-wrap{padding:0 16px calc(var(--nav-h) + 16px);}
-.saved-empty-state{display:flex;align-items:center;justify-content:center;min-height:50vh;color:#949293;font-size:17px;font-weight:500;text-align:center;padding:0 20px;}
-.saved-card{display:flex;align-items:flex-start;gap:14px;padding:16px 50px 16px 0;border-bottom:1px solid var(--border);position:relative;cursor:pointer;}
-.saved-card:last-child{border-bottom:none;}
-.saved-card-img{width:88px;height:88px;border-radius:14px;object-fit:cover;flex-shrink:0;background:#f0f0f0;}
-.saved-card-img-ph{width:88px;height:88px;border-radius:14px;flex-shrink:0;background:#f0f0f0;display:flex;align-items:center;justify-content:center;}
-.saved-card-body{flex:1;min-width:0;padding-right:12px;}
-.saved-card-name{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-weight:700;font-size:19px;color:var(--text);margin:2px 0 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.saved-card-tags{display:flex;gap:8px;flex-wrap:nowrap;overflow:hidden;}
-.saved-tag{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:8px;border:1.5px solid #DFDEDE;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:12px;font-weight:600;color:#292526;background:#fff;white-space:nowrap;line-height:1.3;flex-shrink:0;-webkit-text-size-adjust:none;}
-.saved-tag svg{width:15px;height:15px;flex-shrink:0;stroke:#292526;color:#292526;}
-.saved-card-fav{position:absolute;top:50%;transform:translateY(-50%);right:0;width:38px;height:38px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;flex-shrink:0;}
-.saved-card-fav svg{width:20px;height:20px;fill:#fff;}
-/* ---- REQUEST PAGE SAVE HEART (under photos, right-aligned) ---- */
-.req-save-heart{display:flex;justify-content:flex-end;padding:0 20px 12px;}
-.req-save-heart button{width:44px;height:44px;border-radius:50%;background:var(--green);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background 0.15s;}
-.req-save-heart button svg{width:22px;height:22px;fill:#fff;stroke:#fff;}
-.req-save-heart button:not(.saved){background:var(--surface);border:1.5px solid var(--border);}
-.req-save-heart button:not(.saved) svg{fill:none;stroke:var(--text2);stroke-width:1.8;}
 
 /* Author block */
-.req-author-label{font-size:13px;font-weight:600;color:var(--text3);margin-bottom:10px;}
+.req-author-label{font-size:22px;font-weight:700;color:var(--text);margin-bottom:14px;}
 .req-author{display:flex;align-items:center;gap:12px;padding:14px;border:1.5px solid var(--border);border-radius:16px;margin-bottom:24px;cursor:pointer;transition:background 0.15s;}
 .req-author:active{background:var(--bg);}
 .req-author-avatar{width:44px;height:44px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--green-dark);flex-shrink:0;overflow:hidden;}
@@ -212,8 +190,14 @@ textarea{resize:vertical;min-height:80px;}
 
 /* Offers section */
 .req-offers-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-.req-offers-title{font-size:16px;font-weight:700;color:var(--text);}
-.req-offers-count{font-size:16px;font-weight:700;color:var(--text3);}
+.req-offers-title{font-size:22px;font-weight:700;color:var(--text);}
+.req-offers-count{font-size:22px;font-weight:700;color:var(--text3);}
+
+/* Similar requests section */
+.req-similar-header{font-size:22px;font-weight:700;color:var(--text);margin:28px 0 14px;}
+.req-similar-strip{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:0 20px 4px;}
+.req-similar-strip::-webkit-scrollbar{display:none;}
+.req-similar-card{flex:0 0 200px;width:200px;cursor:pointer;}
 
 /* Offer card */
 .offer-card{background:#fff;border:1.5px solid var(--border);border-radius:16px;padding:14px;margin-bottom:12px;}
@@ -935,11 +919,6 @@ textarea{resize:vertical;min-height:80px;}
   </div>
 </div>
 
-<div id="saved-page" style="display:none">
-  <h1 class="saved-title">Збережені</h1>
-  <div class="saved-list-wrap" id="saved-list-wrap"><div class="spinner" style="margin:40px auto"></div></div>
-</div>
-
 <!-- AUTH MODAL -->
 <!-- AUTH FLOW PAGE -->
 <div id="auth-page" style="display:none">
@@ -1497,7 +1476,7 @@ const photoState = {};
 
 // ---- PAGES ----
 function showPage(page) {
-  ['main-page','profile-page','chat-list-page','chat-window-page','cats-page','request-page','wizard-page','offer-wizard-page','auth-page','settings-page','user-items-page','saved-page'].forEach(function(id) {
+  ['main-page','profile-page','chat-list-page','chat-window-page','cats-page','request-page','wizard-page','offer-wizard-page','auth-page','settings-page','user-items-page'].forEach(function(id) {
     var el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
@@ -1509,7 +1488,7 @@ function showPage(page) {
   // Hide mobile-header and FAB on chat/cats pages
   var mobileHeader = document.querySelector('.mobile-header');
   var fab = document.getElementById('fab-btn');
-  var hiddenPages = ['profile','chat-list','chat-window','cats','request','wizard','offer-wizard','auth','settings','user-items','saved'];
+  var hiddenPages = ['profile','chat-list','chat-window','cats','request','wizard','offer-wizard','auth','settings','user-items'];
   var hide = hiddenPages.indexOf(page) !== -1;
   if (mobileHeader) mobileHeader.style.display = hide ? 'none' : '';
   if (fab) fab.style.display = hide ? 'none' : '';
@@ -2053,6 +2032,37 @@ var catIcons = {
   'Запчастини до авто':'<svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><circle cx="12" cy="12" r="4"/></svg>',
   'Інше':'<svg class="cat-icon-img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M17 12h.01"/><path d="M12 12h.01"/><path d="M7 12h.01"/></svg>'
 };
+// Рендер однієї картки запиту (спільний для стрічки та "подібних")
+function requestCardHtml(r) {
+  var isClosed = !!r.closed_at;
+  var offers = r.offers || [];
+  var isSaved = savedIds.indexOf(r.id) !== -1;
+  var catIcon = catIcons[r.category] || catIcons['Інше'];
+  var imgHtml = r.photos && r.photos.length
+    ? '<img src="' + r.photos[0] + '" alt="" loading="lazy">'
+    : '<div class="card-img-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>';
+  var offersTag = offers.length
+    ? '<span class="card-offers-tag">' + offers.length + ' пропозицій</span>'
+    : '<span class="card-offers-tag no-offers">Пропозицій ще немає</span>';
+  var budgetHtml = r.budget
+    ? '<div class="card-budget"><div><span style="font-size:11px;font-weight:500;color:#949293;font-family:ui-rounded, SF Pro Rounded, Nunito, sans-serif;display:block;line-height:1.3">Бюджет до</span><span style="font-size:18px;font-weight:700;color:#292526;font-family:ui-rounded, SF Pro Rounded, Nunito, sans-serif">' + Number(r.budget).toLocaleString('uk') + ' ₴</span></div><div class="card-arrow"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div></div>'
+    : '<div class="card-budget"><span style="font-size:14px;font-weight:600;color:#292526;font-family:ui-rounded, SF Pro Rounded, Nunito, sans-serif">Вільний бюджет</span><div class="card-arrow"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div></div>';
+  var h = '';
+  h += '<div class="req-card-new' + (isClosed ? ' closed' : '') + '" id="rcard-' + r.id + '">';
+  h += '<div class="card-img-wrap">' + imgHtml;
+  h += '<span class="card-time">' + timeAgo(r.created_at) + '</span>';
+  h += '<button class="card-save-btn' + (isSaved ? ' saved' : '') + '" data-action="toggle-save" data-id="' + r.id + '"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></button>';
+  if (isClosed) h += '<span class="card-found-badge">✓ Знайдено</span>';
+  h += '</div>';
+  h += '<div class="card-body" data-action="open-request" data-id="' + r.id + '">';
+  h += '<p class="card-title">' + esc(r.title) + '</p>';
+  h += '<span class="card-cat-tag" style="align-self:flex-start">' + catIcon + ' ' + esc(r.category || 'Інше') + '</span>';
+  h += '<div style="display:inline-block">' + offersTag + '</div>';
+  h += budgetHtml;
+  h += '</div></div>';
+  return h;
+}
+
 function renderRequests(requests) {
   var c = document.getElementById('requests-container');
   if (!requests.length) {
@@ -2061,33 +2071,7 @@ function renderRequests(requests) {
   }
   var html = '<div class="cards-grid">';
   for (var i = 0; i < requests.length; i++) {
-    var r = requests[i];
-    var isClosed = !!r.closed_at;
-    var offers = r.offers || [];
-    var isSaved = savedIds.indexOf(r.id) !== -1;
-    var catIcon = catIcons[r.category] || catIcons['Інше'];
-    var imgHtml = r.photos && r.photos.length
-      ? '<img src="' + r.photos[0] + '" alt="" loading="lazy">'
-      : '<div class="card-img-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>';
-      var offersTag = offers.length
-      ? '<span class="card-offers-tag">' + offers.length + ' пропозицій</span>'
-      : '<span class="card-offers-tag no-offers">Пропозицій ще немає</span>';
-    var budgetHtml = r.budget
-      ? '<div class="card-budget"><div><span style="font-size:11px;font-weight:500;color:#949293;font-family:ui-rounded, SF Pro Rounded, Nunito, sans-serif;display:block;line-height:1.3">Бюджет до</span><span style="font-size:18px;font-weight:700;color:#292526;font-family:ui-rounded, SF Pro Rounded, Nunito, sans-serif">' + Number(r.budget).toLocaleString('uk') + ' ₴</span></div><div class="card-arrow"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div></div>'
-      : '<div class="card-budget"><span style="font-size:14px;font-weight:600;color:#292526;font-family:ui-rounded, SF Pro Rounded, Nunito, sans-serif">Вільний бюджет</span><div class="card-arrow"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div></div>';
-
-    html += '<div class="req-card-new' + (isClosed ? ' closed' : '') + '" id="rcard-' + r.id + '">';
-    html += '<div class="card-img-wrap">' + imgHtml;
-    html += '<span class="card-time">' + timeAgo(r.created_at) + '</span>';
-    html += '<button class="card-save-btn' + (isSaved ? ' saved' : '') + '" data-action="toggle-save" data-id="' + r.id + '"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></button>';
-    if (isClosed) html += '<span class="card-found-badge">✓ Знайдено</span>';
-    html += '</div>';
-    html += '<div class="card-body" data-action="open-request" data-id="' + r.id + '">';
-    html += '<p class="card-title">' + esc(r.title) + '</p>';
-    html += '<span class="card-cat-tag" style="align-self:flex-start">' + catIcon + ' ' + esc(r.category || 'Інше') + '</span>';
-    html += '<div style="display:inline-block">' + offersTag + '</div>';
-    html += budgetHtml;
-    html += '</div></div>';
+    html += requestCardHtml(requests[i]);
   }
   html += '</div>';
   c.innerHTML = html;
@@ -2103,8 +2087,6 @@ document.addEventListener('click', function(e) {
   if (action === 'open-profile')  { openProfile(btn.dataset.id); }
   if (action === 'decline-offer') { declineOffer(btn.dataset.offerid, btn.dataset.reqid); }
   if (action === 'toggle-save')   { e.stopPropagation(); toggleSave(id, btn); }
-  if (action === 'toggle-save-list') { e.stopPropagation(); removeSavedFromList(id, btn); }
-  if (action === 'toggle-req-save') { e.stopPropagation(); toggleReqSave(id, btn); }
   if (action === 'close-req')     { closeRequest(id); }
   if (action === 'delete-req')    { deleteRequest(id); }
   if (action === 'leave-review')  { openReviewModal(btn.dataset.seller, btn.dataset.reqid); }
@@ -2123,80 +2105,20 @@ function toggleSave(id, btn) {
   localStorage.setItem('savedIds', JSON.stringify(savedIds));
 }
 
-// Toggle save on request page heart
-function toggleReqSave(id, btn) {
-  var idx = savedIds.indexOf(id);
-  if (idx === -1) { savedIds.push(id); btn.classList.add('saved'); toast('Збережено ❤️'); }
-  else { savedIds.splice(idx, 1); btn.classList.remove('saved'); toast('Видалено зі збережених'); }
-  localStorage.setItem('savedIds', JSON.stringify(savedIds));
-}
-
-// Remove from saved page: animate card out, then refresh list
-function removeSavedFromList(id, btn) {
-  var idx = savedIds.indexOf(id);
-  if (idx !== -1) { savedIds.splice(idx, 1); localStorage.setItem('savedIds', JSON.stringify(savedIds)); }
-  toast('Видалено зі збережених');
-  var card = btn.closest('.saved-card');
-  if (card) {
-    card.style.transition = 'opacity 0.2s';
-    card.style.opacity = '0';
-    setTimeout(function() {
-      card.remove();
-      if (!document.querySelector('#saved-list-wrap .saved-card')) {
-        document.getElementById('saved-list-wrap').innerHTML = '<div class="saved-empty-state">Ви ще нічого не зберегли</div>';
-      }
-    }, 200);
-  }
-}
-
 // ---- SAVED PAGE ----
 async function showSaved() {
-  showPage('saved');
+  showPage('main');
   setActiveNav('nav-saved');
-  var wrap = document.getElementById('saved-list-wrap');
+  document.getElementById('requests-container').innerHTML = '<div class="spinner"></div>';
   if (!savedIds.length) {
-    wrap.innerHTML = '<div class="saved-empty-state">Ви ще нічого не зберегли</div>';
+    document.getElementById('requests-container').innerHTML = '<div class="empty"><div class="empty-icon">❤️</div><p>Збережених запитів немає</p></div>';
     return;
   }
-  wrap.innerHTML = '<div class="spinner" style="margin:40px auto"></div>';
   var res = await db.from('requests')
-    .select('*, profiles(name), photos, offers!request_id(id)')
+    .select('*, profiles(name), photos, offers!request_id(id, user_id, description, price, photos, profiles(name))')
     .in('id', savedIds).order('created_at', { ascending: false });
   if (res.error) { toast('Помилка', true); return; }
-  renderSaved(res.data || []);
-}
-
-var HEART_FILLED_SVG = '<svg viewBox="0 0 24 24" fill="#fff" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>';
-
-function renderSaved(requests) {
-  var wrap = document.getElementById('saved-list-wrap');
-  if (!requests.length) {
-    wrap.innerHTML = '<div class="saved-empty-state">Ви ще нічого не зберегли</div>';
-    return;
-  }
-  var html = '';
-  for (var i = 0; i < requests.length; i++) {
-    var r = requests[i];
-    var offers = r.offers || [];
-    var catIcon = (catIcons[r.category] || catIcons['Інше']).replace(/currentColor/g, '#292526');
-    var imgHtml = r.photos && r.photos.length
-      ? '<img class="saved-card-img" src="' + esc(r.photos[0]) + '" alt="" loading="lazy">'
-      : '<div class="saved-card-img-ph"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>';
-    var offersTag = offers.length
-      ? '<span class="saved-tag">З пропозиціями</span>'
-      : '<span class="saved-tag">Без пропозицій</span>';
-    html += '<div class="saved-card" data-action="open-request" data-id="' + r.id + '">';
-    html += imgHtml;
-    html += '<div class="saved-card-body">';
-    html += '<div class="saved-card-name">' + esc(r.title) + '</div>';
-    html += '<div class="saved-card-tags">';
-    html += '<span class="saved-tag">' + catIcon + esc(r.category || 'Інше') + '</span>';
-    html += offersTag;
-    html += '</div></div>';
-    html += '<button class="saved-card-fav" data-action="toggle-save-list" data-id="' + r.id + '" aria-label="Прибрати зі збережених">' + HEART_FILLED_SVG + '</button>';
-    html += '</div>';
-  }
-  wrap.innerHTML = html;
+  renderRequests(res.data || []);
 }
 
 // ---- SUBMIT REQUEST (desktop sidebar) ----
@@ -2536,10 +2458,6 @@ async function openRequestPage(requestId) {
     html += '<div class="req-photo-placeholder"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>';
   }
 
-  // --- SAVE HEART (under photos, right) ---
-  var _isSavedNow = savedIds.indexOf(r.id) !== -1;
-  html += '<div class="req-save-heart"><button id="req-save-heart-btn" class="' + (_isSavedNow ? 'saved' : '') + '" data-action="toggle-req-save" data-id="' + r.id + '" aria-label="Зберегти"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></button></div>';
-
   html += '<div class="req-body">';
 
   // --- TITLE & BUDGET ---
@@ -2626,10 +2544,13 @@ async function openRequestPage(requestId) {
     }
   }
 
+  html += '<div id="req-similar-slot"></div>';
   html += '</div>'; // req-body
 
   document.getElementById('request-page-content').innerHTML = html;
   document.getElementById('request-page-content').scrollTop = 0;
+
+  loadSimilar(r);
 
   // FAB "Зробити пропозицію"
   var existingFab = document.getElementById('req-offer-fab');
@@ -2671,6 +2592,27 @@ async function openRequestPage(requestId) {
       loadRequests();
     });
   }
+}
+
+// Подібні запити: та сама категорія, крім поточного, відкриті, до 10 шт.
+async function loadSimilar(r) {
+  var slot = document.getElementById('req-similar-slot');
+  if (!slot) return;
+  var res = await db.from('requests')
+    .select('id, title, category, budget, photos, created_at, closed_at, offers!request_id(id)')
+    .eq('category', r.category || 'Інше')
+    .neq('id', r.id)
+    .is('closed_at', null)
+    .order('created_at', { ascending: false })
+    .limit(10);
+  if (res.error || !res.data || !res.data.length) { slot.innerHTML = ''; return; }
+  var html = '<div class="req-similar-header">Подібні запити</div>';
+  html += '<div class="req-similar-strip">';
+  for (var i = 0; i < res.data.length; i++) {
+    html += '<div class="req-similar-card">' + requestCardHtml(res.data[i]) + '</div>';
+  }
+  html += '</div>';
+  slot.innerHTML = html;
 }
 
 async function declineOffer(offerId, reqId) {
