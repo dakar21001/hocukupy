@@ -257,6 +257,22 @@ textarea{resize:vertical;min-height:80px;}
 /* ACTIVITY PAGE END */
 
 .prof-wrap{background:#fff;min-height:100vh;padding-bottom:calc(var(--nav-h)+24px);}
+/* Saved / Збережені */
+.saved-wrap{background:#fff;min-height:100vh;padding-bottom:calc(var(--nav-h)+24px);}
+.saved-title{font-size:20px;font-weight:700;color:var(--text);text-align:center;padding:16px 20px 8px;position:sticky;top:0;background:#fff;z-index:20;}
+.saved-list{padding:8px 20px 0;}
+.saved-card{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid #F2F2F2;}
+.saved-card:last-child{border-bottom:none;}
+.saved-card-img{width:88px;height:88px;border-radius:14px;object-fit:cover;background:#E8E8E8;flex-shrink:0;cursor:pointer;}
+.saved-card-body{flex:1;min-width:0;cursor:pointer;}
+.saved-card-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.saved-card-tags{display:flex;gap:8px;}
+.saved-card-tag{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;color:var(--text2);white-space:nowrap;}
+.saved-card-tag svg{width:13px;height:13px;stroke:#292526;flex-shrink:0;}
+.saved-heart{width:36px;height:36px;flex-shrink:0;background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.saved-heart svg{width:26px;height:26px;fill:var(--green);stroke:var(--green);}
+.saved-empty{display:flex;align-items:center;justify-content:center;min-height:60vh;font-size:15px;color:var(--text3);text-align:center;padding:0 40px;}
+
 .prof-header-row{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 8px;position:sticky;top:0;background:#fff;z-index:20;}
 .prof-top{display:flex;flex-direction:column;align-items:center;padding:8px 20px 20px;}
 .prof-avatar-wrap{position:relative;margin-bottom:12px;}
@@ -712,6 +728,14 @@ textarea{resize:vertical;min-height:80px;}
         </div>
       </div>
     </aside>
+  </div>
+</div>
+
+<!-- SAVED PAGE -->
+<div id="saved-page" style="display:none">
+  <div class="saved-wrap">
+    <div class="saved-title">Збережені</div>
+    <div id="saved-content"></div>
   </div>
 </div>
 
@@ -1476,7 +1500,7 @@ const photoState = {};
 
 // ---- PAGES ----
 function showPage(page) {
-  ['main-page','profile-page','chat-list-page','chat-window-page','cats-page','request-page','wizard-page','offer-wizard-page','auth-page','settings-page','user-items-page'].forEach(function(id) {
+  ['main-page','profile-page','chat-list-page','chat-window-page','cats-page','request-page','wizard-page','offer-wizard-page','auth-page','settings-page','user-items-page','saved-page'].forEach(function(id) {
     var el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
@@ -1488,7 +1512,7 @@ function showPage(page) {
   // Hide mobile-header and FAB on chat/cats pages
   var mobileHeader = document.querySelector('.mobile-header');
   var fab = document.getElementById('fab-btn');
-  var hiddenPages = ['profile','chat-list','chat-window','cats','request','wizard','offer-wizard','auth','settings','user-items'];
+  var hiddenPages = ['profile','chat-list','chat-window','cats','request','wizard','offer-wizard','auth','settings','user-items','saved'];
   var hide = hiddenPages.indexOf(page) !== -1;
   if (mobileHeader) mobileHeader.style.display = hide ? 'none' : '';
   if (fab) fab.style.display = hide ? 'none' : '';
@@ -2087,6 +2111,7 @@ document.addEventListener('click', function(e) {
   if (action === 'open-profile')  { openProfile(btn.dataset.id); }
   if (action === 'decline-offer') { declineOffer(btn.dataset.offerid, btn.dataset.reqid); }
   if (action === 'toggle-save')   { e.stopPropagation(); toggleSave(id, btn); }
+  if (action === 'unsave')        { e.stopPropagation(); unsaveFromList(id); }
   if (action === 'close-req')     { closeRequest(id); }
   if (action === 'delete-req')    { deleteRequest(id); }
   if (action === 'leave-review')  { openReviewModal(btn.dataset.seller, btn.dataset.reqid); }
@@ -2105,20 +2130,57 @@ function toggleSave(id, btn) {
   localStorage.setItem('savedIds', JSON.stringify(savedIds));
 }
 
+function unsaveFromList(id) {
+  var idx = savedIds.indexOf(id);
+  if (idx !== -1) { savedIds.splice(idx, 1); localStorage.setItem('savedIds', JSON.stringify(savedIds)); }
+  toast('Видалено зі збережених');
+  showSaved();
+}
+
 // ---- SAVED PAGE ----
 async function showSaved() {
-  showPage('main');
+  showPage('saved');
   setActiveNav('nav-saved');
-  document.getElementById('requests-container').innerHTML = '<div class="spinner"></div>';
+  var c = document.getElementById('saved-content');
   if (!savedIds.length) {
-    document.getElementById('requests-container').innerHTML = '<div class="empty"><div class="empty-icon">❤️</div><p>Збережених запитів немає</p></div>';
+    c.innerHTML = '<div class="saved-empty">Ви ще нічого не зберегли</div>';
     return;
   }
+  c.innerHTML = '<div class="spinner" style="margin:40px auto"></div>';
   var res = await db.from('requests')
-    .select('*, profiles(name), photos, offers!request_id(id, user_id, description, price, photos, profiles(name))')
+    .select('id, title, category, photos, offers!request_id(id)')
     .in('id', savedIds).order('created_at', { ascending: false });
   if (res.error) { toast('Помилка', true); return; }
-  renderRequests(res.data || []);
+  renderSaved(res.data || []);
+}
+
+function renderSaved(items) {
+  var c = document.getElementById('saved-content');
+  if (!items.length) { c.innerHTML = '<div class="saved-empty">Ви ще нічого не зберегли</div>'; return; }
+  var html = '<div class="saved-list">';
+  for (var i = 0; i < items.length; i++) {
+    var r = items[i];
+    var offersCount = (r.offers || []).length;
+    var offersLabel = offersCount
+      ? offersCount + ' ' + pluralOffers(offersCount)
+      : 'Пропозицій ще немає';
+    var catIcon = (catIcons[r.category] || catIcons['Інше']).replace('width="16" height="16"', 'width="13" height="13"');
+    var imgHtml = r.photos && r.photos.length
+      ? '<img class="saved-card-img" src="' + esc(r.photos[0]) + '" data-action="open-request" data-id="' + r.id + '" alt="">'
+      : '<div class="saved-card-img" data-action="open-request" data-id="' + r.id + '"></div>';
+    html += '<div class="saved-card">';
+    html += imgHtml;
+    html += '<div class="saved-card-body" data-action="open-request" data-id="' + r.id + '">';
+    html += '<div class="saved-card-title">' + esc(r.title) + '</div>';
+    html += '<div class="saved-card-tags">';
+    html += '<span class="saved-card-tag">' + catIcon + esc(r.category || 'Інше') + '</span>';
+    html += '<span class="saved-card-tag">' + offersLabel + '</span>';
+    html += '</div></div>';
+    html += '<button class="saved-heart" data-action="unsave" data-id="' + r.id + '"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></button>';
+    html += '</div>';
+  }
+  html += '</div>';
+  c.innerHTML = html;
 }
 
 // ---- SUBMIT REQUEST (desktop sidebar) ----
