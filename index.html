@@ -2575,6 +2575,40 @@ function closeRequestModal() {
   history.pushState({}, '', window.location.pathname);
 }
 
+// Зірки з середнього балу (0 → «Новачок»)
+function ratingStarsHtml(avg, count, starCls, ratingCls) {
+  if (!count) return '<span class="' + ratingCls + '" style="color:var(--text3)">Новачок</span>';
+  var rounded = Math.round(avg);
+  var stars = '★'.repeat(rounded) + '☆'.repeat(5 - rounded);
+  return '<span class="' + starCls + '">' + stars + '</span><span class="' + ratingCls + '"> ' + avg.toFixed(1) + '/5</span>';
+}
+
+// Пакетне завантаження рейтингів для набору продавців → {userId: {avg, count}}
+async function fetchRatings(userIds) {
+  var ids = userIds.filter(function(x){ return x; });
+  if (!ids.length) return {};
+  var res = await db.from('reviews').select('seller_id, rating').in('seller_id', ids);
+  var map = {};
+  (res.data || []).forEach(function(rv) {
+    if (!map[rv.seller_id]) map[rv.seller_id] = { sum: 0, count: 0 };
+    map[rv.seller_id].sum += rv.rating;
+    map[rv.seller_id].count += 1;
+  });
+  Object.keys(map).forEach(function(k) { map[k].avg = map[k].sum / map[k].count; });
+  return map;
+}
+
+// «На сервісі: N» з дати реєстрації
+function timeOnService(createdAt) {
+  if (!createdAt) return '';
+  var months = Math.floor((Date.now() - new Date(createdAt)) / (1000*60*60*24*30));
+  if (months < 1) return 'менше міс';
+  if (months < 12) return months + ' міс';
+  var years = Math.floor(months / 12);
+  var word = years === 1 ? 'рік' : (years < 5 ? 'роки' : 'років');
+  return years + ' ' + word;
+}
+
 async function openRequestPage(requestId) {
   window._currentRequestId = requestId;
   _prevPage = document.getElementById('request-page').style.display === '' ? 'request' : 'main';
@@ -2590,7 +2624,7 @@ async function openRequestPage(requestId) {
   }
 
   var res = await db.from('requests')
-    .select('*, profiles(id, name, avatar_url, created_at), photos, offers!request_id(id, user_id, description, price, photos, profiles(id, name, avatar_url))')
+    .select('*, profiles(id, name, avatar_url, created_at), photos, offers!request_id(id, user_id, description, price, photos, profiles(id, name, avatar_url, created_at))')
     .eq('id', requestId).single();
 
   if (res.error || !res.data) {
@@ -2602,6 +2636,10 @@ async function openRequestPage(requestId) {
   var isClosed = !!r.closed_at;
   var isOwner = currentUser && currentUser.id === r.user_id;
   var offers = r.offers || [];
+  // Реальні рейтинги: автор запиту + усі продавці
+  var ratingIds = [r.user_id];
+  offers.forEach(function(o){ ratingIds.push(o.user_id); });
+  var ratings = await fetchRatings(ratingIds);
   // Mark request as viewed (for "+N нові пропозиції" on Activity page)
   if (isOwner) { localStorage.setItem('req_viewed_' + requestId, String(Date.now())); }
   var html = '';
@@ -2651,14 +2689,13 @@ async function openRequestPage(requestId) {
     ? '<img src="' + esc(r.profiles.avatar_url) + '">'
     : authorInitial;
   var authorId = r.profiles ? r.profiles.id : '';
-  var yearsOnService = r.profiles && r.profiles.created_at
-    ? Math.max(1, Math.floor((Date.now() - new Date(r.profiles.created_at)) / (1000*60*60*24*365))) + ' р'
-    : '';
+  var yearsOnService = r.profiles && r.profiles.created_at ? timeOnService(r.profiles.created_at) : '';
   html += '<div class="req-author-label">Зробив запит</div>';
   html += '<div class="req-author" data-action="open-profile" data-id="' + authorId + '">';
   html += '<div class="req-author-avatar">' + authorAvatar + '</div>';
   html += '<div><div class="req-author-name">' + esc(r.profiles ? r.profiles.name : 'Анонім') + '</div>';
-  html += '<div class="req-author-stars"><span class="req-author-star">★★★★☆</span><span class="req-author-rating"> 4.0/5</span></div></div>';
+  var authorRating = ratings[r.user_id] || { avg: 0, count: 0 };
+  html += '<div class="req-author-stars">' + ratingStarsHtml(authorRating.avg, authorRating.count, 'req-author-star', 'req-author-rating') + '</div></div>';
   if (yearsOnService) html += '<div class="req-author-since">На сервісі: ' + yearsOnService + '</div>';
   html += '</div>';
 
@@ -2678,8 +2715,10 @@ async function openRequestPage(requestId) {
       html += '<div class="offer-card-top">';
       html += '<div class="offer-card-avatar" style="cursor:pointer" data-action="open-profile" data-id="' + (o.profiles ? o.profiles.id : '') + '">' + oAvatar + '</div>';
       html += '<div><div class="offer-card-name">' + esc(oName) + '</div>';
-      html += '<div class="offer-card-stars"><span class="offer-card-star">★★☆☆☆</span><span class="offer-card-rating"> 2.0/5</span></div></div>';
-      html += '<div class="offer-card-since">На сервісі: 2 міс</div>';
+      var oRating = ratings[o.user_id] || { avg: 0, count: 0 };
+      html += '<div class="offer-card-stars">' + ratingStarsHtml(oRating.avg, oRating.count, 'offer-card-star', 'offer-card-rating') + '</div></div>';
+      var oService = o.profiles && o.profiles.created_at ? timeOnService(o.profiles.created_at) : '';
+      if (oService) html += '<div class="offer-card-since">На сервісі: ' + oService + '</div>';
       html += '</div>';
       // photos
       if (o.photos && o.photos.length) {
