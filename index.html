@@ -1993,23 +1993,39 @@ async function finishAccountDeletion() {
   toast('Акаунт видалено');
 }
 
-function checkAuthUrlParams() {
+async function checkAuthUrlParams() {
   var hash = window.location.hash;
   var params = new URLSearchParams(window.location.search);
-  // Підтвердження видалення акаунту через лист. Не покладаємось на hash (supabase-js його
-  // одразу зчитує й прибирає) — лише на маркер ?delete=1, а саме видалення запускаємо,
-  // коли зʼявиться сесія (див. onAuthStateChange / getSession нижче).
+  var tokenHash = params.get('token_hash');
+  var otpType = params.get('type');
+
+  // Надійний флоу: лист несе token_hash, а сесію створюємо самі через verifyOtp.
+  // Це стійко до "прогріву" посилання поштовиком (Gmail тощо), який палить одноразовий лінк.
+  if (tokenHash && otpType) {
+    var isDelete = params.get('delete') === '1';
+    var vr = await db.auth.verifyOtp({ token_hash: tokenHash, type: otpType });
+    history.replaceState({}, '', window.location.pathname);
+    if (vr.error) { toast('Посилання недійсне або протерміноване. Спробуйте ще раз.', true); return; }
+    if (isDelete) {
+      finishAccountDeletion();
+    } else {
+      openAuth();
+      authState.mode = 'login';
+      authGoto('forgot-newpass');
+    }
+    return;
+  }
+
+  // --- Фолбек для старих листів (implicit flow через hash) ---
   if (params.get('delete') === '1') {
     window._pendingDelete = true;
     return;
   }
-  // Supabase email confirm / recovery links arrive with #access_token=...&type=signup|recovery in hash
   if (hash.indexOf('type=recovery') !== -1) {
     openAuth();
     authState.mode = 'login';
     authGoto('forgot-newpass');
   } else if (hash.indexOf('type=signup') !== -1 || params.get('recovery')) {
-    // After email confirm, Supabase auto-logs the session in; continue registration flow
     setTimeout(async function() {
       var sess = await db.auth.getSession();
       if (sess.data.session) {
