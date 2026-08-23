@@ -1088,14 +1088,14 @@ textarea{resize:vertical;min-height:80px;}
       <div class="auth-step" id="auth-step-forgot-email" style="display:none">
         <div class="auth-logo-wrap" id="auth-logo-8"></div>
         <div class="auth-field"><input type="email" id="afg-email" placeholder="Email"></div>
-        <div class="auth-info-hint"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>На вашу пошту буде надіслано лист для відновлення пароля</div>
+        <div class="auth-info-hint"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><span id="auth-forgot-hint">На вашу пошту буде надіслано лист для відновлення пароля</span></div>
       </div>
 
       <!-- STEP: forgot password — check email -->
       <div class="auth-step" id="auth-step-forgot-check" style="display:none">
         <div class="auth-logo-wrap" id="auth-logo-9"></div>
         <div class="auth-check-title">Перевірте пошту!</div>
-        <div class="auth-check-sub">На вашу пошту прийде посилання, перейдіть по ньому, аби продовжити відновлення пароля</div>
+        <div class="auth-check-sub" id="auth-forgot-check-sub">На вашу пошту прийде посилання, перейдіть по ньому, аби продовжити відновлення пароля</div>
       </div>
 
       <!-- STEP: forgot password — new password -->
@@ -1715,6 +1715,31 @@ function authGoto(step) {
   if (step === 'forgot-email') { btn.textContent = 'Відправити лист'; btn.disabled = true; }
   if (step === 'forgot-check') { footer.style.display = 'none'; }
   if (step === 'forgot-newpass') { btn.disabled = true; }
+
+  // Режим видалення акаунту — перевикористовуємо екрани "forgot", але з іншими написами
+  if (authState.mode === 'delete') {
+    if (step === 'forgot-email') {
+      document.getElementById('auth-step-title').textContent = 'Видалення акаунту';
+      var dh = document.getElementById('auth-forgot-hint');
+      if (dh) dh.textContent = 'На вашу пошту буде надіслано лист для підтвердження видалення акаунту';
+      btn.textContent = 'Надіслати лист';
+      btn.disabled = !document.getElementById('afg-email').value.trim();
+    }
+    if (step === 'forgot-check') {
+      document.getElementById('auth-step-title').textContent = 'Видалення акаунту';
+      var ds = document.getElementById('auth-forgot-check-sub');
+      if (ds) ds.textContent = 'На вашу пошту прийшов лист. Перейдіть за посиланням, аби завершити видалення акаунту';
+    }
+  } else {
+    if (step === 'forgot-email') {
+      var dh2 = document.getElementById('auth-forgot-hint');
+      if (dh2) dh2.textContent = 'На вашу пошту буде надіслано лист для відновлення пароля';
+    }
+    if (step === 'forgot-check') {
+      var ds2 = document.getElementById('auth-forgot-check-sub');
+      if (ds2) ds2.textContent = 'На вашу пошту прийде посилання, перейдіть по ньому, аби продовжити відновлення пароля';
+    }
+  }
 }
 
 renderAllLogos();
@@ -1865,9 +1890,11 @@ document.getElementById('auth-next-btn').addEventListener('click', async functio
 
   if (step === 'forgot-email') {
     var email = document.getElementById('afg-email').value.trim();
+    var isDelete = authState.mode === 'delete';
     btn.disabled = true; btn.textContent = 'Надсилаємо...';
-    var res = await db.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + window.location.pathname + '?recovery=1' });
-    btn.disabled = false; btn.textContent = 'Відправити лист';
+    var redirectParam = isDelete ? '?delete=1' : '?recovery=1';
+    var res = await db.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + window.location.pathname + redirectParam });
+    btn.disabled = false; btn.textContent = isDelete ? 'Надіслати лист' : 'Відправити лист';
     if (res.error) { toast(res.error.message, true); return; }
     authGoto('forgot-check');
     return;
@@ -1953,9 +1980,27 @@ document.getElementById('city-sheet-confirm-btn').addEventListener('click', func
 });
 
 // ---- URL RECOVERY/CONFIRM HANDLING ----
+async function finishAccountDeletion() {
+  var sess = await db.auth.getSession();
+  if (!sess.data.session) { toast('Сесія недійсна. Спробуйте ще раз.', true); return; }
+  toast('Видаляємо акаунт...');
+  var res = await db.rpc('delete_own_account');
+  if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
+  try { await db.auth.signOut(); } catch (e) {}
+  setUserUI(null);
+  history.replaceState({}, '', window.location.pathname);
+  showPage('main'); setActiveNav('nav-home'); loadRequests();
+  toast('Акаунт видалено');
+}
+
 function checkAuthUrlParams() {
   var hash = window.location.hash;
   var params = new URLSearchParams(window.location.search);
+  // Підтвердження видалення акаунту через лист (наш маркер ?delete=1 + recovery-сесія)
+  if (params.get('delete') && hash.indexOf('type=recovery') !== -1) {
+    setTimeout(finishAccountDeletion, 400);
+    return;
+  }
   // Supabase email confirm / recovery links arrive with #access_token=...&type=signup|recovery in hash
   if (hash.indexOf('type=recovery') !== -1) {
     openAuth();
@@ -3317,10 +3362,17 @@ document.getElementById('settings-logout-btn').addEventListener('click', functio
   showPage('main'); setActiveNav('nav-home'); loadRequests();
 });
 document.getElementById('settings-delete-account-btn').addEventListener('click', function() {
-  showConfirm('Видалити обліковий запис?', 'Це незворотня дія. Для видалення зверніться у підтримку.', function() {
-    toast('Зверніться у чат підтримки');
-  });
+  showConfirm('Видалення акаунту', 'Ви впевнені, що хочете видалити акаунт? Усі ваші запити, пропозиції та повідомлення буде видалено назавжди.', function() {
+    startAccountDeletion();
+  }, { okLabel: 'Видалити', okIcon: TRASH_ICON_SVG });
 });
+function startAccountDeletion() {
+  if (!currentUser) { openAuth(); return; }
+  authState = { mode: 'delete', step: 'forgot-email', email: currentUser.email || '', pass: '', name: '', city: '', bio: '', isRecovery: false };
+  showPage('auth');
+  document.getElementById('afg-email').value = currentUser.email || '';
+  authGoto('forgot-email');
+}
 
 // ---- PHOTO SHEET ----
 function openPhotoSheet() {
