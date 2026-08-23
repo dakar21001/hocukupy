@@ -1996,9 +1996,11 @@ async function finishAccountDeletion() {
 function checkAuthUrlParams() {
   var hash = window.location.hash;
   var params = new URLSearchParams(window.location.search);
-  // Підтвердження видалення акаунту через лист (наш маркер ?delete=1 + recovery-сесія)
-  if (params.get('delete') && hash.indexOf('type=recovery') !== -1) {
-    setTimeout(finishAccountDeletion, 400);
+  // Підтвердження видалення акаунту через лист. Не покладаємось на hash (supabase-js його
+  // одразу зчитує й прибирає) — лише на маркер ?delete=1, а саме видалення запускаємо,
+  // коли зʼявиться сесія (див. onAuthStateChange / getSession нижче).
+  if (params.get('delete') === '1') {
+    window._pendingDelete = true;
     return;
   }
   // Supabase email confirm / recovery links arrive with #access_token=...&type=signup|recovery in hash
@@ -3740,8 +3742,27 @@ db.channel('public-changes')
   .subscribe();
 
 // ---- INIT ----
-db.auth.getSession().then(function(res) { if (res.data.session && res.data.session.user) setUserUI(res.data.session.user); });
-db.auth.onAuthStateChange(function(_e, session) { setUserUI(session ? session.user : null); loadRequests(); });
+function maybeRunPendingDelete(session) {
+  if (window._pendingDelete && session) {
+    window._pendingDelete = false;
+    finishAccountDeletion();
+    return true;
+  }
+  return false;
+}
+db.auth.getSession().then(function(res) {
+  var session = res.data.session;
+  if (maybeRunPendingDelete(session)) return;
+  if (session && session.user) setUserUI(session.user);
+});
+db.auth.onAuthStateChange(function(_e, session) {
+  if (maybeRunPendingDelete(session)) return;
+  setUserUI(session ? session.user : null); loadRequests();
+});
+// Прийшли за посиланням видалення, але сесія так і не зʼявилась — підкажемо
+setTimeout(function() {
+  if (window._pendingDelete) { window._pendingDelete = false; toast('Не вдалося підтвердити видалення. Спробуйте ще раз.', true); }
+}, 6000);
 loadRequests();
 checkUrlRequest();
 </script>
