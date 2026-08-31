@@ -1049,6 +1049,7 @@ textarea{resize:vertical;min-height:80px;}
           <input type="password" id="ap-pass2" placeholder="Повторити пароль">
           <button class="auth-field-eye" data-toggle="ap-pass2"><svg viewBox="0 0 24 24"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg></button>
         </div>
+        <div class="auth-pw-rules" id="ap-pw-rules"></div>
       </div>
 
       <!-- STEP: name + city -->
@@ -1091,6 +1092,7 @@ textarea{resize:vertical;min-height:80px;}
           <input type="password" id="afn-pass2" placeholder="Повторити пароль">
           <button class="auth-field-eye" data-toggle="afn-pass2"><svg viewBox="0 0 24 24"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg></button>
         </div>
+        <div class="auth-pw-rules" id="afn-pw-rules"></div>
       </div>
 
     </div>
@@ -1671,12 +1673,12 @@ function authGoto(step) {
   if (step === 'login') { btn.disabled = true; }
   if (step === 'reg-email') { btn.textContent = 'Відправити лист'; btn.disabled = true; }
   if (step === 'check-email') { footer.style.display = 'none'; }
-  if (step === 'password') { btn.disabled = true; }
+  if (step === 'password') { btn.disabled = true; renderPwRules(document.getElementById('ap-pass1').value, 'ap-pw-rules'); }
   if (step === 'profile') { btn.disabled = !authState.name; }
   if (step === 'bio') { btn.textContent = 'Готово!'; btn.disabled = false; }
   if (step === 'forgot-email') { btn.textContent = 'Відправити лист'; btn.disabled = true; }
   if (step === 'forgot-check') { footer.style.display = 'none'; }
-  if (step === 'forgot-newpass') { btn.disabled = true; }
+  if (step === 'forgot-newpass') { btn.disabled = true; renderPwRules(document.getElementById('afn-pass1').value, 'afn-pw-rules'); }
 
   // Режим видалення акаунту — перевикористовуємо екрани "forgot", але з іншими написами
   if (authState.mode === 'delete') {
@@ -1746,9 +1748,26 @@ function checkPwRules(pw) {
     special: /[!@#$%^&*(),.?":{}|<>]/.test(pw)
   };
 }
+function renderPwRules(pw, containerId) {
+  var el = document.getElementById(containerId);
+  if (!el) return;
+  var r = checkPwRules(pw);
+  var items = [
+    [r.length, 'Мінімум 8 символів'],
+    [r.upper, 'Велика літера'],
+    [r.digit, 'Цифра'],
+    [r.special, 'Спецсимвол (!@#$%…)']
+  ];
+  var okIc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+  var waitIc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>';
+  el.innerHTML = items.map(function(it) {
+    return '<div class="auth-pw-rule' + (it[0] ? ' valid' : '') + '">' + (it[0] ? okIc : waitIc) + '<span>' + it[1] + '</span></div>';
+  }).join('');
+}
 function validatePasswordStep() {
   var p1 = document.getElementById('ap-pass1').value;
   var p2 = document.getElementById('ap-pass2').value;
+  renderPwRules(p1, 'ap-pw-rules');
   var rules = checkPwRules(p1);
   var allValid = rules.length && rules.upper && rules.digit && rules.special;
   document.getElementById('auth-next-btn').disabled = !(allValid && p1 === p2 && p2.length > 0);
@@ -1773,6 +1792,7 @@ document.getElementById('afg-email').addEventListener('input', function() {
 function validateForgotNewPass() {
   var p1 = document.getElementById('afn-pass1').value;
   var p2 = document.getElementById('afn-pass2').value;
+  renderPwRules(p1, 'afn-pw-rules');
   var rules = checkPwRules(p1);
   var allValid = rules.length && rules.upper && rules.digit && rules.special;
   document.getElementById('auth-next-btn').disabled = !(allValid && p1 === p2 && p2.length > 0);
