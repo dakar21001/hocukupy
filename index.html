@@ -1980,10 +1980,25 @@ document.getElementById('city-sheet-confirm-btn').addEventListener('click', func
 });
 
 // ---- URL RECOVERY/CONFIRM HANDLING ----
+async function purgeUserStorage(uid) {
+  // Фото видаляємо через Storage API — пряме видалення з storage.objects у SQL заборонене.
+  var buckets = ['offers-photos', 'avatars'];
+  for (var i = 0; i < buckets.length; i++) {
+    try {
+      var lr = await db.storage.from(buckets[i]).list(uid, { limit: 1000 });
+      var files = lr.data || [];
+      if (files.length) {
+        var paths = files.map(function(f) { return uid + '/' + f.name; });
+        await db.storage.from(buckets[i]).remove(paths);
+      }
+    } catch (e) { /* не критично — не блокуємо видалення акаунту */ }
+  }
+}
 async function finishAccountDeletion() {
   var sess = await db.auth.getSession();
   if (!sess.data.session) { toast('Сесія недійсна. Спробуйте ще раз.', true); return; }
   toast('Видаляємо акаунт...');
+  await purgeUserStorage(sess.data.session.user.id);
   var res = await db.rpc('delete_own_account');
   if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
   try { await db.auth.signOut(); } catch (e) {}
