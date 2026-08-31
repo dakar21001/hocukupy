@@ -598,21 +598,6 @@ textarea{resize:vertical;min-height:80px;}
 .chat-send-btn:active{background:var(--green-dark);}
 .chat-send-btn svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;margin-left:2px;}
 
-/* REVIEWS */
-.rating-stars{display:flex;gap:6px;margin-bottom:16px;}
-.star{font-size:28px;cursor:pointer;color:#ddd;transition:color 0.1s;line-height:1;}
-.star.active,.star.hover{color:#F5A623;}
-.review-card{background:var(--bg);border-radius:var(--radius-sm);padding:12px;margin-bottom:10px;}
-.review-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
-.review-author{font-size:13px;font-weight:700;}
-.review-stars{color:#F5A623;font-size:13px;}
-.review-date{font-size:11px;color:var(--text3);}
-.review-text{font-size:13px;color:var(--text2);line-height:1.5;}
-.rating-summary{display:flex;align-items:center;gap:16px;padding:14px;background:var(--bg);border-radius:var(--radius-sm);margin-bottom:14px;}
-.rating-avg{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:26px;font-weight:700;}
-.rating-avg-stars{color:#F5A623;font-size:15px;}
-.rating-count{font-size:12px;color:var(--text3);margin-top:2px;}
-
 /* SIDEBAR (desktop) */
 .sidebar-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;position:sticky;top:80px;}
 .sidebar-card h2{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:14px;font-weight:600;margin-bottom:18px;color:var(--text);}
@@ -621,9 +606,6 @@ textarea{resize:vertical;min-height:80px;}
 .new-req-modal{background:var(--surface);border-radius:24px 24px 0 0;padding:8px 20px 32px;width:100%;max-height:92vh;overflow-y:auto;}
 @media(min-width:701px){.new-req-modal{border-radius:20px;max-width:460px;margin:16px;padding:28px;}}
 .new-req-modal h3{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:17px;font-weight:700;margin-bottom:20px;}
-.review-modal{background:var(--surface);border-radius:24px 24px 0 0;padding:8px 20px 32px;width:100%;max-height:92vh;overflow-y:auto;}
-@media(min-width:701px){.review-modal{border-radius:20px;max-width:420px;margin:16px;padding:28px;}}
-.review-modal h3{font-size:16px;font-weight:700;margin-bottom:16px;}
 
 /* ===== Закриття запиту (bottom sheet) ===== */
 .close-sheet{background:#fff;border-radius:28px 28px 0 0;padding:10px 20px 24px;width:100%;max-height:88vh;display:flex;flex-direction:column;}
@@ -1155,26 +1137,6 @@ textarea{resize:vertical;min-height:80px;}
   </div>
 </div>
 
-<!-- REVIEW MODAL -->
-<div class="modal-bg" id="review-modal">
-  <div class="review-modal">
-    <div class="modal-handle"></div>
-    <h3>Залишити відгук</h3>
-    <div class="field-label" style="margin-bottom:8px">Оцінка</div>
-    <div class="rating-stars" id="review-stars">
-      <span class="star" data-val="1">★</span><span class="star" data-val="2">★</span>
-      <span class="star" data-val="3">★</span><span class="star" data-val="4">★</span>
-      <span class="star" data-val="5">★</span>
-    </div>
-    <div class="field-group"><div class="field-label">Коментар</div><textarea id="review-comment" placeholder="Розкажіть про угоду..."></textarea></div>
-    <input type="hidden" id="review-seller-id">
-    <input type="hidden" id="review-request-id">
-    <div style="display:flex;gap:10px;margin-top:4px">
-      <button class="btn btn-primary" id="submit-review-btn">Надіслати</button>
-      <button class="btn" id="cancel-review-btn">Скасувати</button>
-    </div>
-  </div>
-</div>
 
 <!-- CLOSE REQUEST SHEET -->
 <div class="modal-bg" id="close-sheet-bg">
@@ -2306,7 +2268,6 @@ document.addEventListener('click', function(e) {
   if (action === 'unsave')        { e.stopPropagation(); unsaveFromList(id); }
   if (action === 'close-req')     { closeRequest(id); }
   if (action === 'delete-req')    { deleteRequest(id); }
-  if (action === 'leave-review')  { openReviewModal(btn.dataset.seller, btn.dataset.reqid); }
   if (action === 'open-chat')     { openOrCreateChat(btn.dataset.seller, btn.dataset.reqid, btn.dataset.selname, btn.dataset.reqtitle, btn.dataset.offerid); }
   if (action === 'open-chat-id')  { openChatWindow(btn.dataset.chatid, btn.dataset.partner, btn.dataset.title, btn.dataset.partnerid, btn.dataset.reqid, btn.dataset.budget, btn.dataset.photo, btn.dataset.offerdesc, btn.dataset.offerprice, btn.dataset.offerphoto); }
   if (action === 'open-req-from-chat') { if (btn.dataset.reqid) openRequestPage(btn.dataset.reqid); }
@@ -3448,43 +3409,6 @@ document.getElementById('photo-delete-btn').addEventListener('click', async func
 });
 
 // ---- REVIEWS ----
-var selectedRating = 0;
-function initStars() {
-  var stars = document.querySelectorAll('#review-stars .star');
-  stars.forEach(function(star) {
-    star.addEventListener('mouseover', function() {
-      var val = Number(this.dataset.val);
-      stars.forEach(function(s) { s.classList.toggle('hover', Number(s.dataset.val) <= val); });
-    });
-    star.addEventListener('mouseout', function() { stars.forEach(function(s) { s.classList.remove('hover'); }); });
-    star.addEventListener('click', function() {
-      selectedRating = Number(this.dataset.val);
-      stars.forEach(function(s) { s.classList.toggle('active', Number(s.dataset.val) <= selectedRating); });
-    });
-  });
-}
-initStars();
-function openReviewModal(sellerId, requestId) {
-  if (!currentUser) { openAuth(); return; }
-  selectedRating = 0;
-  document.querySelectorAll('#review-stars .star').forEach(function(s) { s.classList.remove('active','hover'); });
-  document.getElementById('review-comment').value = '';
-  document.getElementById('review-seller-id').value = sellerId;
-  document.getElementById('review-request-id').value = requestId;
-  document.getElementById('review-modal').classList.add('open');
-}
-document.getElementById('cancel-review-btn').addEventListener('click', function() { document.getElementById('review-modal').classList.remove('open'); });
-document.getElementById('submit-review-btn').addEventListener('click', async function() {
-  if (!selectedRating) { toast('Оберіть оцінку', true); return; }
-  var sellerId = document.getElementById('review-seller-id').value;
-  var requestId = document.getElementById('review-request-id').value;
-  var comment = document.getElementById('review-comment').value.trim();
-  var res = await db.from('reviews').insert({ reviewer_id: currentUser.id, seller_id: sellerId, request_id: requestId, rating: selectedRating, comment: comment || null });
-  if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
-  toast('Відгук надіслано! ⭐');
-  document.getElementById('review-modal').classList.remove('open');
-  openProfile(sellerId);
-});
 async function loadReviews(userId) {
   var res = await db.from('reviews').select('*, reviewer:reviewer_id(name, avatar_url)').eq('seller_id', userId).order('created_at', { ascending: false });
   var reviews = res.data || [];
@@ -3798,64 +3722,6 @@ loadRequests();
 checkUrlRequest();
 </script>
 
-<!-- CATEGORIES PAGE -->
-<div id="cats-page" style="display:none">
-  <div class="cats-page">
-    <div class="cats-header">
-      <button class="cats-back-btn" id="cats-back-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
-      </button>
-      <div class="cats-title">Категорії</div>
-      <div class="cats-avatar" id="cats-avatar-icon">?</div>
-    </div>
-    <div class="cats-list">
-      <div class="cat-row" data-cat="">
-        <div class="cat-row-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg></div>
-        <div class="cat-row-name">Всі категорії</div>
-      </div>
-      <div class="cat-row" data-cat="Авто">
-        <div class="cat-row-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg></div>
-        <div class="cat-row-name">Авто</div>
-      </div>
-      <div class="cat-row" data-cat="Електроніка">
-        <div class="cat-row-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 19a1 1 0 0 1-1-1v-2a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2a1 1 0 0 1-1 1z"/><path d="M17 21v-2"/><path d="M19 14V6.5a1 1 0 0 0-7 0v11a1 1 0 0 1-7 0V10"/><path d="M21 21v-2"/><path d="M3 5V3"/><path d="M4 10a2 2 0 0 1-2-2V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2a2 2 0 0 1-2 2z"/><path d="M7 5V3"/></svg></div>
-        <div class="cat-row-name">Електроніка</div>
-      </div>
-      <div class="cat-row" data-cat="Одяг">
-        <div class="cat-row-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg></div>
-        <div class="cat-row-name">Одяг</div>
-      </div>
-      <div class="cat-row" data-cat="Спорт">
-        <div class="cat-row-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7a16 16 20 0 1 10.98 4.362"/><path d="M12 12a13 13 0 0 1-8.66 5"/><path d="M16.83 13.634a16 16 0 0 1-9.267 7.328"/><path d="M20.66 17A13 13 0 0 0 12 12a13 13 0 0 1 0-10"/><path d="M8.17 15.366a16 16 0 0 1-1.713-11.69"/><circle cx="12" cy="12" r="10"/></svg></div>
-        <div class="cat-row-name">Спорт</div>
-      </div>
-      <div class="cat-row" data-cat="Книги">
-        <div class="cat-row-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
-        <div class="cat-row-name">Книги</div>
-      </div>
-      <div class="cat-row" data-cat="Іграшки">
-        <div class="cat-row-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.5 22H18a2 2 0 0 0 2-2v-7.5L14.5 22z"/><path d="M4 12.5V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8.5L9 22H6a2 2 0 0 1-2-2v-2.5"/><path d="M10 7H8"/><path d="M14 7h-2"/></svg></div>
-        <div class="cat-row-name">Іграшки</div>
-      </div>
-      <div class="cat-row" data-cat="Косметика">
-        <div class="cat-row-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 22c4.97 0 9-2.69 9-6s-4.03-6-9-6-9 2.69-9 6 4.03 6 9 6z"/><path d="M12 10V2"/><path d="m9 5 3-3 3 3"/></svg></div>
-        <div class="cat-row-name">Косметика</div>
-      </div>
-      <div class="cat-row" data-cat="Меблі">
-        <div class="cat-row-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"/><path d="M3 16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z"/><path d="M5 18v2"/><path d="M19 18v2"/></svg></div>
-        <div class="cat-row-name">Меблі</div>
-      </div>
-      <div class="cat-row" data-cat="Запчастини до авто">
-        <div class="cat-row-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0-2 0"/><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg></div>
-        <div class="cat-row-name">Запчастини до авто</div>
-      </div>
-      <div class="cat-row" data-cat="Інше">
-        <div class="cat-row-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M17 12h.01"/><path d="M12 12h.01"/><path d="M7 12h.01"/></svg></div>
-        <div class="cat-row-name">Інше</div>
-      </div>
-    </div>
-  </div>
-</div>
 
 </body>
 </html>
