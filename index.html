@@ -2070,6 +2070,7 @@ function setUserUI(user) {
     document.getElementById('chats-btn').style.display = 'none';
     updateGreeting(null);
   }
+  updateNavBadges();
 }
 
 document.getElementById('mobile-avatar-btn').addEventListener('click', function() {
@@ -3764,6 +3765,7 @@ function setNavBadge(el, n) {
   else { el.style.display = 'none'; }
 }
 async function updateNavBadges() {
+  if (!window._badgeDbg) { window._badgeDbg = true; toast('DEBUG run, user=' + (currentUser ? 'yes' : 'no')); }
   var chatsBadge = document.getElementById('chats-badge');
   var reqsBadge = document.getElementById('reqs-badge');
   if (!currentUser) { setNavBadge(chatsBadge, 0); setNavBadge(reqsBadge, 0); _prevChatUnread = 0; return; }
