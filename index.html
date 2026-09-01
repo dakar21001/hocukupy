@@ -3765,10 +3765,9 @@ function setNavBadge(el, n) {
   else { el.style.display = 'none'; }
 }
 async function updateNavBadges() {
-  if (!window._badgeDbg) { window._badgeDbg = true; toast('DEBUG run, user=' + (currentUser ? 'yes' : 'no')); }
   var chatsBadge = document.getElementById('chats-badge');
   var reqsBadge = document.getElementById('reqs-badge');
-  if (!currentUser) { setNavBadge(chatsBadge, 0); setNavBadge(reqsBadge, 0); _prevChatUnread = 0; return; }
+  if (!currentUser) { setNavBadge(chatsBadge, 0); setNavBadge(reqsBadge, 0); _prevChatUnread = 0; toast('DBG user=no'); return; }
   var uid = currentUser.id;
   // Непрочитані чати
   var chatUnread = 0;
@@ -3795,7 +3794,7 @@ async function updateNavBadges() {
   } catch (e) {}
   setNavBadge(chatsBadge, chatUnread);
   setNavBadge(reqsBadge, newOffers);
-  if (!window._badgeDbg) { window._badgeDbg = true; toast('DEBUG чати:' + chatUnread + ' проп:' + newOffers); }
+  toast('DBG чати=' + chatUnread + ' проп=' + newOffers);
   // Тост, якщо прийшло нове повідомлення й ми не у вікні чату
   if (chatUnread > _prevChatUnread && document.getElementById('chat-window-page').style.display === 'none') {
     toast('Нове повідомлення 💬');
