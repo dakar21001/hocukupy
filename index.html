@@ -1566,7 +1566,7 @@ function renderAllLogos() {
 
 let currentUser = null, currentCat = '', confirmCb = null;
 let searchQuery = '', searchTimeout = null;
-let savedIds = JSON.parse(localStorage.getItem('savedIds') || '[]');
+let savedIds = []; // тримаємо в памʼяті для миттєвого UI; джерело правди — таблиця saved у Supabase
 const photoState = {};
 
 // ---- PAGES ----
@@ -2307,17 +2307,46 @@ document.addEventListener('click', function(e) {
   if (action === 'lightbox')      { openLightbox(btn.dataset.url); }
 });
 
-// ---- TOGGLE SAVE ----
-function toggleSave(id, btn) {
-  var idx = savedIds.indexOf(id);
-  if (idx === -1) { savedIds.push(id); btn.classList.add('saved'); toast('Збережено ❤️'); }
-  else { savedIds.splice(idx, 1); btn.classList.remove('saved'); toast('Видалено зі збережених'); }
-  localStorage.setItem('savedIds', JSON.stringify(savedIds));
+// ---- SAVED (у Supabase, таблиця saved) ----
+async function loadSavedIds() {
+  if (!currentUser) { savedIds = []; return; }
+  // одноразова міграція старих localStorage-збережень у БД
+  try {
+    var local = JSON.parse(localStorage.getItem('savedIds') || '[]');
+    if (local.length) {
+      var rows = local.map(function(rid) { return { user_id: currentUser.id, request_id: rid }; });
+      await db.from('saved').upsert(rows, { onConflict: 'user_id,request_id', ignoreDuplicates: true });
+      localStorage.removeItem('savedIds');
+    }
+  } catch (e) {}
+  var res = await db.from('saved').select('request_id').eq('user_id', currentUser.id);
+  savedIds = (res.data || []).map(function(row) { return row.request_id; });
+}
+async function refreshSavedAndFeed() {
+  await loadSavedIds();
+  loadRequests();
 }
 
-function unsaveFromList(id) {
+async function toggleSave(id, btn) {
+  if (!currentUser) { openAuth(); return; }
   var idx = savedIds.indexOf(id);
-  if (idx !== -1) { savedIds.splice(idx, 1); localStorage.setItem('savedIds', JSON.stringify(savedIds)); }
+  if (idx === -1) {
+    savedIds.push(id); btn.classList.add('saved'); toast('Збережено ❤️');
+    var res = await db.from('saved').insert({ user_id: currentUser.id, request_id: id });
+    if (res.error) { var i = savedIds.indexOf(id); if (i !== -1) savedIds.splice(i, 1); btn.classList.remove('saved'); toast('Помилка збереження', true); }
+  } else {
+    savedIds.splice(idx, 1); btn.classList.remove('saved'); toast('Видалено зі збережених');
+    var res2 = await db.from('saved').delete().eq('user_id', currentUser.id).eq('request_id', id);
+    if (res2.error) { savedIds.push(id); btn.classList.add('saved'); toast('Помилка', true); }
+  }
+}
+
+async function unsaveFromList(id) {
+  if (!currentUser) return;
+  var idx = savedIds.indexOf(id);
+  if (idx !== -1) savedIds.splice(idx, 1);
+  var res = await db.from('saved').delete().eq('user_id', currentUser.id).eq('request_id', id);
+  if (res.error) { savedIds.push(id); toast('Помилка', true); return; }
   toast('Видалено зі збережених');
   showSaved();
 }
@@ -2327,6 +2356,10 @@ async function showSaved() {
   showPage('saved');
   setActiveNav('nav-saved');
   var c = document.getElementById('saved-content');
+  if (!currentUser) {
+    c.innerHTML = '<div class="saved-empty">Увійдіть, щоб зберігати запити</div>';
+    return;
+  }
   if (!savedIds.length) {
     c.innerHTML = '<div class="saved-empty">Ви ще нічого не зберегли</div>';
     return;
@@ -3741,11 +3774,13 @@ db.auth.getSession().then(function(res) {
   var session = res.data.session;
   if (maybeRunPendingDelete(session)) return;
   if (session && session.user) { ensureProfileFromMetadata(session.user); setUserUI(session.user); }
+  refreshSavedAndFeed();
 });
 db.auth.onAuthStateChange(function(_e, session) {
   if (maybeRunPendingDelete(session)) return;
   if (session && session.user) ensureProfileFromMetadata(session.user);
-  setUserUI(session ? session.user : null); loadRequests();
+  setUserUI(session ? session.user : null);
+  refreshSavedAndFeed();
 });
 // Прийшли за посиланням видалення, але сесія так і не зʼявилась — підкажемо
 setTimeout(function() {
