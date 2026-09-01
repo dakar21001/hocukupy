@@ -1671,11 +1671,11 @@ function authGoto(step) {
   btn.textContent = 'Продовжити';
   if (step === 'splash') { btn.disabled = !authState.mode; }
   if (step === 'login') { btn.disabled = true; }
-  if (step === 'reg-email') { btn.textContent = 'Відправити лист'; btn.disabled = true; }
+  if (step === 'reg-email') { btn.textContent = 'Продовжити'; btn.disabled = true; }
   if (step === 'check-email') { footer.style.display = 'none'; }
   if (step === 'password') { btn.disabled = true; renderPwRules(document.getElementById('ap-pass1').value, 'ap-pw-rules'); }
   if (step === 'profile') { btn.disabled = !authState.name; }
-  if (step === 'bio') { btn.textContent = 'Готово!'; btn.disabled = false; }
+  if (step === 'bio') { btn.textContent = 'Створити акаунт'; btn.disabled = false; }
   if (step === 'forgot-email') { btn.textContent = 'Відправити лист'; btn.disabled = true; }
   if (step === 'forgot-check') { footer.style.display = 'none'; }
   if (step === 'forgot-newpass') { btn.disabled = true; renderPwRules(document.getElementById('afn-pass1').value, 'afn-pw-rules'); }
@@ -1830,27 +1830,20 @@ document.getElementById('auth-next-btn').addEventListener('click', async functio
   }
 
   if (step === 'reg-email') {
-    var email = document.getElementById('ar-email').value.trim();
-    authState.email = email;
-    btn.disabled = true; btn.textContent = 'Надсилаємо...';
-    var res = await db.auth.signUp({ email: email, password: Math.random().toString(36) + 'Aa1!', options: { data: {} } });
-    btn.disabled = false; btn.textContent = 'Відправити лист';
-    if (res.error) { toast(res.error.message, true); return; }
-    authGoto('check-email');
+    // Акаунт ще НЕ створюємо — лише запамʼятовуємо пошту й ідемо далі
+    authState.email = document.getElementById('ar-email').value.trim();
+    authGoto('password');
     return;
   }
 
   if (step === 'password') {
     authState.pass = document.getElementById('ap-pass1').value;
-    btn.disabled = true; btn.textContent = 'Зберігаємо...';
-    var res = await db.auth.updateUser({ password: authState.pass });
-    btn.disabled = false; btn.textContent = 'Продовжити';
-    if (res.error) { toast(res.error.message, true); return; }
     authGoto('profile');
     return;
   }
 
   if (step === 'profile') {
+    authState.name = document.getElementById('apr-name').value.trim();
     authState.city = document.getElementById('apr-city-display').value;
     authGoto('bio');
     return;
@@ -1858,15 +1851,26 @@ document.getElementById('auth-next-btn').addEventListener('click', async functio
 
   if (step === 'bio') {
     authState.bio = document.getElementById('abio-text').value.trim();
-    btn.disabled = true; btn.textContent = 'Завершуємо...';
-    var sess = await db.auth.getSession();
-    var uid = sess.data.session ? sess.data.session.user.id : null;
-    if (uid) {
-      await db.auth.updateUser({ data: { name: authState.name } });
-      await db.from('profiles').upsert({ id: uid, name: authState.name, city: authState.city || null, bio: authState.bio || null });
+    btn.disabled = true; btn.textContent = 'Створюємо...';
+    // Тільки ТЕПЕР створюємо акаунт — з реальним паролем і даними профілю в metadata
+    var res = await db.auth.signUp({
+      email: authState.email,
+      password: authState.pass,
+      options: {
+        data: { name: authState.name, city: authState.city || null, bio: authState.bio || null },
+        emailRedirectTo: window.location.origin + window.location.pathname
+      }
+    });
+    btn.disabled = false; btn.textContent = 'Створити акаунт';
+    if (res.error) { toast(res.error.message, true); return; }
+    if (res.data.session) {
+      // якщо підтвердження email вимкнене — акаунт активний одразу
+      await ensureProfileFromMetadata(res.data.session.user);
+      setUserUI(res.data.session.user);
+      closeAuth(); toast('Акаунт створено! 🎉');
+    } else {
+      authGoto('check-email');
     }
-    btn.disabled = false; btn.textContent = 'Готово!';
-    closeAuth(); toast('Акаунт створено! 🎉');
     return;
   }
 
@@ -2022,15 +2026,11 @@ async function checkAuthUrlParams() {
     openAuth();
     authState.mode = 'login';
     authGoto('forgot-newpass');
-  } else if (hash.indexOf('type=signup') !== -1 || params.get('recovery')) {
-    setTimeout(async function() {
-      var sess = await db.auth.getSession();
-      if (sess.data.session) {
-        openAuth();
-        authState.mode = 'register';
-        authGoto('password');
-      }
-    }, 300);
+  } else if (hash.indexOf('type=signup') !== -1) {
+    // Підтвердження реєстрації: сесію підхопить detectSessionInUrl, а профіль —
+    // ensureProfileFromMetadata в onAuthStateChange. Тут лише прибираємо токен з адреси й вітаємо.
+    history.replaceState({}, '', window.location.pathname);
+    setTimeout(function() { toast('Акаунт створено! 🎉'); }, 800);
   }
 }
 
@@ -2153,6 +2153,18 @@ async function ensureProfile(user) {
     var name = user.user_metadata && user.user_metadata.name ? user.user_metadata.name : user.email.split('@')[0];
     await db.from('profiles').insert({ id: user.id, name: name });
   }
+}
+// Створює профіль з даних, збережених при реєстрації (user_metadata), якщо його ще нема.
+// Викликається при появі сесії (підтвердження email / логін) — робить реєстрацію надійною.
+async function ensureProfileFromMetadata(user) {
+  if (!user) return;
+  try {
+    var res = await db.from('profiles').select('id').eq('id', user.id).maybeSingle();
+    if (res.data) return; // профіль уже є — не чіпаємо
+    var md = user.user_metadata || {};
+    var name = md.name || (user.email ? user.email.split('@')[0] : 'Користувач');
+    await db.from('profiles').insert({ id: user.id, name: name, city: md.city || null, bio: md.bio || null });
+  } catch (e) { /* напр. гонка вставки — ігноруємо */ }
 }
 
 // ---- PHOTO HELPERS ----
@@ -3728,10 +3740,11 @@ function maybeRunPendingDelete(session) {
 db.auth.getSession().then(function(res) {
   var session = res.data.session;
   if (maybeRunPendingDelete(session)) return;
-  if (session && session.user) setUserUI(session.user);
+  if (session && session.user) { ensureProfileFromMetadata(session.user); setUserUI(session.user); }
 });
 db.auth.onAuthStateChange(function(_e, session) {
   if (maybeRunPendingDelete(session)) return;
+  if (session && session.user) ensureProfileFromMetadata(session.user);
   setUserUI(session ? session.user : null); loadRequests();
 });
 // Прийшли за посиланням видалення, але сесія так і не зʼявилась — підкажемо
