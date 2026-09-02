@@ -901,6 +901,11 @@ textarea{resize:vertical;min-height:80px;}
         Змінити пароль
         <svg class="settings-row-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
       </button>
+      <button class="settings-row" id="settings-push-btn">
+        <span class="settings-row-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg></span>
+        <span class="push-label">Увімкнути сповіщення</span>
+        <svg class="settings-row-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
       <button class="settings-row" id="settings-support-btn">
         <span class="settings-row-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></span>
         Чат підтримки
@@ -1497,6 +1502,8 @@ textarea{resize:vertical;min-height:80px;}
 // =============================================
 const SUPABASE_URL = 'https://dvjmqgzpxpfwuxpjrsdx.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_h6yGHLcCUJNZRRp6gxjhoQ_UW_G8zod';
+// Публічний VAPID-ключ для web-push (приватний живе в секретах Edge Function)
+const VAPID_PUBLIC_KEY = 'BI1r1C-F6rzCTLVVqE-QP45KyddWjhCrGb_aDsd9jj74e_qDvvJ49vEtxhYca-GZg5BYMtK08IxPdcPHyCwNRVQ';
 // =============================================
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -2078,6 +2085,8 @@ function setUserUI(user) {
     updateGreeting(null);
   }
   updateNavBadges();
+  if (currentUser) { subscribeToPush(true); }
+  updatePushSettingRow();
 }
 
 document.getElementById('mobile-avatar-btn').addEventListener('click', function() {
@@ -3456,6 +3465,7 @@ function openSettings() {
   var cityField = document.getElementById('settings-city-field');
   cityField.classList.toggle('city-empty', !settingsCityTemp);
   cityField.classList.toggle('city-filled', !!settingsCityTemp);
+  updatePushSettingRow();
 }
 document.getElementById('back-from-settings-btn').addEventListener('click', async function() {
   // Auto-save on back
@@ -3483,6 +3493,11 @@ document.getElementById('settings-change-pass-btn').addEventListener('click', fu
   openAuth(); authState.mode = 'login'; authGoto('forgot-email');
 });
 document.getElementById('settings-support-btn').addEventListener('click', function() { toast('Незабаром 🛠'); });
+document.getElementById('settings-push-btn').addEventListener('click', async function() {
+  var on = Notification.permission === 'granted';
+  if (on) { try { var reg = await navigator.serviceWorker.ready; on = !!(await reg.pushManager.getSubscription()); } catch (e) { on = false; } }
+  if (on) { disablePush(); } else { subscribeToPush(false); }
+});
 document.getElementById('settings-logout-btn').addEventListener('click', function() {
   db.auth.signOut(); setUserUI(null); toast('До побачення!');
   showPage('main'); setActiveNav('nav-home'); loadRequests();
@@ -3862,6 +3877,82 @@ async function updateNavBadges() {
     toast('Нове повідомлення 💬');
   }
   _prevChatUnread = chatUnread;
+}
+
+// ---- WEB-PUSH: підписка на пуші ----
+function urlBase64ToUint8Array(base64String) {
+  var padding = '='.repeat((4 - base64String.length % 4) % 4);
+  var base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  var raw = atob(base64);
+  var arr = new Uint8Array(raw.length);
+  for (var i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
+  return arr;
+}
+
+// silent=true — не турбуємо запитом дозволу; підписуємось лише якщо дозвіл уже є
+async function subscribeToPush(silent) {
+  if (!currentUser) return;
+  if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
+    if (!silent) toast('Ваш браузер не підтримує сповіщення', true);
+    return;
+  }
+  try {
+    var perm = Notification.permission;
+    if (perm === 'default') {
+      if (silent) return;
+      perm = await Notification.requestPermission();
+    }
+    if (perm !== 'granted') {
+      if (!silent) toast('Сповіщення заблоковані у налаштуваннях браузера', true);
+      updatePushSettingRow();
+      return;
+    }
+    var reg = await navigator.serviceWorker.ready;
+    var sub = await reg.pushManager.getSubscription();
+    if (!sub) {
+      sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+      });
+    }
+    var json = sub.toJSON();
+    await db.from('push_subscriptions').upsert({
+      user_id: currentUser.id,
+      endpoint: sub.endpoint,
+      p256dh: json.keys.p256dh,
+      auth: json.keys.auth
+    }, { onConflict: 'endpoint' });
+    if (!silent) toast('Сповіщення увімкнено 🔔');
+    updatePushSettingRow();
+  } catch (e) {
+    if (!silent) toast('Не вдалося увімкнути сповіщення', true);
+  }
+}
+
+async function disablePush() {
+  try {
+    var reg = await navigator.serviceWorker.ready;
+    var sub = await reg.pushManager.getSubscription();
+    if (sub) {
+      await db.from('push_subscriptions').delete().eq('endpoint', sub.endpoint);
+      await sub.unsubscribe();
+    }
+    toast('Сповіщення вимкнено');
+  } catch (e) {}
+  updatePushSettingRow();
+}
+
+// Оновити напис у рядку налаштувань під поточний стан
+async function updatePushSettingRow() {
+  var row = document.getElementById('settings-push-btn');
+  if (!row) return;
+  if (!('PushManager' in window) || !('Notification' in window)) { row.style.display = 'none'; return; }
+  var on = Notification.permission === 'granted';
+  if (on) {
+    try { var reg = await navigator.serviceWorker.ready; on = !!(await reg.pushManager.getSubscription()); } catch (e) { on = false; }
+  }
+  var label = row.querySelector('.push-label');
+  if (label) label.textContent = on ? 'Сповіщення увімкнено' : 'Увімкнути сповіщення';
 }
 
 db.channel('public-changes')
