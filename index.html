@@ -2227,17 +2227,72 @@ async function uploadPhotos(formId) {
 document.getElementById('sidebar-photo-input').addEventListener('change', function() { handlePhotoSelect('sidebar', this); });
 
 // ---- LOAD REQUESTS ----
-async function loadRequests() {
-  document.getElementById('requests-container').innerHTML = '<div class="spinner"></div>';
+var FEED_PAGE_SIZE = 12;
+var feed = { page: 0, loading: false, done: false };
+var feedObserver = null;
+
+function buildFeedQuery(from, to) {
   var query = db.from('requests')
     .select('*, profiles(name), photos, offers!request_id(id, user_id, description, price, photos, profiles(name))')
     .order('closed_at', { ascending: true, nullsFirst: true })
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .range(from, to);
   if (currentCat) query = query.eq('category', currentCat);
   if (searchQuery) query = query.or('title.ilike.%' + searchQuery + '%,description.ilike.%' + searchQuery + '%');
-  var res = await query;
+  return query;
+}
+
+// Повне перезавантаження стрічки (скидає пагінацію) — викликається звідусіль
+async function loadRequests() {
+  feed = { page: 0, loading: true, done: false };
+  document.getElementById('requests-container').innerHTML = '<div class="spinner"></div>';
+  var res = await buildFeedQuery(0, FEED_PAGE_SIZE - 1);
+  feed.loading = false;
   if (res.error) { toast('Помилка завантаження', true); return; }
-  renderRequests(res.data || []);
+  var batch = res.data || [];
+  feed.page = 1;
+  if (batch.length < FEED_PAGE_SIZE) feed.done = true;
+  renderRequests(batch);
+  ensureFeedSentinel();
+}
+
+// Підвантаження наступної порції
+async function loadMoreRequests() {
+  if (feed.loading || feed.done) return;
+  feed.loading = true;
+  var from = feed.page * FEED_PAGE_SIZE;
+  var res = await buildFeedQuery(from, from + FEED_PAGE_SIZE - 1);
+  feed.loading = false;
+  if (res.error) return;
+  var batch = res.data || [];
+  feed.page++;
+  if (batch.length < FEED_PAGE_SIZE) feed.done = true;
+  var grid = document.querySelector('#requests-container .cards-grid');
+  if (grid && batch.length) {
+    var html = '';
+    for (var i = 0; i < batch.length; i++) html += requestCardHtml(batch[i]);
+    grid.insertAdjacentHTML('beforeend', html);
+  }
+  ensureFeedSentinel();
+}
+
+// Сентінел у кінці стрічки — коли зʼявляється у вʼюпорті, вантажимо ще
+function ensureFeedSentinel() {
+  var c = document.getElementById('requests-container');
+  if (!c) return;
+  var old = document.getElementById('feed-sentinel');
+  if (old) old.remove();
+  if (feed.done) return;
+  var s = document.createElement('div');
+  s.id = 'feed-sentinel';
+  s.style.height = '1px';
+  c.appendChild(s);
+  if (!feedObserver) {
+    feedObserver = new IntersectionObserver(function(entries) {
+      if (entries[0].isIntersecting) loadMoreRequests();
+    }, { rootMargin: '500px' });
+  }
+  feedObserver.observe(s);
 }
 
 // ---- RENDER REQUESTS ----
