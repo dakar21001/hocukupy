@@ -3278,7 +3278,7 @@ async function openRequestPage(requestId) {
     fab.id = 'req-offer-fab';
     fab.className = 'req-offer-fab';
     fab.textContent = 'Зробити пропозицію';
-    fab.style.cssText = 'position:fixed;bottom:calc(var(--nav-h) + 16px);left:50%;transform:translateX(-50%);width:214px;height:52px;background:#008000;color:#fff;border:none;border-radius:16px;font-size:15px;font-weight:700;cursor:pointer;z-index:9999;box-shadow:0 4px 24px rgba(0,128,0,0.35);';
+    fab.style.cssText = 'position:fixed;bottom:calc(var(--nav-h) + 16px);left:50%;transform:translateX(-50%);width:214px;height:52px;background:#008000;color:#fff;border:none;border-radius:16px;font-size:15px;font-weight:700;cursor:pointer;z-index:110;box-shadow:0 4px 24px rgba(0,128,0,0.35);';
     fab.addEventListener('click', function() {
       if (!currentUser) { openAuth(); return; }
       openOfferWizard(r.id);
