@@ -11,6 +11,21 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="ХочуКупити">
+<meta name="description" content="Маркетплейс навпаки: покупці створюють запити на купівлю, продавці роблять пропозиції. Знайдіть саме те, що шукаєте.">
+<!-- OG / соцмережі -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ХочуКупити">
+<meta property="og:title" content="ХочуКупити — запитуй, тобі запропонують">
+<meta property="og:description" content="Покупці створюють запити на купівлю, продавці роблять пропозиції. Знайдіть саме те, що шукаєте.">
+<meta property="og:url" content="https://hocukupy.onrender.com/">
+<meta property="og:image" content="https://hocukupy.onrender.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="uk_UA">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ХочуКупити — запитуй, тобі запропонують">
+<meta name="twitter:description" content="Покупці створюють запити на купівлю, продавці роблять пропозиції.">
+<meta name="twitter:image" content="https://hocukupy.onrender.com/og-image.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -344,6 +359,30 @@ textarea{resize:vertical;min-height:80px;}
 .settings-version{font-size:12px;color:var(--text3);letter-spacing:0.5px;margin-bottom:8px;}
 .settings-links{display:flex;gap:20px;justify-content:center;}
 .settings-links a{font-size:12px;color:var(--text3);text-decoration:none;}
+/* ФІЛЬТРИ */
+#filter-open-btn{position:relative;margin-left:8px;}
+.filter-btn.has-filters::after{content:'';position:absolute;top:5px;right:5px;width:9px;height:9px;border-radius:50%;background:#E54D4D;border:2px solid #fff;}
+.filter-body{padding:0 20px 8px;overflow-y:auto;}
+.filter-label{font-size:12px;font-weight:700;color:var(--text3);letter-spacing:0.5px;margin:14px 0 10px 2px;}
+.filter-city-row{display:flex;align-items:center;gap:10px;width:100%;height:54px;padding:0 16px;border:1.5px solid var(--border);border-radius:14px;background:#fff;font-size:15px;font-weight:600;color:var(--text3);cursor:pointer;box-sizing:border-box;font-family:inherit;text-align:left;}
+.filter-city-row svg{width:18px;height:18px;stroke:var(--text3);flex-shrink:0;fill:none;stroke-width:1.5;}
+.filter-city-row.has-city{border-color:var(--green);color:var(--text);}
+.filter-city-row.has-city svg{stroke:var(--green);}
+.filter-city-clear{margin-left:auto;font-size:22px;line-height:1;color:var(--text3);display:none;padding:0 4px;}
+.filter-city-row.has-city .filter-city-clear{display:block;}
+.filter-price-row{display:flex;align-items:center;gap:10px;}
+.filter-price-row input{flex:1;height:54px;border:1.5px solid var(--border);border-radius:14px;padding:0 16px;font-size:15px;font-family:inherit;color:var(--text);outline:none;box-sizing:border-box;background:#fff;}
+.filter-price-row input:focus{border-color:var(--green);}
+.filter-price-dash{color:var(--text3);}
+.filter-sort{display:flex;flex-wrap:wrap;gap:8px;}
+.filter-sort-chip{padding:10px 14px;border-radius:12px;border:1.5px solid var(--border);background:#fff;font-size:14px;font-weight:600;color:var(--text2);cursor:pointer;font-family:inherit;}
+.filter-sort-chip.active{background:var(--green);border-color:var(--green);color:#fff;}
+.filter-footer{display:flex;gap:12px;}
+.filter-reset-btn{flex:0 0 auto;height:54px;padding:0 20px;border-radius:16px;border:1.5px solid var(--border);background:#fff;color:var(--text2);font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;}
+.wiz-city-row{display:flex;align-items:center;justify-content:center;gap:8px;margin:16px auto 0;padding:10px 18px;border:1.5px solid var(--border);border-radius:14px;background:#fff;font-size:15px;font-weight:600;color:var(--text3);cursor:pointer;font-family:inherit;}
+.wiz-city-row svg{width:18px;height:18px;stroke:var(--text3);fill:none;stroke-width:1.5;}
+.wiz-city-row.has-city{border-color:var(--green);color:var(--text);}
+.wiz-city-row.has-city svg{stroke:var(--green);}
 .switch{margin-left:auto;width:46px;height:28px;border-radius:99px;background:var(--border);position:relative;flex-shrink:0;transition:background 0.2s;}
 .switch-knob{position:absolute;top:2px;left:2px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.2);transition:transform 0.2s;}
 .settings-row.push-on .switch{background:var(--green);}
@@ -735,6 +774,9 @@ textarea{resize:vertical;min-height:80px;}
     <button class="filter-btn" id="cat-open-btn" title="Категорії">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
     </button>
+    <button class="filter-btn" id="filter-open-btn" title="Фільтри">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="4" y1="21" y2="14"/><line x1="4" x2="4" y1="10" y2="3"/><line x1="12" x2="12" y1="21" y2="12"/><line x1="12" x2="12" y1="8" y2="3"/><line x1="20" x2="20" y1="21" y2="16"/><line x1="20" x2="20" y1="12" y2="3"/><line x1="1" x2="7" y1="14" y2="14"/><line x1="9" x2="15" y1="8" y2="8"/><line x1="17" x2="23" y1="16" y2="16"/></svg>
+    </button>
   </div>
 </div>
 
@@ -1119,6 +1161,42 @@ textarea{resize:vertical;min-height:80px;}
   </div>
 </div>
 
+<!-- FILTER SHEET -->
+<div class="city-sheet-bg" id="filter-sheet-bg">
+  <div class="city-sheet">
+    <div class="city-sheet-handle"></div>
+    <div class="city-sheet-header">
+      <span class="city-sheet-title">ФІЛЬТРИ</span>
+      <button class="city-sheet-close" id="filter-sheet-close-btn"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="filter-body">
+      <div class="filter-label">МІСТО</div>
+      <button type="button" class="filter-city-row" id="filter-city-row">
+        <svg viewBox="0 0 24 24"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
+        <span id="filter-city-val">Будь-яке місто</span>
+        <span class="filter-city-clear" id="filter-city-clear">×</span>
+      </button>
+      <div class="filter-label">ЦІНА, ₴</div>
+      <div class="filter-price-row">
+        <input type="number" inputmode="numeric" id="filter-price-min" placeholder="від">
+        <span class="filter-price-dash">–</span>
+        <input type="number" inputmode="numeric" id="filter-price-max" placeholder="до">
+      </div>
+      <div class="filter-label">СОРТУВАННЯ</div>
+      <div class="filter-sort" id="filter-sort">
+        <button type="button" class="filter-sort-chip active" data-sort="new">Спочатку нові</button>
+        <button type="button" class="filter-sort-chip" data-sort="old">Спочатку старі</button>
+        <button type="button" class="filter-sort-chip" data-sort="cheap">Дешевші</button>
+        <button type="button" class="filter-sort-chip" data-sort="expensive">Дорожчі</button>
+      </div>
+    </div>
+    <div class="city-sheet-footer filter-footer">
+      <button class="filter-reset-btn" id="filter-reset-btn">Скинути</button>
+      <button class="city-sheet-confirm active" id="filter-apply-btn">Застосувати</button>
+    </div>
+  </div>
+</div>
+
 <!-- CITY PICKER SHEET -->
 <div class="city-sheet-bg" id="city-sheet-bg">
   <div class="city-sheet">
@@ -1308,6 +1386,10 @@ textarea{resize:vertical;min-height:80px;}
           </div>
           <div class="req-tags"><span class="req-tag" id="wiz-preview-cat"></span></div>
           <div class="req-desc" id="wiz-preview-desc"></div>
+          <button type="button" class="wiz-city-row" id="wiz-city-row">
+            <svg viewBox="0 0 24 24"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
+            <span id="wiz-preview-city">Оберіть місто</span>
+          </button>
         </div>
       </div>
 
@@ -1921,7 +2003,10 @@ document.getElementById('auth-next-btn').addEventListener('click', async functio
 // ---- CITY PICKER SHEET ----
 var citySelectedTemp = '';
 function openCitySheet() {
-  citySelectedTemp = authState.city || '';
+  citySelectedTemp = citySheetTarget === 'settings' ? (settingsCityTemp || '')
+    : citySheetTarget === 'wizard' ? (wizState.city || '')
+    : citySheetTarget === 'filter' ? (filterTemp.city || '')
+    : (authState.city || '');
   document.getElementById('city-search-input').value = '';
   renderCityList('');
   document.getElementById('city-sheet-bg').classList.add('open');
@@ -1976,6 +2061,13 @@ document.getElementById('city-sheet-confirm-btn').addEventListener('click', func
     document.getElementById('settings-city-display').value = citySelectedTemp;
     var f = document.getElementById('settings-city-field');
     f.classList.remove('city-empty'); f.classList.add('city-filled');
+  } else if (citySheetTarget === 'wizard') {
+    wizState.city = citySelectedTemp;
+    var wc2 = document.getElementById('wiz-preview-city'); if (wc2) wc2.textContent = citySelectedTemp;
+    var wr2 = document.getElementById('wiz-city-row'); if (wr2) wr2.classList.add('has-city');
+  } else if (citySheetTarget === 'filter') {
+    filterTemp.city = citySelectedTemp;
+    updateFilterUI();
   } else {
     authState.city = citySelectedTemp;
     document.getElementById('apr-city-display').value = citySelectedTemp;
@@ -2170,6 +2262,37 @@ document.getElementById('filter-row').addEventListener('click', function(e) {
   loadRequests();
 });
 
+// ---- ФІЛЬТРИ (місто / ціна / сортування) ----
+var filterTemp = { city: '', priceMin: '', priceMax: '', sort: 'new' };
+function filtersActive() { return !!(filterState.city || filterState.priceMin || filterState.priceMax || (filterState.sort && filterState.sort !== 'new')); }
+function updateFilterBadge() { document.getElementById('filter-open-btn').classList.toggle('has-filters', filtersActive()); }
+function updateFilterUI() {
+  document.getElementById('filter-city-val').textContent = filterTemp.city || 'Будь-яке місто';
+  document.getElementById('filter-city-row').classList.toggle('has-city', !!filterTemp.city);
+  document.getElementById('filter-price-min').value = filterTemp.priceMin;
+  document.getElementById('filter-price-max').value = filterTemp.priceMax;
+  document.querySelectorAll('#filter-sort .filter-sort-chip').forEach(function(c){ c.classList.toggle('active', c.dataset.sort === filterTemp.sort); });
+}
+function openFilterSheet() {
+  filterTemp = { city: filterState.city, priceMin: filterState.priceMin, priceMax: filterState.priceMax, sort: filterState.sort };
+  updateFilterUI();
+  document.getElementById('filter-sheet-bg').classList.add('open');
+}
+function closeFilterSheet() { document.getElementById('filter-sheet-bg').classList.remove('open'); }
+document.getElementById('filter-open-btn').addEventListener('click', openFilterSheet);
+document.getElementById('filter-sheet-close-btn').addEventListener('click', closeFilterSheet);
+document.getElementById('filter-sheet-bg').addEventListener('click', function(e){ if (e.target === this) closeFilterSheet(); });
+document.getElementById('filter-city-row').addEventListener('click', function(){ citySheetTarget = 'filter'; openCitySheet(); });
+document.getElementById('filter-city-clear').addEventListener('click', function(e){ e.stopPropagation(); filterTemp.city = ''; updateFilterUI(); });
+document.getElementById('filter-sort').addEventListener('click', function(e){ var c = e.target.closest('.filter-sort-chip'); if (!c) return; filterTemp.sort = c.dataset.sort; updateFilterUI(); });
+document.getElementById('filter-price-min').addEventListener('input', function(){ filterTemp.priceMin = this.value.replace(/[^0-9]/g, ''); });
+document.getElementById('filter-price-max').addEventListener('input', function(){ filterTemp.priceMax = this.value.replace(/[^0-9]/g, ''); });
+document.getElementById('filter-reset-btn').addEventListener('click', function(){ filterTemp = { city: '', priceMin: '', priceMax: '', sort: 'new' }; updateFilterUI(); });
+document.getElementById('filter-apply-btn').addEventListener('click', function(){
+  filterState = { city: filterTemp.city, priceMin: filterTemp.priceMin, priceMax: filterTemp.priceMax, sort: filterTemp.sort };
+  closeFilterSheet(); updateFilterBadge(); loadRequests();
+});
+
 // ---- ENSURE PROFILE ----
 async function ensureProfile(user) {
   var res = await db.from('profiles').select('id').eq('id', user.id).single();
@@ -2242,16 +2365,24 @@ document.getElementById('sidebar-photo-input').addEventListener('change', functi
 // ---- LOAD REQUESTS ----
 var FEED_PAGE_SIZE = 12;
 var feed = { page: 0, loading: false, done: false };
+var filterState = { city: '', priceMin: '', priceMax: '', sort: 'new' };
 var feedObserver = null;
 
 function buildFeedQuery(from, to) {
+  var profSel = filterState.city ? 'profiles!inner(name, city)' : 'profiles(name, city)';
   var query = db.from('requests')
-    .select('*, profiles(name), photos, offers!request_id(id, user_id, description, price, photos, profiles(name))')
-    .order('closed_at', { ascending: true, nullsFirst: true })
-    .order('created_at', { ascending: false })
-    .range(from, to);
+    .select('*, ' + profSel + ', offers!request_id(id, user_id, description, price, photos, profiles(name))')
+    .order('closed_at', { ascending: true, nullsFirst: true });
+  if (filterState.sort === 'cheap') query = query.order('budget', { ascending: true, nullsFirst: false });
+  else if (filterState.sort === 'expensive') query = query.order('budget', { ascending: false, nullsFirst: false });
+  else if (filterState.sort === 'old') query = query.order('created_at', { ascending: true });
+  else query = query.order('created_at', { ascending: false });
+  query = query.range(from, to);
   if (currentCat) query = query.eq('category', currentCat);
   if (searchQuery) query = query.or('title.ilike.%' + searchQuery + '%,description.ilike.%' + searchQuery + '%');
+  if (filterState.city) query = query.eq('profiles.city', filterState.city);
+  if (filterState.priceMin) query = query.gte('budget', Number(filterState.priceMin));
+  if (filterState.priceMax) query = query.lte('budget', Number(filterState.priceMax));
   return query;
 }
 
@@ -2521,11 +2652,12 @@ if (window.innerWidth > 700) {
 
 // ---- FAB ----
 // ---- WIZARD ----
-var wizState = { step: 1, photos: [], photoFiles: [], category: '', budget: '', title: '', desc: '' };
+var wizState = { step: 1, photos: [], photoFiles: [], category: '', budget: '', title: '', desc: '', city: '' };
 
-function openWizard() {
+async function openWizard() {
   if (!currentUser) { openAuth(); return; }
-  wizState = { step: 1, photos: [], photoFiles: [], category: '', budget: '', title: '', desc: '' };
+  wizState = { step: 1, photos: [], photoFiles: [], category: '', budget: '', title: '', desc: '', city: '' };
+  try { var pr = await db.from('profiles').select('city').eq('id', currentUser.id).maybeSingle(); wizState.city = (pr.data && pr.data.city) || ''; } catch (e) {}
   wizGotoStep(1);
   showPage('wizard');
 }
@@ -2597,7 +2729,11 @@ function wizRenderPreview() {
   if (wizState.budget && wizState.budget!=='0') { bw.style.display=''; bd.textContent=Number(wizState.budget).toLocaleString('uk')+' ₴'; } else bw.style.display='none';
   document.getElementById('wiz-preview-cat').textContent = wizState.category||'Інше';
   document.getElementById('wiz-preview-desc').textContent = wizState.desc;
+  var wc = document.getElementById('wiz-preview-city');
+  wc.textContent = wizState.city || 'Оберіть місто';
+  document.getElementById('wiz-city-row').classList.toggle('has-city', !!wizState.city);
 }
+document.getElementById('wiz-city-row').addEventListener('click', function(){ citySheetTarget = 'wizard'; openCitySheet(); });
 
 document.getElementById('wizard-back-btn').addEventListener('click', function() {
   if (wizState.step<=1) { showPage('main'); setActiveNav('nav-home'); } else wizGotoStep(wizState.step-1);
@@ -2625,7 +2761,7 @@ document.getElementById('wizard-next-btn').addEventListener('click', async funct
     var up=await db.storage.from('offers-photos').upload(path,f,{upsert:true});
     if (!up.error) { var pub=db.storage.from('offers-photos').getPublicUrl(path); photoUrls.push(pub.data.publicUrl); }
   }
-  var res=await db.from('requests').insert({user_id:currentUser.id,title:wizState.title,description:wizState.desc,category:wizState.category||'Інше',budget:wizState.budget?Number(wizState.budget):null,photos:photoUrls.length?photoUrls:null,is_active:true});
+  var res=await db.from('requests').insert({user_id:currentUser.id,title:wizState.title,description:wizState.desc,category:wizState.category||'Інше',budget:wizState.budget?Number(wizState.budget):null,photos:photoUrls.length?photoUrls:null,city:wizState.city||null,is_active:true});
   if (res.error) { toast('Помилка: '+res.error.message,true); this.disabled=false; this.textContent='Опублікувати'; return; }
   toast('Запит опубліковано! 🎉');
   showPage('main'); setActiveNav('nav-home'); loadRequests();
