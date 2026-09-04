@@ -35,7 +35,7 @@
   --border:#DFDEDE;--border2:#DFDEDE;
   --text:#121111;--text2:#292526;--text3:#787676;
   --radius:16px;--radius-sm:8px;--radius-xs:6px;
-  --nav-h:calc(60px + env(safe-area-inset-bottom));
+  --nav-h:calc(76px + env(safe-area-inset-bottom));
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 body{font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', sans-serif;background:#fff;color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;}
@@ -112,28 +112,27 @@ body{font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', sans-serif;background:#
 
 /* BOTTOM NAV */
 .bottom-nav{
-  position:fixed;bottom:0;left:0;right:0;
-  height:calc(60px + env(safe-area-inset-bottom));
-  padding-bottom:env(safe-area-inset-bottom);
-  background:rgba(245,245,245,0.92);
-  backdrop-filter:blur(20px);
-  -webkit-backdrop-filter:blur(20px);
-  display:flex;align-items:flex-start;
+  position:fixed;left:14px;right:14px;
+  bottom:calc(10px + env(safe-area-inset-bottom));
+  border-radius:24px;
+  background:rgba(255,255,255,0.86);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  border:1px solid rgba(0,0,0,0.045);
+  box-shadow:0 10px 30px rgba(18,17,17,0.12), 0 2px 8px rgba(18,17,17,0.05);
+  display:flex;
   z-index:100;
   transform:translateZ(0);
   -webkit-transform:translateZ(0);
 }
-.bottom-nav::before{
-  content:'';position:absolute;top:-32px;left:0;right:0;height:32px;
-  background:linear-gradient(to bottom, rgba(245,245,245,0) 0%, rgba(245,245,245,0.7) 100%);
-  pointer-events:none;
-}
-.nav-row{display:flex;align-items:center;height:60px;width:100%;}
-.nav-item{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;padding:6px 4px;border:none;background:none;height:60px;font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', sans-serif;}
-.nav-badge{position:absolute;top:6px;left:calc(50% + 6px);min-width:16px;height:16px;padding:0 4px;border-radius:99px;background:#E54D4D;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;box-sizing:border-box;line-height:1;}
-.nav-item .nav-icon{width:23px;height:23px;stroke:none;fill:#B0AEAE;transition:all 0.15s;}
-.nav-item .nav-label{max-width:100%;font-size:10px;font-weight:600;color:#B0AEAE;line-height:1;letter-spacing:-0.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color 0.15s, font-weight 0.15s;}
-.nav-item.active .nav-icon{fill:var(--green);}
+.nav-row{display:flex;align-items:center;height:64px;width:100%;padding:0 6px;}
+.nav-item{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;padding:8px 2px 7px;border:none;background:none;height:64px;font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', sans-serif;}
+.nav-item-pill{display:flex;align-items:center;justify-content:center;width:40px;height:26px;border-radius:12px;background:transparent;transition:background 0.2s;}
+.nav-item.active .nav-item-pill{background:var(--green-light);}
+.nav-badge{position:absolute;top:2px;left:calc(50% + 12px);min-width:16px;height:16px;padding:0 4px;border-radius:99px;background:#E54D4D;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;box-sizing:border-box;line-height:1;}
+.nav-item .nav-icon{width:21px;height:21px;fill:none;stroke:#ACA9A9;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:stroke 0.15s;}
+.nav-item .nav-label{max-width:100%;font-size:10px;font-weight:600;color:#ACA9A9;line-height:1;letter-spacing:-0.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color 0.15s, font-weight 0.15s;}
+.nav-item.active .nav-icon{stroke:var(--green);}
 .nav-item.active .nav-label{color:var(--green);font-weight:700;}
 @media(min-width:701px){.bottom-nav{display:none;}}
 
@@ -1700,21 +1699,21 @@ textarea{resize:vertical;min-height:80px;}
 <nav class="bottom-nav">
   <div class="nav-row">
     <button class="nav-item active" id="nav-home">
-      <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 24 24" class="nav-icon"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      <span class="nav-item-pill"><svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" class="nav-icon"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span>
       <span class="nav-label">Головна</span>
     </button>
     <button class="nav-item" id="nav-chats">
-      <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 24 24" class="nav-icon"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/></svg>
+      <span class="nav-item-pill"><svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" class="nav-icon"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/></svg></span>
       <span class="nav-label">Чати</span>
       <span class="nav-badge" id="chats-badge" style="display:none"></span>
     </button>
     <button class="nav-item" id="nav-my-requests">
-      <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 24 24" class="nav-icon"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+      <span class="nav-item-pill"><svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" class="nav-icon"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg></span>
       <span class="nav-label">Запити</span>
       <span class="nav-badge" id="reqs-badge" style="display:none"></span>
     </button>
     <button class="nav-item" id="nav-saved">
-      <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 24 24" class="nav-icon"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+      <span class="nav-item-pill"><svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" class="nav-icon"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></span>
       <span class="nav-label">Збережені</span>
     </button>
   </div>
