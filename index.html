@@ -383,6 +383,18 @@ textarea{resize:vertical;min-height:80px;}
 .wiz-city-row svg{width:18px;height:18px;stroke:var(--text3);fill:none;stroke-width:1.5;}
 .wiz-city-row.has-city{border-color:var(--green);color:var(--text);}
 .wiz-city-row.has-city svg{stroke:var(--green);}
+/* СКАРГИ */
+.report-body{padding:0 20px 8px;overflow-y:auto;}
+.report-reasons{display:flex;flex-direction:column;gap:8px;margin-bottom:4px;}
+.report-reason{text-align:left;padding:14px 16px;border-radius:14px;border:1.5px solid var(--border);background:#fff;font-size:14px;font-weight:600;color:var(--text2);cursor:pointer;font-family:inherit;}
+.report-reason.active{border-color:var(--green);background:var(--green-light);color:var(--green-dark);}
+.report-comment{width:100%;border:1.5px solid var(--border);border-radius:14px;padding:12px 14px;font-size:14px;font-family:inherit;color:var(--text);outline:none;box-sizing:border-box;resize:none;}
+.report-comment:focus{border-color:var(--green);}
+.report-wrap{text-align:center;padding:18px 0 6px;}
+.report-link{background:none;border:none;color:var(--text3);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;text-decoration:underline;}
+.prof-report-btn{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--border);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.prof-report-btn svg{width:20px;height:20px;stroke:var(--text2);fill:none;stroke-width:1.8;}
+.prof-report-btn:active{background:var(--bg);}
 /* ЮРИДИЧНІ СТОРІНКИ */
 .legal-page{background:#fff;min-height:100vh;padding-bottom:calc(var(--nav-h) + 24px);}
 .legal-header-title{font-size:16px;font-weight:700;color:var(--text);flex:1;text-align:center;}
@@ -853,7 +865,9 @@ textarea{resize:vertical;min-height:80px;}
       <button class="cats-back-btn" id="back-from-profile-btn">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
       </button>
-      <div style="width:44px"></div>
+      <button class="prof-report-btn" id="prof-report-btn" style="display:none" title="Поскаржитись">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+      </button>
     </div>
     <div class="prof-top">
       <div class="prof-avatar-wrap" id="prof-avatar-wrap">
@@ -1295,6 +1309,32 @@ textarea{resize:vertical;min-height:80px;}
     </div>
     <div class="auth-footer" id="auth-footer">
       <button class="auth-next-btn" id="auth-next-btn" disabled>Продовжити</button>
+    </div>
+  </div>
+</div>
+
+<!-- REPORT SHEET -->
+<div class="city-sheet-bg" id="report-sheet-bg">
+  <div class="city-sheet">
+    <div class="city-sheet-handle"></div>
+    <div class="city-sheet-header">
+      <span class="city-sheet-title" id="report-sheet-title">Поскаржитись</span>
+      <button class="city-sheet-close" id="report-sheet-close-btn"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="report-body">
+      <div class="filter-label">ПРИЧИНА</div>
+      <div class="report-reasons" id="report-reasons">
+        <button type="button" class="report-reason" data-reason="Шахрайство або обман">Шахрайство або обман</button>
+        <button type="button" class="report-reason" data-reason="Заборонений товар">Заборонений товар</button>
+        <button type="button" class="report-reason" data-reason="Спам або реклама">Спам або реклама</button>
+        <button type="button" class="report-reason" data-reason="Образи чи недоречний контент">Образи чи недоречний контент</button>
+        <button type="button" class="report-reason" data-reason="Інше">Інше</button>
+      </div>
+      <div class="filter-label">КОМЕНТАР (НЕОБОВ'ЯЗКОВО)</div>
+      <textarea id="report-comment" class="report-comment" placeholder="Опишіть проблему детальніше" rows="3"></textarea>
+    </div>
+    <div class="city-sheet-footer">
+      <button class="city-sheet-confirm" id="report-submit-btn" disabled>Надіслати скаргу</button>
     </div>
   </div>
 </div>
@@ -3222,6 +3262,7 @@ async function openRequestPage(requestId) {
   }
 
   html += '<div id="req-similar-slot"></div>';
+  if (!isOwner && currentUser) html += '<div class="report-wrap"><button class="report-link" onclick="openReport(\'request\',\'' + r.id + '\')">Поскаржитись на запит</button></div>';
   html += '</div>'; // req-body
 
   document.getElementById('request-page-content').innerHTML = html;
@@ -3547,6 +3588,7 @@ async function openProfile(userId) {
   // Own profile controls
   document.getElementById('prof-avatar-edit-btn').style.display = isOwn ? '' : 'none';
   document.getElementById('prof-own-actions').style.display = isOwn ? '' : 'none';
+  document.getElementById('prof-report-btn').style.display = (currentUser && !isOwn) ? '' : 'none';
 
   // Stats
   var reqRes = await db.from('requests').select('id, closed_at').eq('user_id', userId);
@@ -3728,6 +3770,44 @@ document.getElementById('prof-my-requests-btn').addEventListener('click', functi
   openActivity('requests');
 });
 document.getElementById('prof-settings-btn').addEventListener('click', function() { openSettings(); });
+
+// ---- СКАРГИ ----
+var reportTarget = { type: '', id: '' };
+var reportReason = '';
+function openReport(type, id) {
+  if (!currentUser) { openAuth(); return; }
+  reportTarget = { type: type, id: id };
+  reportReason = '';
+  document.querySelectorAll('#report-reasons .report-reason').forEach(function(c){ c.classList.remove('active'); });
+  document.getElementById('report-comment').value = '';
+  var b = document.getElementById('report-submit-btn'); b.disabled = true; b.classList.remove('active');
+  document.getElementById('report-sheet-title').textContent = type === 'profile' ? 'Поскаржитись на користувача' : 'Поскаржитись на запит';
+  document.getElementById('report-sheet-bg').classList.add('open');
+}
+function closeReport() { document.getElementById('report-sheet-bg').classList.remove('open'); }
+document.getElementById('report-sheet-close-btn').addEventListener('click', closeReport);
+document.getElementById('report-sheet-bg').addEventListener('click', function(e){ if (e.target === this) closeReport(); });
+document.getElementById('report-reasons').addEventListener('click', function(e){
+  var c = e.target.closest('.report-reason'); if (!c) return;
+  reportReason = c.dataset.reason;
+  document.querySelectorAll('#report-reasons .report-reason').forEach(function(x){ x.classList.toggle('active', x === c); });
+  var b = document.getElementById('report-submit-btn'); b.disabled = false; b.classList.add('active');
+});
+document.getElementById('report-submit-btn').addEventListener('click', async function(){
+  if (!reportReason || !currentUser) return;
+  this.disabled = true;
+  var res = await db.from('reports').insert({
+    reporter_id: currentUser.id,
+    target_type: reportTarget.type,
+    target_id: reportTarget.id,
+    reason: reportReason,
+    comment: (document.getElementById('report-comment').value || '').trim() || null
+  });
+  if (res.error) { toast('Не вдалося надіслати: ' + res.error.message, true); this.disabled = false; return; }
+  closeReport();
+  toast('Скаргу надіслано. Дякуємо 🙏');
+});
+document.getElementById('prof-report-btn').addEventListener('click', function(){ openReport('profile', window._profileUserId); });
 
 // ---- SETTINGS PAGE ----
 var settingsCityTemp = '';
