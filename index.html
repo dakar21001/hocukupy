@@ -76,7 +76,7 @@ body{font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', sans-serif;background:#
 .cat-chip:hover:not(.active){border-color:var(--green);color:var(--green);}
 
 /* MAIN */
-.main-content{padding:16px 16px calc(var(--nav-h)+16px);background:#fff;}
+.main-content{padding:16px 16px calc(var(--nav-h) + 16px);background:#fff;}
 @media(min-width:701px){.main-content{max-width:900px;margin:0 auto;padding:24px;display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start;background:#fff;}}
 
 /* CARD GRID */
@@ -173,7 +173,7 @@ textarea{resize:vertical;min-height:80px;}
 .modal-close{float:right;background:none;border:none;font-size:22px;cursor:pointer;color:var(--text3);line-height:1;margin-top:-4px;}
 
 /* REQUEST PAGE */
-.req-page-wrap{background:#fff;min-height:100vh;padding-bottom:calc(var(--nav-h)+80px);}
+.req-page-wrap{background:#fff;min-height:100vh;padding-bottom:calc(var(--nav-h) + 80px);}
 .req-page-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:#fff;position:sticky;top:0;z-index:20;}
 .req-page-share-btn{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--border);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .req-page-share-btn svg{width:20px;height:20px;stroke:var(--text2);}
@@ -240,7 +240,7 @@ textarea{resize:vertical;min-height:80px;}
 .offer-card-actions .btn{flex:1;height:42px;border-radius:10px;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;}
 
 /* FAB offer button */
-.req-offer-fab{position:fixed;bottom:calc(var(--nav-h)+16px);left:50%;transform:translateX(-50%);width:214px;height:52px;background:var(--green);color:#fff;border:none;border-radius:16px;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 24px rgba(0,128,0,0.35);z-index:110;transition:background 0.15s;white-space:nowrap;}
+.req-offer-fab{position:fixed;bottom:calc(var(--nav-h) + 16px);left:50%;transform:translateX(-50%);width:214px;height:52px;background:var(--green);color:#fff;border:none;border-radius:16px;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 24px rgba(0,128,0,0.35);z-index:110;transition:background 0.15s;white-space:nowrap;}
 .req-offer-fab:active{background:var(--green-dark);}
 
 /* ACTIVITY PAGE */
@@ -279,9 +279,9 @@ textarea{resize:vertical;min-height:80px;}
 
 /* ACTIVITY PAGE END */
 
-.prof-wrap{background:#fff;min-height:100vh;padding-bottom:calc(var(--nav-h)+24px);}
+.prof-wrap{background:#fff;min-height:100vh;padding-bottom:calc(var(--nav-h) + 24px);}
 /* Saved / Збережені */
-.saved-wrap{background:#fff;min-height:100vh;padding-bottom:calc(var(--nav-h)+24px);}
+.saved-wrap{background:#fff;min-height:100vh;padding-bottom:calc(var(--nav-h) + 24px);}
 .saved-title{font-size:28px;font-weight:700;color:var(--text);text-align:center;padding:20px 20px 8px;position:sticky;top:0;background:#fff;z-index:20;}
 .saved-list{padding:8px 20px 0;}
 .saved-card{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid #F2F2F2;overflow:hidden;}
@@ -554,7 +554,7 @@ textarea{resize:vertical;min-height:80px;}
 .lightbox-close{position:absolute;top:20px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;cursor:pointer;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
 
 /* TOAST */
-.toast{position:fixed;bottom:calc(var(--nav-h)+16px);left:50%;transform:translateX(-50%) translateY(20px);background:#111;color:#fff;font-size:13px;font-weight:600;padding:12px 20px;border-radius:99px;opacity:0;transition:all 0.25s;z-index:999;white-space:nowrap;}
+.toast{position:fixed;bottom:calc(var(--nav-h) + 16px);left:50%;transform:translateX(-50%) translateY(20px);background:#111;color:#fff;font-size:13px;font-weight:600;padding:12px 20px;border-radius:99px;opacity:0;transition:all 0.25s;z-index:999;white-space:nowrap;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 .toast.error{background:#c0392b;}
 @media(min-width:701px){.toast{bottom:24px;}}
@@ -566,7 +566,7 @@ textarea{resize:vertical;min-height:80px;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
 /* PROFILE */
-.profile-page{max-width:700px;margin:0 auto;padding:16px 16px calc(var(--nav-h)+16px);}
+.profile-page{max-width:700px;margin:0 auto;padding:16px 16px calc(var(--nav-h) + 16px);}
 .profile-header{background:var(--surface);border-radius:var(--radius);padding:20px;margin-bottom:16px;}
 .profile-top{display:flex;align-items:center;gap:16px;margin-bottom:16px;}
 .avatar{width:64px;height:64px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:22px;font-weight:700;color:var(--green-dark);flex-shrink:0;overflow:hidden;}
@@ -585,7 +585,7 @@ textarea{resize:vertical;min-height:80px;}
 .req-actions{display:flex;gap:8px;margin-top:12px;border-top:1px solid var(--border);padding-top:12px;}
 
 /* CHAT LIST */
-.chat-list-page-wrap{background:#fff;min-height:100vh;padding-bottom:calc(var(--nav-h)+16px);}
+.chat-list-page-wrap{background:#fff;min-height:100vh;padding-bottom:calc(var(--nav-h) + 16px);}
 .chat-list-header{padding:20px 20px 12px;text-align:center;}
 .chat-list-title{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:18px;font-weight:700;color:var(--text);}
 .chat-list-items{padding:0 16px;display:flex;flex-direction:column;gap:0;}
@@ -735,7 +735,7 @@ textarea{resize:vertical;min-height:80px;}
 .confirm-btn-ok svg{stroke:rgba(0,0,0,0.6);stroke-width:2;}
 
 /* CATEGORIES PAGE */
-.cats-page{background:#fff;min-height:100vh;padding-bottom:calc(var(--nav-h)+16px);}
+.cats-page{background:#fff;min-height:100vh;padding-bottom:calc(var(--nav-h) + 16px);}
 .cats-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 20px;position:sticky;top:0;background:#fff;z-index:20;}
 .cats-back-btn{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--border);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .cats-back-btn svg{width:20px;height:20px;stroke:var(--text);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
