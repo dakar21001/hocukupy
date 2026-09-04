@@ -344,6 +344,10 @@ textarea{resize:vertical;min-height:80px;}
 .settings-version{font-size:12px;color:var(--text3);letter-spacing:0.5px;margin-bottom:8px;}
 .settings-links{display:flex;gap:20px;justify-content:center;}
 .settings-links a{font-size:12px;color:var(--text3);text-decoration:none;}
+.switch{margin-left:auto;width:46px;height:28px;border-radius:99px;background:var(--border);position:relative;flex-shrink:0;transition:background 0.2s;}
+.switch-knob{position:absolute;top:2px;left:2px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.2);transition:transform 0.2s;}
+.settings-row.push-on .switch{background:var(--green);}
+.settings-row.push-on .switch-knob{transform:translateX(18px);}
 
 /* AUTH FLOW */
 .auth-wrap{background:#fff;height:100dvh;display:flex;flex-direction:column;overflow:hidden;}
@@ -903,8 +907,8 @@ textarea{resize:vertical;min-height:80px;}
       </button>
       <button class="settings-row" id="settings-push-btn">
         <span class="settings-row-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg></span>
-        <span class="push-label">Увімкнути сповіщення</span>
-        <svg class="settings-row-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        <span class="push-label">Сповіщення</span>
+        <span class="switch" id="settings-push-switch"><span class="switch-knob"></span></span>
       </button>
       <button class="settings-row" id="settings-support-btn">
         <span class="settings-row-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></span>
@@ -3951,8 +3955,7 @@ async function updatePushSettingRow() {
   if (on) {
     try { var reg = await navigator.serviceWorker.ready; on = !!(await reg.pushManager.getSubscription()); } catch (e) { on = false; }
   }
-  var label = row.querySelector('.push-label');
-  if (label) label.textContent = on ? 'Сповіщення увімкнено' : 'Увімкнути сповіщення';
+  row.classList.toggle('push-on', on);
 }
 
 db.channel('public-changes')
