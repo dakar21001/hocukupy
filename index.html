@@ -395,6 +395,21 @@ textarea{resize:vertical;min-height:80px;}
 .prof-report-btn{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--border);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .prof-report-btn svg{width:20px;height:20px;stroke:var(--text2);fill:none;stroke-width:1.8;}
 .prof-report-btn:active{background:var(--bg);}
+/* АДМІН/МОДЕРАЦІЯ */
+.admin-list{padding:8px 16px 24px;max-width:720px;margin:0 auto;}
+.admin-empty{text-align:center;color:var(--text3);padding:60px 20px;font-size:15px;}
+.admin-card{border:1.5px solid var(--border);border-radius:16px;padding:14px;margin-bottom:12px;background:#fff;}
+.admin-card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.admin-badge{font-size:11px;font-weight:800;letter-spacing:0.3px;text-transform:uppercase;color:var(--green-dark);background:var(--green-light);padding:3px 10px;border-radius:99px;}
+.admin-date{font-size:12px;color:var(--text3);}
+.admin-reason{font-size:15px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.admin-target{font-size:14px;color:var(--text2);margin-bottom:4px;word-break:break-word;}
+.admin-comment{font-size:13px;color:var(--text3);font-style:italic;margin-bottom:10px;}
+.admin-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
+.admin-btn{padding:8px 14px;border-radius:10px;border:1.5px solid var(--border);background:#fff;font-size:13px;font-weight:700;color:var(--text2);cursor:pointer;font-family:inherit;}
+.admin-btn:active{background:var(--bg);}
+.admin-btn-danger{border-color:#E54D4D;color:#E54D4D;}
+.admin-btn-done{background:var(--green);border-color:var(--green);color:#fff;}
 /* ЮРИДИЧНІ СТОРІНКИ */
 .legal-page{background:#fff;min-height:100vh;padding-bottom:calc(var(--nav-h) + 24px);}
 .legal-header-title{font-size:16px;font-weight:700;color:var(--text);flex:1;text-align:center;}
@@ -978,6 +993,11 @@ textarea{resize:vertical;min-height:80px;}
         <span class="push-label">Сповіщення</span>
         <span class="switch" id="settings-push-switch"><span class="switch-knob"></span></span>
       </button>
+      <button class="settings-row" id="settings-admin-btn" style="display:none">
+        <span class="settings-row-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg></span>
+        Модерація
+        <svg class="settings-row-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
       <button class="settings-row" id="settings-support-btn">
         <span class="settings-row-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></span>
         Чат підтримки
@@ -1310,6 +1330,20 @@ textarea{resize:vertical;min-height:80px;}
     <div class="auth-footer" id="auth-footer">
       <button class="auth-next-btn" id="auth-next-btn" disabled>Продовжити</button>
     </div>
+  </div>
+</div>
+
+<!-- ADMIN PAGE -->
+<div id="admin-page" style="display:none">
+  <div class="legal-page">
+    <div class="cats-header">
+      <button class="cats-back-btn" id="back-from-admin-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div class="legal-header-title">Модерація</div>
+      <div style="width:44px"></div>
+    </div>
+    <div id="admin-list" class="admin-list"></div>
   </div>
 </div>
 
@@ -1856,7 +1890,7 @@ const photoState = {};
 
 // ---- PAGES ----
 function showPage(page) {
-  ['main-page','profile-page','chat-list-page','chat-window-page','cats-page','request-page','wizard-page','offer-wizard-page','auth-page','settings-page','user-items-page','saved-page','privacy-page','terms-page'].forEach(function(id) {
+  ['main-page','profile-page','chat-list-page','chat-window-page','cats-page','request-page','wizard-page','offer-wizard-page','auth-page','settings-page','user-items-page','saved-page','privacy-page','terms-page','admin-page'].forEach(function(id) {
     var el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
@@ -1868,7 +1902,7 @@ function showPage(page) {
   // Hide mobile-header and FAB on chat/cats pages
   var mobileHeader = document.querySelector('.mobile-header');
   var fab = document.getElementById('fab-btn');
-  var hiddenPages = ['profile','chat-list','chat-window','cats','request','wizard','offer-wizard','auth','settings','user-items','saved','privacy','terms'];
+  var hiddenPages = ['profile','chat-list','chat-window','cats','request','wizard','offer-wizard','auth','settings','user-items','saved','privacy','terms','admin'];
   var hide = hiddenPages.indexOf(page) !== -1;
   if (mobileHeader) mobileHeader.style.display = hide ? 'none' : '';
   if (fab) fab.style.display = hide ? 'none' : '';
@@ -2363,7 +2397,8 @@ function setUserUI(user) {
     updateGreeting(null);
   }
   updateNavBadges();
-  if (currentUser) { subscribeToPush(true); }
+  if (currentUser) { subscribeToPush(true); refreshSelfFlags(); }
+  else { window._isAdmin = false; }
   updatePushSettingRow();
 }
 
@@ -2551,9 +2586,10 @@ var filterState = { city: '', priceMin: '', priceMax: '', sort: 'new' };
 var feedObserver = null;
 
 function buildFeedQuery(from, to) {
-  var profSel = filterState.city ? 'profiles!inner(name, city)' : 'profiles(name, city)';
   var query = db.from('requests')
-    .select('*, ' + profSel + ', offers!request_id(id, user_id, description, price, photos, profiles(name))')
+    .select('*, profiles!inner(name, city, is_banned), offers!request_id(id, user_id, description, price, photos, profiles(name))')
+    .eq('is_hidden', false)
+    .eq('profiles.is_banned', false)
     .order('closed_at', { ascending: true, nullsFirst: true });
   if (filterState.sort === 'cheap') query = query.order('budget', { ascending: true, nullsFirst: false });
   else if (filterState.sort === 'expensive') query = query.order('budget', { ascending: false, nullsFirst: false });
@@ -3809,6 +3845,90 @@ document.getElementById('report-submit-btn').addEventListener('click', async fun
 });
 document.getElementById('prof-report-btn').addEventListener('click', function(){ openReport('profile', window._profileUserId); });
 
+// ---- АДМІН / МОДЕРАЦІЯ ----
+window._isAdmin = false;
+async function refreshSelfFlags() {
+  if (!currentUser) { window._isAdmin = false; return; }
+  try {
+    var r = await db.from('profiles').select('is_admin, is_banned').eq('id', currentUser.id).maybeSingle();
+    var pr = r.data || {};
+    window._isAdmin = !!pr.is_admin;
+    var arow = document.getElementById('settings-admin-btn');
+    if (arow) arow.style.display = window._isAdmin ? '' : 'none';
+    if (pr.is_banned) handleBanned();
+  } catch (e) {}
+}
+function handleBanned() {
+  toast('Ваш акаунт заблоковано за порушення правил', true);
+  setTimeout(async function() {
+    try { await db.auth.signOut(); } catch (e) {}
+    setUserUI(null); showPage('main'); setActiveNav('nav-home'); loadRequests();
+  }, 1800);
+}
+document.getElementById('settings-admin-btn').addEventListener('click', function(){ openAdmin(); });
+document.getElementById('back-from-admin-btn').addEventListener('click', function(){ showPage('settings'); });
+
+async function openAdmin() {
+  if (!window._isAdmin) { toast('Немає доступу', true); return; }
+  showPage('admin');
+  var cont = document.getElementById('admin-list');
+  cont.innerHTML = '<div class="spinner" style="margin:40px auto"></div>';
+  var res = await db.from('reports').select('*').neq('status', 'resolved').order('created_at', { ascending: false });
+  if (res.error) { cont.innerHTML = '<div class="admin-empty">Помилка: ' + esc(res.error.message) + '</div>'; return; }
+  var reports = res.data || [];
+  if (!reports.length) { cont.innerHTML = '<div class="admin-empty">Немає нових скарг 🎉</div>'; return; }
+  var reqIds = [], profIds = [];
+  reports.forEach(function(r){ if (r.target_type === 'request') reqIds.push(r.target_id); else if (r.target_type === 'profile') profIds.push(r.target_id); });
+  var reqMap = {}, profMap = {};
+  if (reqIds.length) { var rr = await db.from('requests').select('id, title, is_hidden').in('id', reqIds); (rr.data || []).forEach(function(x){ reqMap[x.id] = x; }); }
+  if (profIds.length) { var pp = await db.from('profiles').select('id, name, is_banned').in('id', profIds); (pp.data || []).forEach(function(x){ profMap[x.id] = x; }); }
+  var typeLabel = { request: 'Запит', profile: 'Користувач', offer: 'Пропозиція' };
+  var html = '';
+  reports.forEach(function(r) {
+    var when = new Date(r.created_at).toLocaleDateString('uk', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+    var target = '', actions = '';
+    if (r.target_type === 'request') {
+      var rq = reqMap[r.target_id];
+      target = rq ? esc(rq.title || 'Без назви') : '<i>запит видалено</i>';
+      if (rq) {
+        actions += '<button class="admin-btn" onclick="openRequestPage(\'' + r.target_id + '\')">Відкрити</button>';
+        actions += '<button class="admin-btn ' + (rq.is_hidden ? '' : 'admin-btn-danger') + '" onclick="adminHideRequest(\'' + r.target_id + '\',' + (rq.is_hidden ? 'false' : 'true') + ')">' + (rq.is_hidden ? 'Показати' : 'Приховати') + '</button>';
+      }
+    } else if (r.target_type === 'profile') {
+      var pf = profMap[r.target_id];
+      target = pf ? esc(pf.name || 'Без імені') : '<i>профіль видалено</i>';
+      if (pf) {
+        actions += '<button class="admin-btn" onclick="openProfile(\'' + r.target_id + '\')">Відкрити</button>';
+        actions += '<button class="admin-btn ' + (pf.is_banned ? '' : 'admin-btn-danger') + '" onclick="adminBan(\'' + r.target_id + '\',' + (pf.is_banned ? 'false' : 'true') + ')">' + (pf.is_banned ? 'Розбанити' : 'Забанити') + '</button>';
+      }
+    }
+    actions += '<button class="admin-btn admin-btn-done" onclick="adminResolve(\'' + r.id + '\')">Опрацьовано</button>';
+    html += '<div class="admin-card">'
+      + '<div class="admin-card-top"><span class="admin-badge">' + (typeLabel[r.target_type] || r.target_type) + '</span><span class="admin-date">' + when + '</span></div>'
+      + '<div class="admin-reason">' + esc(r.reason) + '</div>'
+      + '<div class="admin-target">' + target + '</div>'
+      + (r.comment ? '<div class="admin-comment">«' + esc(r.comment) + '»</div>' : '')
+      + '<div class="admin-actions">' + actions + '</div>'
+      + '</div>';
+  });
+  cont.innerHTML = html;
+}
+async function adminHideRequest(id, hide) {
+  var res = await db.from('requests').update({ is_hidden: hide }).eq('id', id);
+  if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
+  toast(hide ? 'Запит приховано' : 'Запит показано'); openAdmin();
+}
+async function adminBan(userId, ban) {
+  var res = await db.from('profiles').update({ is_banned: ban }).eq('id', userId);
+  if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
+  toast(ban ? 'Користувача забанено' : 'Розбанено'); openAdmin();
+}
+async function adminResolve(reportId) {
+  var res = await db.from('reports').update({ status: 'resolved' }).eq('id', reportId);
+  if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
+  toast('Позначено опрацьованою'); openAdmin();
+}
+
 // ---- SETTINGS PAGE ----
 var settingsCityTemp = '';
 function openSettings() {
@@ -3828,6 +3948,7 @@ function openSettings() {
   cityField.classList.toggle('city-empty', !settingsCityTemp);
   cityField.classList.toggle('city-filled', !!settingsCityTemp);
   updatePushSettingRow();
+  document.getElementById('settings-admin-btn').style.display = window._isAdmin ? '' : 'none';
 }
 document.getElementById('back-from-settings-btn').addEventListener('click', async function() {
   // Auto-save on back
