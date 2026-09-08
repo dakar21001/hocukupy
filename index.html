@@ -410,6 +410,25 @@ textarea{resize:vertical;min-height:80px;}
 .admin-btn:active{background:var(--bg);}
 .admin-btn-danger{border-color:#E54D4D;color:#E54D4D;}
 .admin-btn-done{background:var(--green);border-color:var(--green);color:#fff;}
+.admin-tabs{display:flex;gap:8px;padding:10px 16px 4px;max-width:720px;margin:0 auto;}
+.admin-tab{flex:1;padding:10px;border-radius:12px;border:1.5px solid var(--border);background:#fff;font-size:14px;font-weight:700;color:var(--text2);cursor:pointer;font-family:inherit;}
+.admin-tab.active{background:var(--green);border-color:var(--green);color:#fff;}
+.support-thread-row{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1.5px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:10px;cursor:pointer;background:#fff;}
+.support-thread-name{font-weight:700;color:var(--text);font-size:15px;margin-bottom:2px;}
+.support-thread-last{font-size:13px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;}
+/* SUPPORT CHAT */
+.support-page{display:flex;flex-direction:column;height:100vh;height:100dvh;background:#fff;}
+.support-messages{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:8px;-webkit-overflow-scrolling:touch;}
+.support-bubble{max-width:80%;padding:10px 14px;border-radius:16px;font-size:14px;line-height:1.4;word-break:break-word;}
+.support-bubble.from-user{align-self:flex-end;background:var(--green);color:#fff;border-bottom-right-radius:6px;}
+.support-bubble.from-admin{align-self:flex-start;background:var(--bg);color:var(--text);border-bottom-left-radius:6px;}
+.support-bubble-time{font-size:10px;opacity:0.65;margin-top:3px;display:block;text-align:right;}
+.support-empty{margin:auto;text-align:center;color:var(--text3);font-size:14px;padding:40px 24px;line-height:1.6;}
+.support-input-bar{display:flex;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));border-top:1px solid var(--border);background:#fff;flex-shrink:0;}
+.support-input-bar input{flex:1;height:46px;border:1.5px solid var(--border);border-radius:23px;padding:0 16px;font-size:15px;font-family:inherit;color:var(--text);outline:none;}
+.support-input-bar input:focus{border-color:var(--green);}
+.support-send{width:46px;height:46px;border-radius:50%;background:var(--green);border:none;color:#fff;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.support-send svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2;}
 /* ЮРИДИЧНІ СТОРІНКИ */
 .legal-page{background:#fff;min-height:100vh;padding-bottom:calc(var(--nav-h) + 24px);}
 .legal-header-title{font-size:16px;font-weight:700;color:var(--text);flex:1;text-align:center;}
@@ -1343,7 +1362,29 @@ textarea{resize:vertical;min-height:80px;}
       <div class="legal-header-title">Модерація</div>
       <div style="width:44px"></div>
     </div>
+    <div class="admin-tabs">
+      <button class="admin-tab active" id="admin-tab-reports" onclick="switchAdminTab('reports')">Скарги</button>
+      <button class="admin-tab" id="admin-tab-support" onclick="switchAdminTab('support')">Підтримка</button>
+    </div>
     <div id="admin-list" class="admin-list"></div>
+  </div>
+</div>
+
+<!-- SUPPORT PAGE -->
+<div id="support-page" style="display:none">
+  <div class="support-page">
+    <div class="cats-header">
+      <button class="cats-back-btn" id="back-from-support-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div class="legal-header-title" id="support-title">Підтримка</div>
+      <div style="width:44px"></div>
+    </div>
+    <div class="support-messages" id="support-messages"></div>
+    <div class="support-input-bar">
+      <input type="text" id="support-input" placeholder="Напишіть повідомлення...">
+      <button class="support-send" id="support-send-btn"><svg viewBox="0 0 24 24"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg></button>
+    </div>
   </div>
 </div>
 
@@ -1890,7 +1931,7 @@ const photoState = {};
 
 // ---- PAGES ----
 function showPage(page) {
-  ['main-page','profile-page','chat-list-page','chat-window-page','cats-page','request-page','wizard-page','offer-wizard-page','auth-page','settings-page','user-items-page','saved-page','privacy-page','terms-page','admin-page'].forEach(function(id) {
+  ['main-page','profile-page','chat-list-page','chat-window-page','cats-page','request-page','wizard-page','offer-wizard-page','auth-page','settings-page','user-items-page','saved-page','privacy-page','terms-page','admin-page','support-page'].forEach(function(id) {
     var el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
@@ -1902,13 +1943,13 @@ function showPage(page) {
   // Hide mobile-header and FAB on chat/cats pages
   var mobileHeader = document.querySelector('.mobile-header');
   var fab = document.getElementById('fab-btn');
-  var hiddenPages = ['profile','chat-list','chat-window','cats','request','wizard','offer-wizard','auth','settings','user-items','saved','privacy','terms','admin'];
+  var hiddenPages = ['profile','chat-list','chat-window','cats','request','wizard','offer-wizard','auth','settings','user-items','saved','privacy','terms','admin','support'];
   var hide = hiddenPages.indexOf(page) !== -1;
   if (mobileHeader) mobileHeader.style.display = hide ? 'none' : '';
   if (fab) fab.style.display = hide ? 'none' : '';
   // Hide bottom nav entirely on fullscreen wizard
   var bottomNav = document.querySelector('.bottom-nav');
-  var fullscreenPages = ['wizard','offer-wizard','auth','chat-window'];
+  var fullscreenPages = ['wizard','offer-wizard','auth','chat-window','support'];
   if (bottomNav) bottomNav.style.display = (fullscreenPages.indexOf(page) !== -1) ? 'none' : '';
   // Lock body scroll on fullscreen wizard
   document.body.style.overflow = (fullscreenPages.indexOf(page) !== -1) ? 'hidden' : '';
@@ -3871,6 +3912,15 @@ document.getElementById('back-from-admin-btn').addEventListener('click', functio
 async function openAdmin() {
   if (!window._isAdmin) { toast('Немає доступу', true); return; }
   showPage('admin');
+  switchAdminTab('reports');
+}
+function switchAdminTab(tab) {
+  var tr = document.getElementById('admin-tab-reports'), ts = document.getElementById('admin-tab-support');
+  if (tr) tr.classList.toggle('active', tab === 'reports');
+  if (ts) ts.classList.toggle('active', tab === 'support');
+  if (tab === 'support') renderAdminSupport(); else renderAdminReports();
+}
+async function renderAdminReports() {
   var cont = document.getElementById('admin-list');
   cont.innerHTML = '<div class="spinner" style="margin:40px auto"></div>';
   var res = await db.from('reports').select('*').neq('status', 'resolved').order('created_at', { ascending: false });
@@ -3929,6 +3979,88 @@ async function adminResolve(reportId) {
   toast('Позначено опрацьованою'); openAdmin();
 }
 
+// Адмін: список звернень
+async function renderAdminSupport() {
+  var cont = document.getElementById('admin-list');
+  cont.innerHTML = '<div class="spinner" style="margin:40px auto"></div>';
+  var res = await db.from('support_messages').select('*').order('created_at', { ascending: false }).limit(300);
+  if (res.error) { cont.innerHTML = '<div class="admin-empty">Помилка: ' + esc(res.error.message) + '</div>'; return; }
+  var rows = res.data || [];
+  var threads = {}, order = [];
+  rows.forEach(function(m){ if (!threads[m.user_id]) { threads[m.user_id] = m; order.push(m.user_id); } });
+  if (!order.length) { cont.innerHTML = '<div class="admin-empty">Немає звернень 💬</div>'; return; }
+  var names = {};
+  var pp = await db.from('profiles').select('id, name').in('id', order);
+  (pp.data || []).forEach(function(x){ names[x.id] = x.name; });
+  cont.innerHTML = order.map(function(uid){
+    var last = threads[uid];
+    var when = new Date(last.created_at).toLocaleDateString('uk', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+    var preview = (last.sender === 'admin' ? 'Ви: ' : '') + last.body;
+    return '<div class="support-thread-row" onclick="openSupport(\'' + uid + '\', true)">'
+      + '<div style="min-width:0"><div class="support-thread-name">' + esc(names[uid] || 'Користувач') + '</div><div class="support-thread-last">' + esc(preview) + '</div></div>'
+      + '<div class="admin-date">' + when + '</div></div>';
+  }).join('');
+}
+
+// ---- ЧАТ ПІДТРИМКИ ----
+var _supportUserId = null, _supportAsAdmin = false, _supportChannel = null;
+async function openSupport(userId, asAdmin) {
+  if (!currentUser) { openAuth(); return; }
+  _supportUserId = userId || currentUser.id;
+  _supportAsAdmin = !!asAdmin;
+  document.getElementById('support-title').textContent = 'Підтримка';
+  showPage('support');
+  var box = document.getElementById('support-messages');
+  box.innerHTML = '<div class="spinner" style="margin:24px auto"></div>';
+  if (_supportAsAdmin) {
+    try { var pr = await db.from('profiles').select('name').eq('id', _supportUserId).maybeSingle(); document.getElementById('support-title').textContent = (pr.data && pr.data.name) || 'Користувач'; } catch (e) {}
+  }
+  var res = await db.from('support_messages').select('*').eq('user_id', _supportUserId).order('created_at', { ascending: true });
+  renderSupport(res.data || []);
+  subscribeSupport();
+  setTimeout(function(){ var i = document.getElementById('support-input'); if (i) i.focus(); }, 200);
+}
+function supportBubbleHtml(m) {
+  var mySender = _supportAsAdmin ? 'admin' : 'user';
+  var side = m.sender === mySender ? 'from-user' : 'from-admin';
+  var t = new Date(m.created_at).toLocaleTimeString('uk', { hour: '2-digit', minute: '2-digit' });
+  return '<div class="support-bubble ' + side + '">' + esc(m.body) + '<span class="support-bubble-time">' + t + '</span></div>';
+}
+function renderSupport(list) {
+  var box = document.getElementById('support-messages');
+  if (!list.length) {
+    box.innerHTML = '<div class="support-empty">' + (_supportAsAdmin ? 'Порожньо' : 'Напишіть нам — команда підтримки відповість якнайшвидше 💬') + '</div>';
+    return;
+  }
+  box.innerHTML = list.map(supportBubbleHtml).join('');
+  box.scrollTop = box.scrollHeight;
+}
+function appendSupport(m) {
+  var box = document.getElementById('support-messages');
+  var empty = box.querySelector('.support-empty'); if (empty) box.innerHTML = '';
+  box.insertAdjacentHTML('beforeend', supportBubbleHtml(m));
+  box.scrollTop = box.scrollHeight;
+}
+function subscribeSupport() {
+  if (_supportChannel) { db.removeChannel(_supportChannel); _supportChannel = null; }
+  _supportChannel = db.channel('support-' + _supportUserId)
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'support_messages', filter: 'user_id=eq.' + _supportUserId }, function(payload){ appendSupport(payload.new); })
+    .subscribe();
+}
+async function sendSupport() {
+  var inp = document.getElementById('support-input');
+  var body = (inp.value || '').trim(); if (!body) return;
+  inp.value = '';
+  var res = await db.from('support_messages').insert({ user_id: _supportUserId, sender: _supportAsAdmin ? 'admin' : 'user', body: body });
+  if (res.error) { toast('Не вдалося: ' + res.error.message, true); inp.value = body; }
+}
+document.getElementById('support-send-btn').addEventListener('click', sendSupport);
+document.getElementById('support-input').addEventListener('keydown', function(e){ if (e.key === 'Enter') { e.preventDefault(); sendSupport(); } });
+document.getElementById('back-from-support-btn').addEventListener('click', function(){
+  if (_supportChannel) { db.removeChannel(_supportChannel); _supportChannel = null; }
+  if (_supportAsAdmin) { openAdmin(); switchAdminTab('support'); } else { showPage('settings'); }
+});
+
 // ---- SETTINGS PAGE ----
 var settingsCityTemp = '';
 function openSettings() {
@@ -3975,7 +4107,7 @@ document.getElementById('settings-city-field').addEventListener('click', functio
 document.getElementById('settings-change-pass-btn').addEventListener('click', function() {
   openAuth(); authState.mode = 'login'; authGoto('forgot-email');
 });
-document.getElementById('settings-support-btn').addEventListener('click', function() { toast('Незабаром 🛠'); });
+document.getElementById('settings-support-btn').addEventListener('click', function() { openSupport(null, false); });
 // ---- ЮРИДИЧНІ СТОРІНКИ ----
 function openLegal(page) { showPage(page); window.scrollTo(0, 0); }
 document.getElementById('open-privacy').addEventListener('click', function(e){ e.preventDefault(); openLegal('privacy'); });
