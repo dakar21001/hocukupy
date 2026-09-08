@@ -413,6 +413,10 @@ textarea{resize:vertical;min-height:80px;}
 .admin-tabs{display:flex;gap:8px;padding:10px 16px 4px;max-width:720px;margin:0 auto;}
 .admin-tab{flex:1;padding:10px;border-radius:12px;border:1.5px solid var(--border);background:#fff;font-size:14px;font-weight:700;color:var(--text2);cursor:pointer;font-family:inherit;}
 .admin-tab.active{background:var(--green);border-color:var(--green);color:#fff;}
+.admin-tab-badge{min-width:18px;height:18px;padding:0 5px;border-radius:99px;background:#E54D4D;color:#fff;font-size:11px;font-weight:700;display:none;align-items:center;justify-content:center;vertical-align:middle;box-sizing:border-box;line-height:1;}
+.avatar-wrap{position:relative;display:inline-flex;flex-shrink:0;}
+.admin-avatar-dot{position:absolute;top:-1px;right:-1px;width:12px;height:12px;border-radius:50%;background:#E54D4D;border:2px solid #fff;}
+.settings-badge{margin-left:auto;min-width:20px;height:20px;padding:0 6px;border-radius:99px;background:#E54D4D;color:#fff;font-size:11px;font-weight:700;display:none;align-items:center;justify-content:center;box-sizing:border-box;line-height:1;}
 .support-thread-row{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1.5px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:10px;cursor:pointer;background:#fff;}
 .support-thread-name{font-weight:700;color:var(--text);font-size:15px;margin-bottom:2px;}
 .support-thread-last{font-size:13px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;}
@@ -819,9 +823,12 @@ textarea{resize:vertical;min-height:80px;}
       <div class="greeting">Привіт 👋</div>
       <div class="greeting-name" id="greeting-name" style="font-size:18px;font-weight:700;font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', sans-serif">ХочуКупити</div>
     </div>
-    <button class="avatar-btn" id="mobile-avatar-btn">
-      <span id="mobile-avatar-letter">?</span>
-    </button>
+    <span class="avatar-wrap">
+      <button class="avatar-btn" id="mobile-avatar-btn">
+        <span id="mobile-avatar-letter">?</span>
+      </button>
+      <span class="admin-avatar-dot" id="admin-avatar-dot" style="display:none"></span>
+    </span>
   </div>
   <div class="search-row">
     <div class="search-wrap">
@@ -1015,6 +1022,7 @@ textarea{resize:vertical;min-height:80px;}
       <button class="settings-row" id="settings-admin-btn" style="display:none">
         <span class="settings-row-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg></span>
         Модерація
+        <span class="settings-badge" id="admin-settings-badge" style="display:none"></span>
         <svg class="settings-row-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
       </button>
       <button class="settings-row" id="settings-support-btn">
@@ -1363,8 +1371,8 @@ textarea{resize:vertical;min-height:80px;}
       <div style="width:44px"></div>
     </div>
     <div class="admin-tabs">
-      <button class="admin-tab active" id="admin-tab-reports" onclick="switchAdminTab('reports')">Скарги</button>
-      <button class="admin-tab" id="admin-tab-support" onclick="switchAdminTab('support')">Підтримка</button>
+      <button class="admin-tab active" id="admin-tab-reports" onclick="switchAdminTab('reports')">Скарги <span class="admin-tab-badge" id="admin-tab-reports-badge" style="display:none"></span></button>
+      <button class="admin-tab" id="admin-tab-support" onclick="switchAdminTab('support')">Підтримка <span class="admin-tab-badge" id="admin-tab-support-badge" style="display:none"></span></button>
     </div>
     <div id="admin-list" class="admin-list"></div>
   </div>
@@ -3886,6 +3894,38 @@ document.getElementById('report-submit-btn').addEventListener('click', async fun
 });
 document.getElementById('prof-report-btn').addEventListener('click', function(){ openReport('profile', window._profileUserId); });
 
+// ---- ІНДИКАТОРИ ДЛЯ АДМІНА ----
+function setTabBadge(id, n) { var el = document.getElementById(id); if (!el) return; if (n > 0) { el.textContent = n; el.style.display = 'inline-flex'; } else el.style.display = 'none'; }
+function setAdminBadge(reportsN, supportN) {
+  var total = (reportsN || 0) + (supportN || 0);
+  var sb = document.getElementById('admin-settings-badge');
+  if (sb) { if (total > 0) { sb.textContent = total; sb.style.display = 'flex'; } else sb.style.display = 'none'; }
+  var dot = document.getElementById('admin-avatar-dot');
+  if (dot) dot.style.display = total > 0 ? 'block' : 'none';
+  setTabBadge('admin-tab-reports-badge', reportsN || 0);
+  setTabBadge('admin-tab-support-badge', supportN || 0);
+}
+async function refreshAdminBadges() {
+  if (!window._isAdmin) { setAdminBadge(0, 0); return; }
+  var reportsN = 0, supportN = 0;
+  try { var rc = await db.from('reports').select('*', { count: 'exact', head: true }).neq('status', 'resolved'); reportsN = rc.count || 0; } catch (e) {}
+  try {
+    var sm = await db.from('support_messages').select('user_id, sender, created_at').order('created_at', { ascending: false }).limit(300);
+    var seen = {};
+    (sm.data || []).forEach(function(m){ if (!(m.user_id in seen)) seen[m.user_id] = m.sender; });
+    Object.keys(seen).forEach(function(u){ if (seen[u] === 'user') supportN++; });
+  } catch (e) {}
+  setAdminBadge(reportsN, supportN);
+}
+var _adminChannel = null;
+function subscribeAdminRealtime() {
+  if (_adminChannel) return;
+  _adminChannel = db.channel('admin-badges')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'reports' }, function(){ refreshAdminBadges(); })
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'support_messages' }, function(){ refreshAdminBadges(); })
+    .subscribe();
+}
+
 // ---- АДМІН / МОДЕРАЦІЯ ----
 window._isAdmin = false;
 async function refreshSelfFlags() {
@@ -3896,6 +3936,7 @@ async function refreshSelfFlags() {
     window._isAdmin = !!pr.is_admin;
     var arow = document.getElementById('settings-admin-btn');
     if (arow) arow.style.display = window._isAdmin ? '' : 'none';
+    if (window._isAdmin) { refreshAdminBadges(); subscribeAdminRealtime(); } else { setAdminBadge(0, 0); }
     if (pr.is_banned) handleBanned();
   } catch (e) {}
 }
@@ -3921,6 +3962,7 @@ function switchAdminTab(tab) {
   if (tab === 'support') renderAdminSupport(); else renderAdminReports();
 }
 async function renderAdminReports() {
+  refreshAdminBadges();
   var cont = document.getElementById('admin-list');
   cont.innerHTML = '<div class="spinner" style="margin:40px auto"></div>';
   var res = await db.from('reports').select('*').neq('status', 'resolved').order('created_at', { ascending: false });
@@ -3981,6 +4023,7 @@ async function adminResolve(reportId) {
 
 // Адмін: список звернень
 async function renderAdminSupport() {
+  refreshAdminBadges();
   var cont = document.getElementById('admin-list');
   cont.innerHTML = '<div class="spinner" style="margin:40px auto"></div>';
   var res = await db.from('support_messages').select('*').order('created_at', { ascending: false }).limit(300);
@@ -4053,6 +4096,7 @@ async function sendSupport() {
   inp.value = '';
   var res = await db.from('support_messages').insert({ user_id: _supportUserId, sender: _supportAsAdmin ? 'admin' : 'user', body: body });
   if (res.error) { toast('Не вдалося: ' + res.error.message, true); inp.value = body; }
+  else if (_supportAsAdmin) { setTimeout(refreshAdminBadges, 400); }
 }
 document.getElementById('support-send-btn').addEventListener('click', sendSupport);
 document.getElementById('support-input').addEventListener('keydown', function(e){ if (e.key === 'Enter') { e.preventDefault(); sendSupport(); } });
@@ -4081,6 +4125,7 @@ function openSettings() {
   cityField.classList.toggle('city-filled', !!settingsCityTemp);
   updatePushSettingRow();
   document.getElementById('settings-admin-btn').style.display = window._isAdmin ? '' : 'none';
+  if (window._isAdmin) refreshAdminBadges();
 }
 document.getElementById('back-from-settings-btn').addEventListener('click', async function() {
   // Auto-save on back
