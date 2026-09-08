@@ -2581,18 +2581,58 @@ async function ensureProfileFromMetadata(user) {
 }
 
 // ---- PHOTO HELPERS ----
+// Стиснення фото перед аплоадом. Фото з камери важать 3-10 МБ — саме через них
+// перші секунди на головній гальмує скрол (браузер вантажить і декодує їх одразу
+// для карток стрічки). Стискаємо в браузері до розумного розміру перед відправкою
+// в Supabase Storage, щоб у стрічці завжди були легкі фото.
+async function compressImage(file, maxDim, quality) {
+  maxDim = maxDim || 1600;
+  quality = quality === undefined ? 0.82 : quality;
+  if (!file || !file.type || !file.type.startsWith('image/') || file.type === 'image/gif') return file;
+  try {
+    var source, w, h;
+    if (window.createImageBitmap) {
+      source = await createImageBitmap(file, { imageOrientation: 'from-image' });
+      w = source.width; h = source.height;
+    } else {
+      source = await new Promise(function(resolve, reject) {
+        var url = URL.createObjectURL(file);
+        var img = new Image();
+        img.onload = function() { URL.revokeObjectURL(url); resolve(img); };
+        img.onerror = function(e) { URL.revokeObjectURL(url); reject(e); };
+        img.src = url;
+      });
+      w = source.naturalWidth; h = source.naturalHeight;
+    }
+    if (!w || !h) return file;
+    if (w <= maxDim && h <= maxDim && file.size <= 600 * 1024) { if (source.close) source.close(); return file; }
+    var scale = Math.min(1, maxDim / Math.max(w, h));
+    var cw = Math.max(1, Math.round(w * scale)), ch = Math.max(1, Math.round(h * scale));
+    var canvas = document.createElement('canvas');
+    canvas.width = cw; canvas.height = ch;
+    canvas.getContext('2d').drawImage(source, 0, 0, cw, ch);
+    if (source.close) source.close();
+    var blob = await new Promise(function(resolve) { canvas.toBlob(resolve, 'image/jpeg', quality); });
+    if (!blob) return file;
+    var newName = file.name.replace(/\.\w+$/, '') + '.jpg';
+    return new File([blob], newName, { type: 'image/jpeg' });
+  } catch (e) {
+    return file; // фейлсейф: якщо стиснення не вдалось — вантажимо оригінал, не блокуємо публікацію
+  }
+}
 function initPhotoUpload(formId) { if (!photoState[formId]) photoState[formId] = []; }
-function handlePhotoSelect(formId, input) {
+async function handlePhotoSelect(formId, input) {
   initPhotoUpload(formId);
-  var files = Array.from(input.files);
+  var files = Array.from(input.files).filter(function(file) { return file.type.startsWith('image/'); });
   var remaining = 3 - photoState[formId].length;
-  if (remaining <= 0) { toast('Максимум 3 фото', true); return; }
-  files.slice(0, remaining).forEach(function(file) {
-    if (!file.type.startsWith('image/')) return;
-    photoState[formId].push({ file: file, previewUrl: URL.createObjectURL(file) });
-  });
-  renderPhotoPreviews(formId);
   input.value = '';
+  if (remaining <= 0) { toast('Максимум 3 фото', true); return; }
+  files = files.slice(0, remaining);
+  for (var i = 0; i < files.length; i++) {
+    var compressed = await compressImage(files[i]);
+    photoState[formId].push({ file: compressed, previewUrl: URL.createObjectURL(compressed) });
+    renderPhotoPreviews(formId);
+  }
 }
 function removePhoto(formId, idx) { photoState[formId].splice(idx, 1); renderPhotoPreviews(formId); }
 function renderPhotoPreviews(formId) {
@@ -2726,7 +2766,7 @@ function requestCardHtml(r) {
   var isSaved = savedIds.indexOf(r.id) !== -1;
   var catIcon = catIcons[r.category] || catIcons['Інше'];
   var imgHtml = r.photos && r.photos.length
-    ? '<img src="' + r.photos[0] + '" alt="" loading="lazy">'
+    ? '<img src="' + r.photos[0] + '" alt="" loading="lazy" decoding="async">'
     : '<div class="card-img-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>';
   var offersTag = offers.length
     ? '<span class="card-offers-tag">' + offers.length + ' пропозицій</span>'
@@ -2966,13 +3006,18 @@ function wizRenderPhotos() {
     grid.innerHTML = h;
   }
   var inp = document.getElementById('wiz-photo-input');
-  if (inp) inp.addEventListener('change', function() {
+  if (inp) inp.addEventListener('change', async function() {
     var files = Array.from(this.files).slice(0, 3-wizState.photos.length);
-    files.forEach(function(f) {
-      var r = new FileReader();
-      r.onload = function(e) { wizState.photos.push(e.target.result); wizState.photoFiles.push(f); wizRenderPhotos(); };
-      r.readAsDataURL(f);
-    });
+    this.value = '';
+    for (var i = 0; i < files.length; i++) {
+      var f = await compressImage(files[i]);
+      var dataUrl = await new Promise(function(resolve) {
+        var r = new FileReader();
+        r.onload = function(e) { resolve(e.target.result); };
+        r.readAsDataURL(f);
+      });
+      wizState.photos.push(dataUrl); wizState.photoFiles.push(f); wizRenderPhotos();
+    }
   });
   document.querySelectorAll('.wiz-remove-btn').forEach(function(b) {
     b.addEventListener('click', function(e) { e.preventDefault(); var idx=parseInt(this.dataset.idx); wizState.photos.splice(idx,1); wizState.photoFiles.splice(idx,1); wizRenderPhotos(); });
@@ -3080,13 +3125,18 @@ function owizRenderPhotos() {
     grid.innerHTML = h;
   }
   var inp = document.getElementById('owiz-photo-input');
-  if (inp) inp.addEventListener('change', function() {
+  if (inp) inp.addEventListener('change', async function() {
     var files = Array.from(this.files).slice(0, 3-owizState.photos.length);
-    files.forEach(function(f) {
-      var r = new FileReader();
-      r.onload = function(e) { owizState.photos.push(e.target.result); owizState.photoFiles.push(f); owizRenderPhotos(); };
-      r.readAsDataURL(f);
-    });
+    this.value = '';
+    for (var i = 0; i < files.length; i++) {
+      var f = await compressImage(files[i]);
+      var dataUrl = await new Promise(function(resolve) {
+        var r = new FileReader();
+        r.onload = function(e) { resolve(e.target.result); };
+        r.readAsDataURL(f);
+      });
+      owizState.photos.push(dataUrl); owizState.photoFiles.push(f); owizRenderPhotos();
+    }
   });
   document.querySelectorAll('#owiz-photos-grid .wiz-remove-btn').forEach(function(b) {
     b.addEventListener('click', function(e) { e.preventDefault(); var idx=parseInt(this.dataset.idx); owizState.photos.splice(idx,1); owizState.photoFiles.splice(idx,1); owizRenderPhotos(); });
@@ -4416,18 +4466,20 @@ function renderChatPhotoPreview() {
   });
 }
 
-document.getElementById('chat-photo-input').addEventListener('change', function() {
+document.getElementById('chat-photo-input').addEventListener('change', async function() {
   var files = Array.from(this.files).slice(0, 3 - pendingChatPhotos.length);
-  files.forEach(function(f) {
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      if (pendingChatPhotos.length >= 3) return;
-      pendingChatPhotos.push({ file: f, dataUrl: e.target.result });
-      renderChatPhotoPreview();
-    };
-    reader.readAsDataURL(f);
-  });
   this.value = '';
+  for (var i = 0; i < files.length; i++) {
+    if (pendingChatPhotos.length >= 3) break;
+    var f = await compressImage(files[i]);
+    var dataUrl = await new Promise(function(resolve) {
+      var reader = new FileReader();
+      reader.onload = function(e) { resolve(e.target.result); };
+      reader.readAsDataURL(f);
+    });
+    pendingChatPhotos.push({ file: f, dataUrl: dataUrl });
+    renderChatPhotoPreview();
+  }
 });
 
 async function sendMessage() {
