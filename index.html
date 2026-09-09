@@ -417,6 +417,15 @@ textarea{resize:vertical;min-height:80px;}
 .avatar-wrap{position:relative;display:inline-flex;flex-shrink:0;}
 .admin-avatar-dot{position:absolute;top:-1px;right:-1px;width:12px;height:12px;border-radius:50%;background:#E54D4D;border:2px solid #fff;}
 .settings-badge{margin-left:auto;min-width:20px;height:20px;padding:0 6px;border-radius:99px;background:#E54D4D;color:#fff;font-size:11px;font-weight:700;display:none;align-items:center;justify-content:center;box-sizing:border-box;line-height:1;}
+/* ВЕРИФІКАЦІЯ (ручна) */
+.verified-badge{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--green);vertical-align:middle;margin-left:6px;}
+.verified-badge svg{width:11px;height:11px;stroke:#fff;fill:none;stroke-width:3;}
+.settings-verify-check{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--green);margin-left:auto;flex-shrink:0;}
+.settings-verify-check svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:3;}
+.verify-body{padding:0 20px 8px;}
+.verify-step-hint{font-size:13px;color:var(--text3);margin:10px 0 14px 2px;line-height:1.5;}
+.verify-input{width:100%;height:54px;border:1.5px solid var(--border);border-radius:14px;padding:0 16px;font-size:17px;font-family:inherit;color:var(--text);outline:none;box-sizing:border-box;}
+.verify-input:focus{border-color:var(--green);}
 .support-thread-row{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1.5px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:10px;cursor:pointer;background:#fff;}
 .support-thread-name{font-weight:700;color:var(--text);font-size:15px;margin-bottom:2px;}
 .support-thread-last{font-size:13px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;}
@@ -1014,6 +1023,12 @@ textarea{resize:vertical;min-height:80px;}
         Змінити пароль
         <svg class="settings-row-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
       </button>
+      <button class="settings-row" id="settings-verify-btn">
+        <span class="settings-row-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+        <span id="verify-label">Пройти верифікацію</span>
+        <span class="settings-verify-check" id="verify-check" style="display:none"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <svg class="settings-row-arrow" id="verify-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
       <button class="settings-row" id="settings-push-btn">
         <span class="settings-row-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg></span>
         <span class="push-label">Сповіщення</span>
@@ -1373,6 +1388,7 @@ textarea{resize:vertical;min-height:80px;}
     <div class="admin-tabs">
       <button class="admin-tab active" id="admin-tab-reports" onclick="switchAdminTab('reports')">Скарги <span class="admin-tab-badge" id="admin-tab-reports-badge" style="display:none"></span></button>
       <button class="admin-tab" id="admin-tab-support" onclick="switchAdminTab('support')">Підтримка <span class="admin-tab-badge" id="admin-tab-support-badge" style="display:none"></span></button>
+      <button class="admin-tab" id="admin-tab-verify" onclick="switchAdminTab('verify')">Заявки <span class="admin-tab-badge" id="admin-tab-verify-badge" style="display:none"></span></button>
     </div>
     <div id="admin-list" class="admin-list"></div>
   </div>
@@ -1392,6 +1408,27 @@ textarea{resize:vertical;min-height:80px;}
     <div class="support-input-bar">
       <input type="text" id="support-input" placeholder="Напишіть повідомлення...">
       <button class="support-send" id="support-send-btn"><svg viewBox="0 0 24 24"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg></button>
+    </div>
+  </div>
+</div>
+
+<!-- VERIFICATION SHEET -->
+<div class="city-sheet-bg" id="verify-sheet-bg">
+  <div class="city-sheet">
+    <div class="city-sheet-handle"></div>
+    <div class="city-sheet-header">
+      <span class="city-sheet-title">Верифікація профілю</span>
+      <button class="city-sheet-close" id="verify-sheet-close-btn"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="verify-body">
+      <div class="filter-label">НОМЕР ТЕЛЕФОНУ</div>
+      <input type="tel" id="verify-phone-input" class="verify-input" placeholder="+380XXXXXXXXX" inputmode="tel">
+      <div class="verify-step-hint">Адміністратор перевірить дані й підтвердить ваш профіль. Номер бачить лише адміністрація — він не показується іншим користувачам.</div>
+      <div class="filter-label">КОМЕНТАР (НЕОБОВ'ЯЗКОВО)</div>
+      <textarea id="verify-note-input" class="report-comment" rows="2" placeholder="Напр. посилання на соцмережі або чому вам можна довіряти"></textarea>
+    </div>
+    <div class="city-sheet-footer">
+      <button class="city-sheet-confirm active" id="verify-submit-btn">Надіслати заявку</button>
     </div>
   </div>
 </div>
@@ -3696,7 +3733,7 @@ async function openProfile(userId) {
   if (profile.avatar_url) { avatarEl.innerHTML = '<img src="' + esc(profile.avatar_url) + '" alt="">'; }
   else { avatarEl.textContent = name.charAt(0).toUpperCase(); }
 
-  document.getElementById('profile-name').textContent = name;
+  document.getElementById('profile-name').innerHTML = esc(name) + (profile.is_verified ? ' <span class="verified-badge" title="Верифікований"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>' : '');
   document.getElementById('profile-bio-show').textContent = profile.bio || '';
 
   // City tag
@@ -3944,16 +3981,97 @@ document.getElementById('report-submit-btn').addEventListener('click', async fun
 });
 document.getElementById('prof-report-btn').addEventListener('click', function(){ openReport('profile', window._profileUserId); });
 
+// ---- ВЕРИФІКАЦІЯ (ручна) ----
+async function refreshVerifyRow() {
+  var label = document.getElementById('verify-label'), check = document.getElementById('verify-check'), arrow = document.getElementById('verify-arrow');
+  if (!label || !currentUser) return;
+  var verified = !!(window._profileData && window._profileData.is_verified);
+  if (verified) { label.textContent = 'Верифіковано'; check.style.display = 'inline-flex'; arrow.style.display = 'none'; return; }
+  check.style.display = 'none'; arrow.style.display = ''; label.textContent = 'Пройти верифікацію';
+  try {
+    var vr = await db.from('verification_requests').select('status').eq('user_id', currentUser.id).maybeSingle();
+    if (vr.data && vr.data.status === 'pending') label.textContent = 'Заявка на розгляді';
+    else if (vr.data && vr.data.status === 'rejected') label.textContent = 'Пройти верифікацію повторно';
+  } catch (e) {}
+}
+function openVerify() {
+  if (!currentUser) { openAuth(); return; }
+  if (window._profileData && window._profileData.is_verified) { toast('Ваш профіль уже верифіковано ✓'); return; }
+  document.getElementById('verify-phone-input').value = '';
+  document.getElementById('verify-note-input').value = '';
+  document.getElementById('verify-submit-btn').disabled = false;
+  document.getElementById('verify-sheet-bg').classList.add('open');
+  setTimeout(function(){ document.getElementById('verify-phone-input').focus(); }, 200);
+}
+function closeVerify() { document.getElementById('verify-sheet-bg').classList.remove('open'); }
+document.getElementById('settings-verify-btn').addEventListener('click', openVerify);
+document.getElementById('verify-sheet-close-btn').addEventListener('click', closeVerify);
+document.getElementById('verify-sheet-bg').addEventListener('click', function(e){ if (e.target === this) closeVerify(); });
+async function submitVerify() {
+  var phone = (document.getElementById('verify-phone-input').value || '').trim().replace(/[\s()-]/g, '');
+  if (!/^\+?\d{10,15}$/.test(phone)) { toast('Введіть коректний номер, напр. +380...', true); return; }
+  var note = (document.getElementById('verify-note-input').value || '').trim() || null;
+  var btn = document.getElementById('verify-submit-btn'); btn.disabled = true;
+  await db.from('verification_requests').delete().eq('user_id', currentUser.id);
+  var res = await db.from('verification_requests').insert({ user_id: currentUser.id, phone: phone, note: note, status: 'pending' });
+  btn.disabled = false;
+  if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
+  closeVerify();
+  toast('Заявку надіслано. Очікуйте підтвердження 🙏');
+  refreshVerifyRow();
+}
+document.getElementById('verify-submit-btn').addEventListener('click', submitVerify);
+
+// Адмін: заявки на верифікацію
+async function renderAdminVerify() {
+  refreshAdminBadges();
+  var cont = document.getElementById('admin-list');
+  cont.innerHTML = '<div class="spinner" style="margin:40px auto"></div>';
+  var res = await db.from('verification_requests').select('*').eq('status', 'pending').order('created_at', { ascending: true });
+  if (res.error) { cont.innerHTML = '<div class="admin-empty">Помилка: ' + esc(res.error.message) + '</div>'; return; }
+  var rows = res.data || [];
+  if (!rows.length) { cont.innerHTML = '<div class="admin-empty">Немає заявок на верифікацію ✓</div>'; return; }
+  var names = {};
+  var pp = await db.from('profiles').select('id, name, city').in('id', rows.map(function(r){ return r.user_id; }));
+  (pp.data || []).forEach(function(x){ names[x.id] = x; });
+  cont.innerHTML = rows.map(function(r){
+    var pf = names[r.user_id] || {};
+    var when = new Date(r.created_at).toLocaleDateString('uk', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+    return '<div class="admin-card">'
+      + '<div class="admin-card-top"><span class="admin-badge">Верифікація</span><span class="admin-date">' + when + '</span></div>'
+      + '<div class="admin-reason">' + esc(pf.name || 'Користувач') + '</div>'
+      + '<div class="admin-target">📞 ' + esc(r.phone) + (pf.city ? (' · ' + esc(pf.city)) : '') + '</div>'
+      + (r.note ? '<div class="admin-comment">«' + esc(r.note) + '»</div>' : '')
+      + '<div class="admin-actions">'
+      + '<button class="admin-btn" onclick="openProfile(\'' + r.user_id + '\')">Профіль</button>'
+      + '<button class="admin-btn admin-btn-done" onclick="adminVerifyApprove(\'' + r.user_id + '\')">Підтвердити</button>'
+      + '<button class="admin-btn admin-btn-danger" onclick="adminVerifyReject(\'' + r.user_id + '\')">Відхилити</button>'
+      + '</div></div>';
+  }).join('');
+}
+async function adminVerifyApprove(uid) {
+  var r1 = await db.from('profiles').update({ is_verified: true }).eq('id', uid);
+  if (r1.error) { toast('Помилка: ' + r1.error.message, true); return; }
+  await db.from('verification_requests').update({ status: 'approved', reviewed_at: new Date().toISOString() }).eq('user_id', uid);
+  toast('Профіль верифіковано ✓'); renderAdminVerify(); refreshAdminBadges();
+}
+async function adminVerifyReject(uid) {
+  var r1 = await db.from('verification_requests').update({ status: 'rejected', reviewed_at: new Date().toISOString() }).eq('user_id', uid);
+  if (r1.error) { toast('Помилка: ' + r1.error.message, true); return; }
+  toast('Заявку відхилено'); renderAdminVerify(); refreshAdminBadges();
+}
+
 // ---- ІНДИКАТОРИ ДЛЯ АДМІНА ----
 function setTabBadge(id, n) { var el = document.getElementById(id); if (!el) return; if (n > 0) { el.textContent = n; el.style.display = 'inline-flex'; } else el.style.display = 'none'; }
-function setAdminBadge(reportsN, supportN) {
-  var total = (reportsN || 0) + (supportN || 0);
+function setAdminBadge(reportsN, supportN, verifyN) {
+  var total = (reportsN || 0) + (supportN || 0) + (verifyN || 0);
   var sb = document.getElementById('admin-settings-badge');
   if (sb) { if (total > 0) { sb.textContent = total; sb.style.display = 'flex'; } else sb.style.display = 'none'; }
   var dot = document.getElementById('admin-avatar-dot');
   if (dot) dot.style.display = total > 0 ? 'block' : 'none';
   setTabBadge('admin-tab-reports-badge', reportsN || 0);
   setTabBadge('admin-tab-support-badge', supportN || 0);
+  setTabBadge('admin-tab-verify-badge', verifyN || 0);
 }
 async function refreshAdminBadges() {
   if (!window._isAdmin) { setAdminBadge(0, 0); return; }
@@ -3965,7 +4083,9 @@ async function refreshAdminBadges() {
     (sm.data || []).forEach(function(m){ if (!(m.user_id in seen)) seen[m.user_id] = m.sender; });
     Object.keys(seen).forEach(function(u){ if (seen[u] === 'user') supportN++; });
   } catch (e) {}
-  setAdminBadge(reportsN, supportN);
+  var verifyN = 0;
+  try { var vc = await db.from('verification_requests').select('*', { count: 'exact', head: true }).eq('status', 'pending'); verifyN = vc.count || 0; } catch (e) {}
+  setAdminBadge(reportsN, supportN, verifyN);
 }
 var _adminChannel = null;
 function subscribeAdminRealtime() {
@@ -3973,6 +4093,7 @@ function subscribeAdminRealtime() {
   _adminChannel = db.channel('admin-badges')
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'reports' }, function(){ refreshAdminBadges(); })
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'support_messages' }, function(){ refreshAdminBadges(); })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'verification_requests' }, function(){ refreshAdminBadges(); })
     .subscribe();
 }
 
@@ -4006,10 +4127,10 @@ async function openAdmin() {
   switchAdminTab('reports');
 }
 function switchAdminTab(tab) {
-  var tr = document.getElementById('admin-tab-reports'), ts = document.getElementById('admin-tab-support');
-  if (tr) tr.classList.toggle('active', tab === 'reports');
-  if (ts) ts.classList.toggle('active', tab === 'support');
-  if (tab === 'support') renderAdminSupport(); else renderAdminReports();
+  ['reports','support','verify'].forEach(function(t){ var el = document.getElementById('admin-tab-' + t); if (el) el.classList.toggle('active', tab === t); });
+  if (tab === 'support') renderAdminSupport();
+  else if (tab === 'verify') renderAdminVerify();
+  else renderAdminReports();
 }
 async function renderAdminReports() {
   refreshAdminBadges();
@@ -4176,6 +4297,7 @@ function openSettings() {
   updatePushSettingRow();
   document.getElementById('settings-admin-btn').style.display = window._isAdmin ? '' : 'none';
   if (window._isAdmin) refreshAdminBadges();
+  refreshVerifyRow();
 }
 document.getElementById('back-from-settings-btn').addEventListener('click', async function() {
   // Auto-save on back
