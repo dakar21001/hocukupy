@@ -534,7 +534,7 @@ textarea{resize:vertical;min-height:80px;}
 .city-sheet-confirm.active{background:var(--green);cursor:pointer;}
 
 
-.wizard-wrap{background:#fff;height:100dvh;display:flex;flex-direction:column;overflow:hidden;}
+.wizard-wrap{background:#fff;position:fixed;inset:0;z-index:1;display:flex;flex-direction:column;overflow:hidden;}
 .wizard-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 0;flex-shrink:0;background:#fff;position:relative;z-index:1;}
 .wizard-title{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:17px;font-weight:700;color:var(--text);}
 .wizard-progress{display:flex;gap:6px;padding:16px 20px;flex-shrink:0;background:#fff;position:relative;z-index:1;}
@@ -579,10 +579,10 @@ textarea{resize:vertical;min-height:80px;}
 .wiz-budget-hint{font-size:14px;color:var(--text3);text-align:center;}
 
 /* Step 4 — Title */
-#wiz-step-4{height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px;}
+#wiz-step-4{height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px 20px calc(20px + var(--kb-h, 0px));}
 
 /* Step 5 — Desc */
-#wiz-step-5{height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px;}
+#wiz-step-5{height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px 20px calc(20px + var(--kb-h, 0px));}
 
 .wiz-text-display{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:22px;font-weight:700;color:var(--text);text-align:center;cursor:pointer;min-height:60px;width:100%;line-height:1.4;}
 .wiz-text-display:empty::before{content:attr(data-placeholder);color:var(--border2);font-weight:400;}
