@@ -418,8 +418,8 @@ textarea{resize:vertical;min-height:80px;}
 .admin-avatar-dot{position:absolute;top:-1px;right:-1px;width:12px;height:12px;border-radius:50%;background:#E54D4D;border:2px solid #fff;}
 .settings-badge{margin-left:auto;min-width:20px;height:20px;padding:0 6px;border-radius:99px;background:#E54D4D;color:#fff;font-size:11px;font-weight:700;display:none;align-items:center;justify-content:center;box-sizing:border-box;line-height:1;}
 /* ВЕРИФІКАЦІЯ (ручна) */
-.verified-badge{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--green);vertical-align:middle;margin-left:6px;}
-.verified-badge svg{width:11px;height:11px;stroke:#fff;fill:none;stroke-width:3;}
+.verified-badge{display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;vertical-align:middle;margin-left:6px;}
+.verified-badge svg{width:19px;height:19px;display:block;}
 .settings-verify-check{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--green);margin-left:auto;flex-shrink:0;}
 .settings-verify-check svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:3;}
 .verify-body{padding:0 20px 8px;}
@@ -3733,7 +3733,7 @@ async function openProfile(userId) {
   if (profile.avatar_url) { avatarEl.innerHTML = '<img src="' + esc(profile.avatar_url) + '" alt="">'; }
   else { avatarEl.textContent = name.charAt(0).toUpperCase(); }
 
-  document.getElementById('profile-name').innerHTML = esc(name) + (profile.is_verified ? ' <span class="verified-badge" title="Верифікований"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>' : '');
+  document.getElementById('profile-name').innerHTML = esc(name) + (profile.is_verified ? ' <span class="verified-badge" title="Верифікований"><svg viewBox="0 0 24 24"><path fill="#2b8fe8" d="M22.25 12c0-1.43-.88-2.67-2.19-3.34.46-1.39.2-2.9-.81-3.91s-2.52-1.27-3.91-.81c-.66-1.31-1.91-2.19-3.34-2.19s-2.67.88-3.33 2.19c-1.4-.46-2.91-.2-3.92.81s-1.26 2.52-.8 3.91c-1.31.67-2.2 1.91-2.2 3.34s.89 2.67 2.2 3.34c-.46 1.39-.21 2.9.8 3.91s2.52 1.26 3.91.81c.67 1.31 1.91 2.19 3.34 2.19s2.68-.88 3.34-2.19c1.39.45 2.9.2 3.91-.81s1.27-2.52.81-3.91c1.31-.67 2.19-1.91 2.19-3.34z"/><path fill="#fff" d="M10.54 16.2 6.8 12.46l1.41-1.42 2.26 2.26 4.8-5.23 1.47 1.36z"/></svg></span>' : '');
   document.getElementById('profile-bio-show').textContent = profile.bio || '';
 
   // City tag
