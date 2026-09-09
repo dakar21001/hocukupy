@@ -36,6 +36,7 @@
   --text:#121111;--text2:#292526;--text3:#787676;
   --radius:16px;--radius-sm:8px;--radius-xs:6px;
   --nav-h:calc(76px + env(safe-area-inset-bottom));
+  --kb-h:0px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 body{font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', sans-serif;background:#fff;color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;}
@@ -540,7 +541,7 @@ textarea{resize:vertical;min-height:80px;}
 .wizard-progress-bar{flex:1;height:4px;border-radius:99px;background:var(--border);transition:background 0.3s;}
 .wizard-progress-bar.active{background:var(--green);}
 .wizard-body{flex:1;min-height:0;overflow:hidden;}
-.wizard-footer{position:fixed;bottom:24px;left:20px;right:20px;z-index:110;}
+.wizard-footer{position:fixed;bottom:calc(24px + var(--kb-h, 0px));left:20px;right:20px;z-index:110;}
 .wizard-next-btn{width:100%;height:54px;background:var(--green);color:#fff;border:none;border-radius:16px;font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:opacity 0.2s,background 0.15s;}
 .wizard-next-btn:disabled{background:#B8D9B8;cursor:not-allowed;}
 
@@ -573,7 +574,7 @@ textarea{resize:vertical;min-height:80px;}
 .wiz-cat-row.selected .cat-row-icon svg{stroke:#fff;}
 
 /* Step 3 — Budget */
-#wiz-step-3{height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px;}
+#wiz-step-3{height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px 20px calc(20px + var(--kb-h, 0px));}
 .wiz-budget-display{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:48px;font-weight:700;color:var(--text);cursor:pointer;text-align:center;margin-bottom:24px;}
 .wiz-budget-hint{font-size:14px;color:var(--text3);text-align:center;}
 
@@ -2995,6 +2996,23 @@ if (window.innerWidth > 700) {
 }
 
 // ---- FAB ----
+// ---- KEYBOARD-AWARE FOOTER ----
+// Кнопка "Далі" в майстрах — position:fixed. Мобільні браузери не рухають fixed-елементи
+// разом з клавіатурою (вона зменшує visual viewport, а не layout viewport), тому кнопка
+// лишалась внизу "за кадром". Рахуємо висоту клавіатури через VisualViewport API і
+// підіймаємо кнопку (та звужуємо зону центрування на кроці бюджету/ціни) на цю висоту.
+(function() {
+  var vv = window.visualViewport;
+  if (!vv) return;
+  function update() {
+    var kb = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+    document.documentElement.style.setProperty('--kb-h', kb + 'px');
+  }
+  vv.addEventListener('resize', update);
+  vv.addEventListener('scroll', update);
+  update();
+})();
+
 // ---- WIZARD ----
 var wizState = { step: 1, photos: [], photoFiles: [], category: '', budget: '', title: '', desc: '', city: '' };
 
