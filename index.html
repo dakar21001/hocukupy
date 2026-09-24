@@ -3465,6 +3465,15 @@ function checkUrlRequest() {
   if (reqId) openRequestPage(reqId);
 }
 
+// Deep-link у чат із push: ?chat=<id>
+function checkUrlChat() {
+  var params = new URLSearchParams(window.location.search);
+  var chatId = params.get('chat');
+  if (!chatId) return;
+  history.replaceState({}, '', window.location.pathname);
+  openChatById(chatId);
+}
+
 // Handle browser back/forward
 window.addEventListener('popstate', function(e) {
   var params = new URLSearchParams(window.location.search);
@@ -4403,6 +4412,22 @@ async function openChatList() {
   document.getElementById('chat-list-container').innerHTML = html;
 }
 
+// Відкрити конкретний чат за id (для deep-link з push-повідомлення)
+async function openChatById(chatId) {
+  if (!currentUser) { openAuth(); return; }
+  var res = await db.from('chats').select('*, buyer:buyer_id(name), seller:seller_id(name), request:request_id(id,title,budget,photos), offer:offer_id(description,price,photos)').eq('id', chatId).maybeSingle();
+  var c = res.data;
+  if (!c) { openChatList(); return; }
+  var isbuyer = currentUser.id === c.buyer_id;
+  var partner = isbuyer ? (c.seller ? c.seller.name : 'Продавець') : (c.buyer ? c.buyer.name : 'Покупець');
+  var partnerId = isbuyer ? c.seller_id : c.buyer_id;
+  var req = c.request || {};
+  var offer = c.offer || {};
+  var reqPhoto = (req.photos && req.photos.length) ? req.photos[0] : '';
+  var offerPhoto = (offer.photos && offer.photos.length) ? offer.photos[0] : '';
+  openChatWindow(c.id, partner, req.title || '', partnerId, req.id || '', req.budget || '', reqPhoto, offer.description || '', offer.price || '', offerPhoto);
+}
+
 async function openOrCreateChat(sellerId, requestId, sellerName, reqTitle, offerId) {
   if (!currentUser) { openAuth(); return; }
   var res = await db.from('chats').select('id').eq('offer_id', offerId).maybeSingle();
@@ -4771,6 +4796,7 @@ db.auth.getSession().then(function(res) {
   if (maybeRunPendingDelete(session)) return;
   if (session && session.user) { ensureProfileFromMetadata(session.user); setUserUI(session.user); }
   refreshSavedAndFeed();
+  checkUrlChat();
 });
 db.auth.onAuthStateChange(function(_e, session) {
   if (maybeRunPendingDelete(session)) return;
