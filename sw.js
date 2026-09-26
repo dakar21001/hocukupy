@@ -1,8 +1,8 @@
 // ХочуКупити — service worker (PWA)
 // Стратегія: HTML (навігації) — network-first (щоб бачити свіжий деплой), офлайн-фолбек із кешу.
 // Своя статика (іконки) — cache-first. Supabase/CDN — не кешуємо, йдуть у мережу як є.
-var CACHE = 'hocukupy-v1';
-var CORE = ['/', '/index.html', '/manifest.json', '/icon-192.png', '/icon-512.png', '/apple-touch-icon.png'];
+var CACHE = 'hocukupy-v2';
+var CORE = ['/', '/index.html', '/manifest.json', '/icon-192.png', '/icon-512.png', '/apple-touch-icon.png', '/favicon.ico', '/favicon.svg', '/favicon-96x96.png'];
 
 self.addEventListener('install', function(e) {
   self.skipWaiting();
