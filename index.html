@@ -93,7 +93,7 @@ body{font-family:ui-rounded, 'SF Pro Rounded', 'Nunito', sans-serif;background:#
 .req-card-new{background:#fff;cursor:pointer;transition:transform 0.15s;display:flex;flex-direction:column;width:100%;}
 .req-card-new:active{transform:scale(0.97);}
 .req-card-new.closed{opacity:0.65;}
-.card-img-wrap{position:relative;height:160px;background:#E8E8E8;overflow:hidden;border-radius:16px;}
+.card-img-wrap{position:relative;height:160px;background:#E8E8E8;overflow:hidden;border-radius:16px;cursor:pointer;}
 .card-img-wrap img{width:100%;height:100%;object-fit:cover;}
 .card-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F0F0F0,#E2E2E2);}
 .card-img-placeholder svg{width:38px;height:38px;}
@@ -2784,7 +2784,7 @@ function requestCardHtml(r) {
     : '<div class="card-budget"><span style="font-size:14px;font-weight:600;color:#292526;font-family:ui-rounded, SF Pro Rounded, Nunito, sans-serif">Вільний бюджет</span><div class="card-arrow"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div></div>';
   var h = '';
   h += '<div class="req-card-new' + (isClosed ? ' closed' : '') + '" id="rcard-' + r.id + '">';
-  h += '<div class="card-img-wrap">' + imgHtml;
+  h += '<div class="card-img-wrap" data-action="open-request" data-id="' + r.id + '">' + imgHtml;
   h += '<span class="card-time">' + timeAgo(r.created_at) + '</span>';
   h += '<button class="card-save-btn' + (isSaved ? ' saved' : '') + '" data-action="toggle-save" data-id="' + r.id + '"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></button>';
   if (isClosed) h += '<span class="card-found-badge">✓ Знайдено</span>';
