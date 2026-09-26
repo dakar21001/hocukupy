@@ -213,6 +213,7 @@ textarea{resize:vertical;min-height:80px;}
 .req-author-avatar img{width:100%;height:100%;object-fit:cover;}
 .req-author-name{font-size:15px;font-weight:700;color:var(--text);margin-bottom:3px;}
 .req-author-stars{display:flex;align-items:center;gap:2px;}
+.rating-slot:empty{min-height:18px;}
 .req-author-star{color:#F5A623;font-size:14px;}
 .req-author-rating{font-size:12px;color:var(--text3);margin-left:2px;}
 .req-author-since{font-size:12px;color:var(--text3);margin-left:auto;white-space:nowrap;}
@@ -2503,7 +2504,64 @@ function updateGreeting(user) {
   } else {
     document.getElementById('greeting-name').textContent = 'ХочуКупити';
     document.getElementById('mobile-avatar-letter').textContent = '?';
+    renderHeaderAvatar(null);
   }
+}
+
+// ---- АВАТАР У ХЕДЕРІ ----
+// Фото профілю в кружечку справа зверху. Якщо фото нема або воно не завантажилось — показуємо букву.
+function renderHeaderAvatar(profile) {
+  var btn = document.getElementById('mobile-avatar-btn');
+  if (!btn) return;
+  var letter = document.getElementById('mobile-avatar-letter');
+  var img = btn.querySelector('img');
+  var url = profile && profile.avatar_url;
+  if (!url) {
+    if (img) img.remove();
+    if (letter) letter.style.display = '';
+    return;
+  }
+  if (!img) {
+    img = document.createElement('img');
+    img.alt = '';
+    img.decoding = 'async';
+    btn.appendChild(img);
+  }
+  img.onerror = function() { img.remove(); if (letter) letter.style.display = ''; };
+  if (img.getAttribute('src') !== url) img.src = url;
+  if (letter) letter.style.display = 'none';
+}
+
+// Старі аватарки завантажувались "як є" з камери (3-10 МБ), а показуються кружечком 38-46px.
+// Саме вони гальмують сторінку запиту (пропозиції) і профіль (відгуки).
+// Один раз стискаємо ВЛАСНУ аватарку користувача при вході — так з часом полегшають усі.
+async function maybeShrinkOwnAvatar(pr) {
+  if (!currentUser || !pr || !pr.avatar_url) return;
+  var key = 'avatar_ok_' + currentUser.id;
+  try { if (localStorage.getItem(key) === pr.avatar_url) return; } catch (e) {}
+  function markOk(u) { try { localStorage.setItem(key, u); } catch (e) {} }
+  try {
+    var resp = await fetch(pr.avatar_url);
+    if (!resp.ok) return;
+    var blob = await resp.blob();
+    if (blob.size <= 150 * 1024) { markOk(pr.avatar_url); return; }
+    var small = await compressImage(new File([blob], 'avatar.jpg', { type: blob.type || 'image/jpeg' }), 512, 0.85);
+    if (!small || small.size >= blob.size) { markOk(pr.avatar_url); return; }
+    var path = currentUser.id + '/avatar_' + Date.now() + '.jpg';
+    var up = await db.storage.from('avatars').upload(path, small, { upsert: true, contentType: 'image/jpeg' });
+    if (up.error) return;
+    var url = db.storage.from('avatars').getPublicUrl(path).data.publicUrl;
+    var upd = await db.from('profiles').update({ avatar_url: url }).eq('id', currentUser.id);
+    if (upd.error) return;
+    markOk(url);
+    renderHeaderAvatar({ avatar_url: url });
+    // старий важкий файл прибираємо (тільки якщо він у власній папці користувача)
+    var oldPath = (pr.avatar_url.split('/object/public/avatars/')[1] || '').split('?')[0];
+    oldPath = decodeURIComponent(oldPath);
+    if (oldPath && oldPath.indexOf(currentUser.id + '/') === 0) {
+      db.storage.from('avatars').remove([oldPath]).catch(function() {});
+    }
+  } catch (e) { /* не критично — лишаємо як є */ }
 }
 
 function setUserUI(user) {
@@ -2689,7 +2747,9 @@ async function compressImage(file, maxDim, quality) {
     var cw = Math.max(1, Math.round(w * scale)), ch = Math.max(1, Math.round(h * scale));
     var canvas = document.createElement('canvas');
     canvas.width = cw; canvas.height = ch;
-    canvas.getContext('2d').drawImage(source, 0, 0, cw, ch);
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cw, ch); // прозорі PNG інакше стають з чорним фоном у JPEG
+    ctx.drawImage(source, 0, 0, cw, ch);
     if (source.close) source.close();
     var blob = await new Promise(function(resolve) { canvas.toBlob(resolve, 'image/jpeg', quality); });
     if (!blob) return file;
@@ -3345,7 +3405,9 @@ async function openRequestPage(requestId) {
   // Реальні рейтинги: автор запиту + усі продавці
   var ratingIds = [r.user_id];
   offers.forEach(function(o){ ratingIds.push(o.user_id); });
-  var ratings = await fetchRatings(ratingIds);
+  // Раніше сторінка чекала на рейтинги (другий запит у БД) і лише потім зʼявлялась.
+  // Тепер показуємо одразу, а зірки дозаповнюємо, коли прийдуть.
+  var ratingsPromise = fetchRatings(ratingIds).catch(function() { return {}; });
   // Mark request as viewed (for "+N нові пропозиції" on Activity page)
   if (isOwner) { localStorage.setItem('req_viewed_' + requestId, String(Date.now())); updateNavBadges(); }
   var html = '';
@@ -3392,7 +3454,7 @@ async function openRequestPage(requestId) {
   // --- AUTHOR ---
   var authorInitial = r.profiles ? r.profiles.name.charAt(0).toUpperCase() : '?';
   var authorAvatar = r.profiles && r.profiles.avatar_url
-    ? '<img src="' + esc(r.profiles.avatar_url) + '">'
+    ? '<img src="' + esc(r.profiles.avatar_url) + '" alt="" decoding="async">'
     : authorInitial;
   var authorId = r.profiles ? r.profiles.id : '';
   var yearsOnService = r.profiles && r.profiles.created_at ? timeOnService(r.profiles.created_at) : '';
@@ -3400,8 +3462,7 @@ async function openRequestPage(requestId) {
   html += '<div class="req-author" data-action="open-profile" data-id="' + authorId + '">';
   html += '<div class="req-author-avatar">' + authorAvatar + '</div>';
   html += '<div><div class="req-author-name">' + esc(r.profiles ? r.profiles.name : 'Анонім') + '</div>';
-  var authorRating = ratings[r.user_id] || { avg: 0, count: 0 };
-  html += '<div class="req-author-stars">' + ratingStarsHtml(authorRating.avg, authorRating.count, 'req-author-star', 'req-author-rating') + '</div></div>';
+  html += '<div class="req-author-stars rating-slot" data-uid="' + esc(r.user_id || '') + '" data-sc="req-author-star" data-rc="req-author-rating"></div></div>';
   if (yearsOnService) html += '<div class="req-author-since">На сервісі: ' + yearsOnService + '</div>';
   html += '</div>';
 
@@ -3413,7 +3474,7 @@ async function openRequestPage(requestId) {
       var oName = o.profiles ? o.profiles.name : 'Анонім';
       var oInitial = oName.charAt(0).toUpperCase();
       var oAvatar = o.profiles && o.profiles.avatar_url
-        ? '<img src="' + esc(o.profiles.avatar_url) + '">'
+        ? '<img src="' + esc(o.profiles.avatar_url) + '" alt="" loading="lazy" decoding="async">'
         : oInitial;
 
       html += '<div class="offer-card" data-offerid="' + o.id + '">';
@@ -3421,8 +3482,7 @@ async function openRequestPage(requestId) {
       html += '<div class="offer-card-top">';
       html += '<div class="offer-card-avatar" style="cursor:pointer" data-action="open-profile" data-id="' + (o.profiles ? o.profiles.id : '') + '">' + oAvatar + '</div>';
       html += '<div><div class="offer-card-name">' + esc(oName) + '</div>';
-      var oRating = ratings[o.user_id] || { avg: 0, count: 0 };
-      html += '<div class="offer-card-stars">' + ratingStarsHtml(oRating.avg, oRating.count, 'offer-card-star', 'offer-card-rating') + '</div></div>';
+      html += '<div class="offer-card-stars rating-slot" data-uid="' + esc(o.user_id || '') + '" data-sc="offer-card-star" data-rc="offer-card-rating"></div></div>';
       var oService = o.profiles && o.profiles.created_at ? timeOnService(o.profiles.created_at) : '';
       if (oService) html += '<div class="offer-card-since">На сервісі: ' + oService + '</div>';
       html += '</div>';
@@ -3454,6 +3514,14 @@ async function openRequestPage(requestId) {
 
   document.getElementById('request-page-content').innerHTML = html;
   document.getElementById('request-page-content').scrollTop = 0;
+
+  ratingsPromise.then(function(ratings) {
+    if (window._currentRequestId !== requestId) return;
+    document.querySelectorAll('#request-page-content .rating-slot').forEach(function(el) {
+      var rt = ratings[el.dataset.uid] || { avg: 0, count: 0 };
+      el.innerHTML = ratingStarsHtml(rt.avg, rt.count, el.dataset.sc, el.dataset.rc);
+    });
+  });
 
   loadSimilar(r);
 
@@ -3753,14 +3821,25 @@ async function openProfile(userId) {
   var isOwn = currentUser && currentUser.id === userId;
   window._profileUserId = userId;
   document.getElementById('profile-reviews').innerHTML = '<div class="spinner"></div>';
+  ['stat-requests','stat-offers','stat-closed'].forEach(function(id){ document.getElementById(id).textContent = '–'; });
+  document.getElementById('prof-rating-display').textContent = '';
 
-  var res = await db.from('profiles').select('*').eq('id', userId).single();
+  // Раніше: профіль → запити → пропозиції → рейтинг → відгуки — 5 запитів ПО ЧЕРЗІ.
+  // Тепер стартуємо всі одночасно (Promise.resolve одразу запускає запит Supabase),
+  // а відгуки тягнемо один раз — і для списку, і для середньої оцінки.
+  var pProfile = Promise.resolve(db.from('profiles').select('*').eq('id', userId).single());
+  var pReqs = Promise.resolve(db.from('requests').select('id, closed_at').eq('user_id', userId));
+  var pOffs = Promise.resolve(db.from('offers').select('id').eq('user_id', userId));
+  var pReviews = Promise.resolve(db.from('reviews').select('*, reviewer:reviewer_id(name, avatar_url)').eq('seller_id', userId).order('created_at', { ascending: false }));
+
+  var res = await pProfile;
+  if (window._profileUserId !== userId) return; // користувач уже пішов на інший профіль
   var profile = res.data || {};
   window._profileData = profile;
   var name = profile.name || 'Без імені';
 
   var avatarEl = document.getElementById('profile-avatar');
-  if (profile.avatar_url) { avatarEl.innerHTML = '<img src="' + esc(profile.avatar_url) + '" alt="">'; }
+  if (profile.avatar_url) { avatarEl.innerHTML = '<img src="' + esc(profile.avatar_url) + '" alt="" decoding="async">'; }
   else { avatarEl.textContent = name.charAt(0).toUpperCase(); }
 
   document.getElementById('profile-name').innerHTML = esc(name) + (profile.is_verified ? ' <span class="verified-badge" title="Верифікований"><svg viewBox="0 0 24 24"><path fill="#2b8fe8" d="M22.25 12c0-1.43-.88-2.67-2.19-3.34.46-1.39.2-2.9-.81-3.91s-2.52-1.27-3.91-.81c-.66-1.31-1.91-2.19-3.34-2.19s-2.67.88-3.33 2.19c-1.4-.46-2.91-.2-3.92.81s-1.26 2.52-.8 3.91c-1.31.67-2.2 1.91-2.2 3.34s.89 2.67 2.2 3.34c-.46 1.39-.21 2.9.8 3.91s2.52 1.26 3.91.81c.67 1.31 1.91 2.19 3.34 2.19s2.68-.88 3.34-2.19c1.39.45 2.9.2 3.91-.81s1.27-2.52.81-3.91c1.31-.67 2.19-1.91 2.19-3.34z"/><path fill="#fff" d="M10.54 16.2 6.8 12.46l1.41-1.42 2.26 2.26 4.8-5.23 1.47 1.36z"/></svg></span>' : '');
@@ -3793,25 +3872,24 @@ async function openProfile(userId) {
   document.getElementById('prof-report-btn').style.display = (currentUser && !isOwn) ? '' : 'none';
 
   // Stats
-  var reqRes = await db.from('requests').select('id, closed_at').eq('user_id', userId);
-  var offRes = await db.from('offers').select('id').eq('user_id', userId);
-  var requests = reqRes.data || [];
+  var rest = await Promise.all([pReqs, pOffs, pReviews]);
+  if (window._profileUserId !== userId) return;
+  var requests = rest[0].data || [];
   var closed = requests.filter(function(r) { return r.closed_at; }).length;
   document.getElementById('stat-requests').textContent = requests.length;
-  document.getElementById('stat-offers').textContent = (offRes.data || []).length;
+  document.getElementById('stat-offers').textContent = (rest[1].data || []).length;
   document.getElementById('stat-closed').textContent = closed;
 
-  // Rating
-  var ratingRes = await db.from('reviews').select('rating').eq('seller_id', userId);
-  var ratingData = ratingRes.data || [];
+  // Rating + відгуки — з одного запиту
+  var reviews = rest[2].data || [];
   var ratingEl = document.getElementById('prof-rating-display');
-  if (ratingData.length) {
-    var avg = ratingData.reduce(function(s,r){return s+r.rating;},0)/ratingData.length;
+  if (reviews.length) {
+    var avg = reviews.reduce(function(s,r){return s+r.rating;},0)/reviews.length;
     var stars = '★'.repeat(Math.round(avg)) + '☆'.repeat(5-Math.round(avg));
     ratingEl.innerHTML = '<span style="color:#F5D90A">' + stars + '</span> ' + avg.toFixed(1) + '/5';
   } else { ratingEl.textContent = ''; }
 
-  loadReviews(userId);
+  renderReviews(reviews);
 }
 
 // ---- ACTIVITY PAGE ----
@@ -4133,8 +4211,10 @@ window._isAdmin = false;
 async function refreshSelfFlags() {
   if (!currentUser) { window._isAdmin = false; return; }
   try {
-    var r = await db.from('profiles').select('is_admin, is_banned').eq('id', currentUser.id).maybeSingle();
+    var r = await db.from('profiles').select('is_admin, is_banned, name, avatar_url').eq('id', currentUser.id).maybeSingle();
     var pr = r.data || {};
+    renderHeaderAvatar(pr);
+    maybeShrinkOwnAvatar(pr);
     window._isAdmin = !!pr.is_admin;
     var arow = document.getElementById('settings-admin-btn');
     if (arow) arow.style.display = window._isAdmin ? '' : 'none';
@@ -4405,6 +4485,8 @@ document.getElementById('photo-sheet-bg').addEventListener('click', function(e) 
 async function uploadAvatar(file) {
   if (!currentUser || !file) return;
   toast('Завантажуємо...');
+  // аватарка показується максимум ~120px — 512px з запасом для ретіни
+  file = await compressImage(file, 512, 0.85);
   var ext = file.name.split('.').pop();
   var path = currentUser.id + '/avatar_' + Date.now() + '.' + ext;
   var up = await db.storage.from('avatars').upload(path, file, { upsert: true });
@@ -4414,6 +4496,8 @@ async function uploadAvatar(file) {
   var res = await db.from('profiles').update({ avatar_url: url }).eq('id', currentUser.id);
   if (res.error) { toast('Помилка: ' + res.error.message, true); return; }
   toast('Фото оновлено!');
+  try { localStorage.setItem('avatar_ok_' + currentUser.id, url); } catch (e) {}
+  renderHeaderAvatar({ avatar_url: url });
   closePhotoSheet();
   openProfile(currentUser.id);
 }
@@ -4424,6 +4508,7 @@ document.getElementById('photo-delete-btn').addEventListener('click', async func
   var res = await db.from('profiles').update({ avatar_url: null }).eq('id', currentUser.id);
   if (res.error) { toast('Помилка', true); return; }
   toast('Фото видалено');
+  renderHeaderAvatar(null);
   closePhotoSheet();
   openProfile(currentUser.id);
 });
@@ -4431,7 +4516,9 @@ document.getElementById('photo-delete-btn').addEventListener('click', async func
 // ---- REVIEWS ----
 async function loadReviews(userId) {
   var res = await db.from('reviews').select('*, reviewer:reviewer_id(name, avatar_url)').eq('seller_id', userId).order('created_at', { ascending: false });
-  var reviews = res.data || [];
+  renderReviews(res.data || []);
+}
+function renderReviews(reviews) {
   var container = document.getElementById('profile-reviews');
   if (!reviews.length) { container.innerHTML = '<div class="prof-reviews-empty">Відгуків ще немає</div>'; return; }
   var html = '';
@@ -4439,7 +4526,7 @@ async function loadReviews(userId) {
     var r=reviews[j];
     var rName = r.reviewer ? r.reviewer.name : 'Анонім';
     var rAv = r.reviewer && r.reviewer.avatar_url
-      ? '<img src="'+esc(r.reviewer.avatar_url)+'">'
+      ? '<img src="'+esc(r.reviewer.avatar_url)+'" alt="" loading="lazy" decoding="async">'
       : rName.charAt(0).toUpperCase();
     var rs='';for(var k=1;k<=5;k++)rs+=k<=r.rating?'★':'☆';
     var dateStr = new Date(r.created_at).toLocaleDateString('uk',{day:'2-digit',month:'2-digit',year:'numeric'});
