@@ -540,7 +540,8 @@ textarea{resize:vertical;min-height:80px;}
 .city-sheet-confirm.active{background:var(--green);cursor:pointer;}
 
 
-.wizard-wrap{background:#fff;position:fixed;inset:0;z-index:1;display:flex;flex-direction:column;overflow:hidden;}
+.wizard-wrap{background:#fff;position:fixed;inset:0;z-index:1;display:flex;flex-direction:column;overflow:hidden;overscroll-behavior:none;}
+#wiz-step-2,#wiz-step-6{overscroll-behavior:contain;}
 .wizard-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 0;flex-shrink:0;background:#fff;position:relative;z-index:1;}
 .wizard-title{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:17px;font-weight:700;color:var(--text);}
 .wizard-progress{display:flex;gap:6px;padding:16px 20px;flex-shrink:0;background:#fff;position:relative;z-index:1;}
@@ -592,6 +593,13 @@ textarea{resize:vertical;min-height:80px;}
 
 .wiz-text-display{font-family:ui-rounded,'SF Pro Rounded','Nunito',sans-serif;font-size:22px;font-weight:700;color:var(--text);text-align:center;cursor:pointer;min-height:60px;width:100%;line-height:1.4;}
 .wiz-text-display:empty::before{content:attr(data-placeholder);color:var(--border2);font-weight:400;}
+/* Свій курсор: справжній (у прихованому input) ховаємо, малюємо риску після тексту */
+#wiz-budget-input,#wiz-title-input,#wiz-desc-input,#owiz-desc-input,#owiz-price-input{caret-color:transparent;color:transparent;}
+.wiz-text-display.typing::after,.wiz-budget-display.typing::after{content:'';display:inline-block;width:2px;height:1.15em;margin-left:2px;vertical-align:-0.2em;background:var(--green);border-radius:1px;animation:wiz-caret 1s step-end infinite;}
+/* порожнє поле: курсор ПЕРЕД підказкою, як у звичайному інпуті */
+.wiz-text-display.typing:empty::before{content:'';display:inline-block;width:2px;height:1.15em;margin-right:2px;vertical-align:-0.2em;background:var(--green);border-radius:1px;animation:wiz-caret 1s step-end infinite;}
+.wiz-text-display.typing:empty::after{content:attr(data-placeholder);display:inline;width:auto;height:auto;margin:0;background:none;color:var(--border2);font-weight:400;animation:none;}
+@keyframes wiz-caret{50%{opacity:0;}}
 #wiz-step-5 .wiz-text-display{font-size:16px;font-weight:400;line-height:1.7;text-align:center;}
 
 /* Step 6 — Preview */
@@ -3056,6 +3064,47 @@ function renderSaved(items) {
 }
 
 // ---- FAB ----
+
+// ---- МАЙСТРИ: СВІЙ КУРСОР ----
+// Поки прихований input у фокусі — показуємо курсор у відповідному тексті.
+[['wiz-budget-input','wiz-budget-display'],['wiz-title-input','wiz-title-display'],['wiz-desc-input','wiz-desc-display'],
+ ['owiz-desc-input','owiz-desc-display'],['owiz-price-input','owiz-price-display']].forEach(function(pair) {
+  var inp = document.getElementById(pair[0]), disp = document.getElementById(pair[1]);
+  if (!inp || !disp) return;
+  inp.addEventListener('focus', function() { disp.classList.add('typing'); });
+  inp.addEventListener('blur', function() { disp.classList.remove('typing'); });
+});
+
+// ---- МАЙСТРИ: БЕЗ СКРОЛУ СТОРІНКИ ----
+// З відкритою клавіатурою iOS дозволяє "тягати" всю сторінку, навіть коли body overflow:hidden.
+// У майстрах забороняємо жест прокрутки всюди, крім елементів, які справді прокручуються
+// (список категорій, превʼю, стрічка фото). На краях списку жест теж не "протікає" в сторінку.
+(function() {
+  function wizardOpen() {
+    var a = document.getElementById('wizard-page'), b = document.getElementById('offer-wizard-page');
+    return (a && a.style.display !== 'none') || (b && b.style.display !== 'none');
+  }
+  var sx = 0, sy = 0;
+  document.addEventListener('touchstart', function(e) {
+    if (e.touches.length === 1) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }
+  }, { passive: true });
+  document.addEventListener('touchmove', function(e) {
+    if (!wizardOpen() || e.touches.length !== 1) return;
+    var dx = e.touches[0].clientX - sx, dy = e.touches[0].clientY - sy;
+    var horizontal = Math.abs(dx) > Math.abs(dy);
+    for (var el = e.target; el && el !== document.body && el !== document.documentElement; el = el.parentElement) {
+      var cs = getComputedStyle(el);
+      if (horizontal && /(auto|scroll)/.test(cs.overflowX) && el.scrollWidth > el.clientWidth + 1) return; // стрічка фото
+      if (!horizontal && /(auto|scroll)/.test(cs.overflowY) && el.scrollHeight > el.clientHeight + 1) {
+        var atTop = el.scrollTop <= 0, atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
+        if ((dy > 0 && atTop) || (dy < 0 && atBottom)) e.preventDefault();
+        return;
+      }
+    }
+    e.preventDefault(); // нічого прокручувати — не рухаємо сторінку
+  }, { passive: false });
+})();
+
 // ---- KEYBOARD-AWARE FOOTER ----
 // Кнопка "Далі" в майстрах — position:fixed. Мобільні браузери не рухають fixed-елементи
 // разом з клавіатурою (вона зменшує visual viewport, а не layout viewport), тому кнопка
