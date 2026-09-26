@@ -1982,6 +1982,72 @@ function showPage(page) {
   if (owizFooter) owizFooter.style.display = page === 'offer-wizard' ? '' : 'none';
 }
 
+// ---- НАВІГАЦІЯ: історія екранів для кнопки "Назад" ----
+// Раніше кожна кнопка "Назад" вела на жорстко зашитий екран (майже завжди — головну).
+// Тепер тримаємо стек: перед відкриттям нового екрана запамʼятовуємо, як відновити поточний.
+var navStack = [];
+var _navSuppress = false;
+
+// Знімок поточного екрана: {key, restore}. null — екран, який не запамʼятовуємо (майстри, авторизація).
+function currentView() {
+  function vis(id) { var e = document.getElementById(id); return e && e.style.display !== 'none'; }
+  if (vis('wizard-page') || vis('offer-wizard-page') || vis('auth-page')) return null;
+  if (vis('request-page') && window._currentRequestId) {
+    var rid = window._currentRequestId;
+    return { key: 'request:' + rid, restore: function() { openRequestPage(rid); } };
+  }
+  if (vis('profile-page') && window._profileUserId) {
+    var pid = window._profileUserId;
+    return { key: 'profile:' + pid, restore: function() { openProfile(pid); } };
+  }
+  if (vis('chat-window-page') && currentChatId) {
+    var cid = currentChatId;
+    return { key: 'chat:' + cid, restore: function() { openChatById(cid); } };
+  }
+  if (vis('chat-list-page')) return { key: 'chatlist', restore: function() { openChatList(); setActiveNav('nav-chats'); } };
+  if (vis('user-items-page')) { var t = activityTab; return { key: 'activity', restore: function() { openActivity(t); } }; }
+  if (vis('saved-page')) return { key: 'saved', restore: function() { showSaved(); } };
+  if (vis('cats-page')) return { key: 'cats', restore: function() { showPage('cats'); } };
+  if (vis('settings-page')) return { key: 'settings', restore: function() { openSettings(); } };
+  if (vis('admin-page')) return { key: 'admin', restore: function() { openAdmin(); } };
+  if (vis('support-page') && _supportUserId) {
+    var su = _supportUserId, sa = _supportAsAdmin;
+    return { key: 'support:' + su, restore: function() { openSupport(su, sa); } };
+  }
+  if (vis('privacy-page')) return { key: 'privacy', restore: function() { showPage('privacy'); } };
+  if (vis('terms-page')) return { key: 'terms', restore: function() { showPage('terms'); } };
+  if (vis('main-page')) return { key: 'main', restore: function() { showPage('main'); setActiveNav('nav-home'); } };
+  return null;
+}
+
+// Викликається першим рядком кожного "відкрити екран X"
+function navPush(targetKey) {
+  if (_navSuppress) return;
+  var cur = currentView();
+  if (!cur) return;
+  if (targetKey && cur.key === targetKey) return; // перевідкриття того ж екрана (realtime-оновлення, зміна табу)
+  var top = navStack[navStack.length - 1];
+  if (top && top.key === cur.key) return;
+  navStack.push(cur);
+  if (navStack.length > 30) navStack.shift();
+}
+
+// Кнопка "Назад" — повертаємось на попередній екран зі стека
+function navBack(fallback) {
+  var prev = navStack.pop();
+  _navSuppress = true;
+  try {
+    if (prev) prev.restore();
+    else if (fallback) fallback();
+    else { showPage('main'); setActiveNav('nav-home'); }
+  } finally {
+    setTimeout(function() { _navSuppress = false; }, 0);
+  }
+}
+
+// Вкладки нижнього меню — корінь навігації, стек скидаємо
+function navReset() { navStack = []; }
+
 // ---- TOAST ----
 function toast(msg, isError) {
   var t = document.getElementById('toast');
@@ -2487,10 +2553,11 @@ window.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.cat-row').forEach(function(r) {
       r.classList.toggle('active-cat', r.getAttribute('data-cat') === currentCat);
     });
+    navPush('cats');
     showPage('cats');
   });
   document.getElementById('cats-back-btn').addEventListener('click', function() {
-    showPage('main'); setActiveNav('nav-home');
+    navBack();
   });
   document.querySelectorAll('.cat-row').forEach(function(row) {
     row.addEventListener('click', function() {
@@ -2511,10 +2578,10 @@ function setActiveNav(id) {
   var el = document.getElementById(id);
   if (el) el.classList.add('active');
 }
-document.getElementById('nav-home').addEventListener('click', function() { showPage('main'); setActiveNav('nav-home'); loadRequests(); });
-document.getElementById('nav-chats').addEventListener('click', function() { if (!currentUser) { openAuth(); return; } openChatList(); setActiveNav('nav-chats'); });
-document.getElementById('nav-my-requests').addEventListener('click', function() { if (!currentUser) { openAuth(); return; } openActivity('requests'); });
-document.getElementById('nav-saved').addEventListener('click', function() { showSaved(); setActiveNav('nav-saved'); });
+document.getElementById('nav-home').addEventListener('click', function() { showPage('main'); setActiveNav('nav-home'); navReset(); loadRequests(); });
+document.getElementById('nav-chats').addEventListener('click', function() { if (!currentUser) { openAuth(); return; } openChatList(); navReset(); setActiveNav('nav-chats'); });
+document.getElementById('nav-my-requests').addEventListener('click', function() { if (!currentUser) { openAuth(); return; } openActivity('requests'); navReset(); });
+document.getElementById('nav-saved').addEventListener('click', function() { showSaved(); navReset(); setActiveNav('nav-saved'); });
 
 // ---- SEARCH ----
 document.getElementById('search-input').addEventListener('input', function() {
@@ -2879,6 +2946,7 @@ async function unsaveFromList(id) {
 
 // ---- SAVED PAGE ----
 async function showSaved() {
+  navPush('saved');
   showPage('saved');
   setActiveNav('nav-saved');
   var c = document.getElementById('saved-content');
@@ -3208,11 +3276,9 @@ document.getElementById('share-btn').addEventListener('click', function() {
   });
 });
 
-var _prevPage = 'main';
 function closeRequestModal() {
-  showPage(_prevPage);
-  setActiveNav('nav-home');
   history.pushState({}, '', window.location.pathname);
+  navBack();
 }
 
 // Зірки з середнього балу (0 → «Новачок»)
@@ -3250,8 +3316,8 @@ function timeOnService(createdAt) {
 }
 
 async function openRequestPage(requestId) {
+  navPush('request:' + requestId);
   window._currentRequestId = requestId;
-  _prevPage = document.getElementById('request-page').style.display === '' ? 'request' : 'main';
   history.pushState({ requestId: requestId }, '', '?request=' + requestId);
   showPage('request');
   clearTimeout(_shareResetTimer);
@@ -3482,10 +3548,15 @@ function checkUrlChat() {
 window.addEventListener('popstate', function(e) {
   var params = new URLSearchParams(window.location.search);
   var reqId = params.get('request');
-  if (reqId) {
-    openRequestPage(reqId);
-  } else {
-    showPage('main'); setActiveNav('nav-home');
+  _navSuppress = true;
+  try {
+    if (reqId) {
+      openRequestPage(reqId);
+    } else {
+      showPage('main'); setActiveNav('nav-home');
+    }
+  } finally {
+    setTimeout(function() { _navSuppress = false; }, 0);
   }
 });
 
@@ -3674,9 +3745,10 @@ async function deleteRequest(requestId) {
 }
 
 // ---- PROFILE ----
-document.getElementById('back-from-profile-btn').addEventListener('click', function() { showPage('main'); setActiveNav('nav-home'); });
+document.getElementById('back-from-profile-btn').addEventListener('click', function() { navBack(); });
 
 async function openProfile(userId) {
+  navPush('profile:' + userId);
   showPage('profile');
   var isOwn = currentUser && currentUser.id === userId;
   window._profileUserId = userId;
@@ -3746,6 +3818,7 @@ async function openProfile(userId) {
 var activityTab = 'requests';
 
 function openActivity(tab) {
+  navPush('activity');
   activityTab = tab || 'requests';
   showPage('user-items');
   setActiveNav('nav-my-requests');
@@ -4073,14 +4146,15 @@ function handleBanned() {
   toast('Ваш акаунт заблоковано за порушення правил', true);
   setTimeout(async function() {
     try { await db.auth.signOut(); } catch (e) {}
-    setUserUI(null); showPage('main'); setActiveNav('nav-home'); loadRequests();
+    setUserUI(null); navReset(); showPage('main'); setActiveNav('nav-home'); loadRequests();
   }, 1800);
 }
 document.getElementById('settings-admin-btn').addEventListener('click', function(){ openAdmin(); });
-document.getElementById('back-from-admin-btn').addEventListener('click', function(){ showPage('settings'); });
+document.getElementById('back-from-admin-btn').addEventListener('click', function(){ navBack(function(){ openSettings(); }); });
 
 async function openAdmin() {
   if (!window._isAdmin) { toast('Немає доступу', true); return; }
+  navPush('admin');
   showPage('admin');
   switchAdminTab('reports');
 }
@@ -4180,6 +4254,7 @@ async function openSupport(userId, asAdmin) {
   if (!currentUser) { openAuth(); return; }
   _supportUserId = userId || currentUser.id;
   _supportAsAdmin = !!asAdmin;
+  navPush('support:' + _supportUserId);
   document.getElementById('support-title').textContent = 'Підтримка';
   showPage('support');
   var box = document.getElementById('support-messages');
@@ -4231,12 +4306,14 @@ document.getElementById('support-send-btn').addEventListener('click', sendSuppor
 document.getElementById('support-input').addEventListener('keydown', function(e){ if (e.key === 'Enter') { e.preventDefault(); sendSupport(); } });
 document.getElementById('back-from-support-btn').addEventListener('click', function(){
   if (_supportChannel) { db.removeChannel(_supportChannel); _supportChannel = null; }
-  if (_supportAsAdmin) { openAdmin(); switchAdminTab('support'); } else { showPage('settings'); }
+  var asAdmin = _supportAsAdmin;
+  navBack(function(){ if (asAdmin) { openAdmin(); switchAdminTab('support'); } else { openSettings(); } });
 });
 
 // ---- SETTINGS PAGE ----
 var settingsCityTemp = '';
 function openSettings() {
+  navPush('settings');
   showPage('settings');
   var p = window._profileData || {};
   var name = p.name || '';
@@ -4259,7 +4336,7 @@ function openSettings() {
 }
 document.getElementById('back-from-settings-btn').addEventListener('click', async function() {
   // Auto-save on back
-  if (!currentUser) { openProfile(window._profileUserId); return; }
+  if (!currentUser) { navBack(function() { openProfile(window._profileUserId); }); return; }
   var name = document.getElementById('settings-name').value.trim();
   var bio = document.getElementById('settings-bio').value.trim();
   var city = document.getElementById('settings-city-display').value.trim();
@@ -4269,7 +4346,7 @@ document.getElementById('back-from-settings-btn').addEventListener('click', asyn
     updateGreeting(currentUser);
     toast('Збережено');
   }
-  openProfile(currentUser.id);
+  navBack(function() { openProfile(currentUser.id); });
 });
 document.getElementById('settings-city-field').addEventListener('click', function() {
   citySheetTarget = 'settings';
@@ -4284,11 +4361,11 @@ document.getElementById('settings-change-pass-btn').addEventListener('click', fu
 });
 document.getElementById('settings-support-btn').addEventListener('click', function() { openSupport(null, false); });
 // ---- ЮРИДИЧНІ СТОРІНКИ ----
-function openLegal(page) { showPage(page); window.scrollTo(0, 0); }
+function openLegal(page) { navPush(page); showPage(page); window.scrollTo(0, 0); }
 document.getElementById('open-privacy').addEventListener('click', function(e){ e.preventDefault(); openLegal('privacy'); });
 document.getElementById('open-terms').addEventListener('click', function(e){ e.preventDefault(); openLegal('terms'); });
-document.getElementById('back-from-privacy-btn').addEventListener('click', function(){ showPage('settings'); });
-document.getElementById('back-from-terms-btn').addEventListener('click', function(){ showPage('settings'); });
+document.getElementById('back-from-privacy-btn').addEventListener('click', function(){ navBack(function(){ openSettings(); }); });
+document.getElementById('back-from-terms-btn').addEventListener('click', function(){ navBack(function(){ openSettings(); }); });
 document.getElementById('settings-push-btn').addEventListener('click', async function() {
   var on = Notification.permission === 'granted';
   if (on) { try { var reg = await navigator.serviceWorker.ready; on = !!(await reg.pushManager.getSubscription()); } catch (e) { on = false; } }
@@ -4296,7 +4373,7 @@ document.getElementById('settings-push-btn').addEventListener('click', async fun
 });
 document.getElementById('settings-logout-btn').addEventListener('click', function() {
   db.auth.signOut(); setUserUI(null); toast('До побачення!');
-  showPage('main'); setActiveNav('nav-home'); loadRequests();
+  navReset(); showPage('main'); setActiveNav('nav-home'); loadRequests();
 });
 document.getElementById('settings-delete-account-btn').addEventListener('click', function() {
   showConfirm('Видалення акаунту', 'Ви впевнені, що хочете видалити акаунт? Усі ваші запити, пропозиції та повідомлення буде видалено назавжди.', function() {
@@ -4377,9 +4454,10 @@ async function loadReviews(userId) {
 
 // ---- CHAT ----
 var currentChatId = null, chatRealtimeSub = null;
-document.getElementById('back-from-chat-btn').addEventListener('click', function() { openChatList(); if (chatRealtimeSub) { chatRealtimeSub.unsubscribe(); chatRealtimeSub = null; } });
+document.getElementById('back-from-chat-btn').addEventListener('click', function() { if (chatRealtimeSub) { chatRealtimeSub.unsubscribe(); chatRealtimeSub = null; } navBack(function() { openChatList(); setActiveNav('nav-chats'); }); });
 
 async function openChatList() {
+  navPush('chatlist');
   showPage('chat-list');
   if (!currentUser) return;
   document.getElementById('chat-list-container').innerHTML = '<div class="spinner"></div>';
@@ -4452,11 +4530,12 @@ async function openOrCreateChat(sellerId, requestId, sellerName, reqTitle, offer
   }
   var rq = await db.from('requests').select('budget,photos').eq('id', requestId).maybeSingle();
   if (rq.data) { reqBudget = rq.data.budget || ''; reqPhoto = (rq.data.photos && rq.data.photos.length) ? rq.data.photos[0] : ''; }
-  closeRequestModal();
+  history.pushState({}, '', window.location.pathname);
   openChatWindow(chatId, sellerName, reqTitle, sellerId, requestId, reqBudget, reqPhoto, offerDesc, offerPrice, offerPhoto);
 }
 
 function openChatWindow(chatId, partnerName, reqTitle, partnerId, reqId, reqBudget, reqPhoto, offerDesc, offerPrice, offerPhoto) {
+  navPush('chat:' + chatId);
   currentChatId = chatId;
   pendingChatPhotos = [];
   if (document.getElementById('chat-photo-preview')) renderChatPhotoPreview();
